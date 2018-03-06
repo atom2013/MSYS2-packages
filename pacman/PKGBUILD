@@ -98,6 +98,7 @@ build() {
   cd ${srcdir}/${pkgname}-${pkgver}
 
   export PKG_CONFIG="/usr/bin/pkg-config --static"
+  LIBS="$(pkg-config --libs-only-l libpsl) -lintl" \
   ./configure \
     --prefix=/usr \
     --sysconfdir=/etc \
