@@ -1,7 +1,7 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=msys2-keyring
-pkgver=r9.397a52e
+pkgver=r10.97104dc
 pkgrel=1
 pkgdesc='MSYS2 PGP keyring'
 arch=('any')
@@ -10,14 +10,20 @@ url='https://github.com/Alexpux/MSYS2-keyring'
 license=('GPL')
 install="${pkgname}.install"
 makedepends=("git")
-source=(${pkgname}::"git+https://github.com/Alexpux/MSYS2-keyring.git")
-sha256sums=('SKIP')
+source=(${pkgname}::"git+https://github.com/Alexpux/MSYS2-keyring.git"
+		0001-add-Atom-s-key.patch)
+sha256sums=('SKIP'
+			'd1adcff6d092b75417b4254f753430eedac5350e31f8bc20f59f10a59483a026')
 
 pkgver() {
   cd "${srcdir}/${pkgname}"
   printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
+prepare() {
+  cd "${srcdir}/${pkgname}"
+  git am ${srcdir}/0001-add-Atom-s-key.patch
+}
 package() {
   cd "${srcdir}/${pkgname}"
   make PREFIX=/usr DESTDIR=${pkgdir} install
