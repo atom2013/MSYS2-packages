@@ -52,7 +52,8 @@ build() {
     --without-libintl-prefix \
     --without-libiconv-prefix \
     --enable-install-program=arch,hostname \
-    --enable-no-install-program=uptime
+    --enable-no-install-program=uptime \
+	gl_cv_func_getcwd_path_max=yes
 
   make
 }
