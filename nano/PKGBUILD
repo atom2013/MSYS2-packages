@@ -19,12 +19,14 @@ install=nano.install
 source=(https://www.nano-editor.org/dist/v${pkgver%.*}/${pkgname}-${pkgver}.tar.xz{,.asc}
         2.2.4-wchar.patch
         nano-2.3.4-fix-ncurses-location.patch
-        nano-2.8.0-msys2.patch)
+        nano-2.8.0-msys2.patch
+		nano-2.9.7__nonnull.patch)
 sha256sums=('b64ab017305b1777e97b5b9b07b31db8aeebfc3e8719f61e8da1cf3866d344bd'
             'SKIP'
             '60ea17cdaf6ce0dbcf7e21b592e54aa829b34d9aab95a7ad20ddce569605c3d4'
             '62b0e50470254ed09e55c068b29b72fe784d0552f97fbc5a15b6ee791c9cbd72'
-            '9ff4c257f385ae2d77a97b9f332e5022badf703d1e6f00ebc778c282c8323b82')
+            '9ff4c257f385ae2d77a97b9f332e5022badf703d1e6f00ebc778c282c8323b82'
+			'e089b3ac94b8b1563e4b5213b329146b4d044be61f235ba29c54ff6525077eb3')
 validpgpkeys=('8DA6FE7BFA7A418AB3CB2354BCB356DF91009FA7' # "Chris Allegretta <chrisa@asty.org>"
               'A7F6A64A67DA09EF92782DD79DF4862AF1175C5B' # "Benno Schulenberg <bensberg@justemail.net>"
 )
@@ -37,6 +39,8 @@ prepare() {
   patch -p1 -i ${srcdir}/nano-2.3.4-fix-ncurses-location.patch
   msg2 "nano-2.8.0-msys2.patch"
   patch -p1 -i ${srcdir}/nano-2.8.0-msys2.patch
+  msg2 "nano-2.9.7__nonnull.patch"
+  patch -p1 -i ${srcdir}/nano-2.9.7__nonnull.patch
 }
 
 build() {
