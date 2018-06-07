@@ -10,7 +10,7 @@ arch=('i686' 'x86_64')
 #url="http://directory.fsf.org/project/HexCurse/"
 url="https://github.com/LonnyGomes/hexcurse"
 license=('GPL')
-depends=('ncurses')
+depends=('ncurses' 'ncurses-devel')
 options=('!makeflags')
 source=("${pkgname}-${pkgver}.tgz::https://github.com/LonnyGomes/hexcurse/archive/v${pkgver}.tar.gz"
         hexcurse-1.60.0-msys2-automake-version.diff
