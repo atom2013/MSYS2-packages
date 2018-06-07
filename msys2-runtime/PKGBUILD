@@ -3,8 +3,8 @@
 
 pkgbase=msys2-runtime
 pkgname=('msys2-runtime' 'msys2-runtime-devel')
-pkgver=2.10.0
-pkgrel=3
+pkgver=2.5.2
+pkgrel=2
 pkgdesc="Cygwin POSIX emulation engine"
 arch=('i686' 'x86_64')
 url="https://www.cygwin.com/"
@@ -46,90 +46,65 @@ source=('msys2-runtime'::git://sourceware.org/git/newlib-cygwin.git#tag=cygwin-$
         0021-Add-debugging-for-strace-make_command_line.patch
         0022-environ.cc-New-facility-environment-variable-MSYS2_E.patch
         0023-path.cc-Ignore-zero-length-exclusions.patch
-        0024-Cygwin-fix-build-with-GCC-7.patch
-)
+        0024-machine-_types.h-__blkcnt_t-should-be-signed.patch
+		0025-Rename-__in-and-__out-in-headers-to-avoid-collision-.patch)
 sha256sums=('SKIP'
-            '8aafdf4f62a52195a591ebe24ab671c35aa1d7c60381c8ff3526c4c1dd1fdf0e'
-            '0f95696e2bafc6120a60e66fe48884d516ca28fc5ee1ddf9e52f946e1234019d'
-            '735321f3f00e60af22dead4d319a73199d0f3839fed5566021d310a4697a5b6b'
-            '8c3aa163f2c5f65622e3b3067a8dd5eb9bf5ffe1314b877fd85505ee3fd54ada'
-            '884dcf771e3a6122f34029b1780511f180f2143db463c19a1c6051921e6ad267'
-            '2c5b74243d9d1b10447875ee8c1793c512da269cd33b069f6e478d304895abd2'
-            'a3708553ff2f3ba8608e4cff6488d0c1f61f1c1739f16127c398921cca944731'
-            'ee178aa40f3f9d3e197e87ac8b5cb646aef44ca59d4664e142fb571ab5128a19'
-            '601e2f7c99c8702061d89a79a1f9ffe3e85f77f75ee718a8186d91b5d1deac87'
-            'd8a060a752f703da0051ee4929a10d8ca72eaab3dd54da111b54c52f34177950'
-            '0cc775ee20bc1f5c947eadc7b1bfc022508bcc0f4eb6aae294184b024de55222'
-            'd299312cca28130823a6ca4e163e8c0bc32887c132c76c37e8cb0082c7d54e10'
-            '7cb032f609aeee26def614f4c8b7ffb3a41e63412c045ebeaa9385d58f53a5ba'
-            '3f176e0713024301a2497836caf5c5c7cc00212f2dbc164a9565a619980ed1bc'
-            '7a43506231fdedcb6fe01fee7094040fe4c2904af1d84ab18022b2aa0cc3ea13'
-            'd861b33b5396455959a009d935ffc73e81977d2eb50038753aee02c7e0d3d5c6'
-            '5be0cda0f574ad9a7408c28987b9884dd8e9e584db26abadbb3f7466543e65e2'
-            'fd8f188fe49549ca690f13abfe02eace268011fc39644bfdf5df6acf64aeb32f'
-            '06ba3acae156d3e409355cda6b81fc18f1f6f5839676c4f7d8d1970e2fd4d31c'
-            '09972073fe07623ad8bbfdec9c7c33fd75e12cd9d237aef3c04468a9aefa4afd'
-            'ac80823274db00b877f1e925426da1a709f00b211f77e30fe4448f5c6c31194a'
-            'a0fe210a8ae05f0a17a06ff79736d0908a6c3dc0fc6db444e5c4d050b84b779d'
-            '7cba394680f874b23fa77ea295d17f4b2a2a5f64bd376cd6afd6cf34b05f659b'
-            '6bf4d9abd0ec1cf3de0868df81792d3cdf4d857eb8002fd9dd8505f9541a8c29')
-
-# Helper macros to help make tasks easier #
-apply_patch_with_msg() {
-  for _patch in "$@"
-  do
-    msg2 "Applying $_patch"
-    patch -Nbp1 -i "${srcdir}/${_patch}"
-  done
-}
-
-apply_git_am_with_msg() {
-  for _patch in "$@"
-  do
-    msg2 "Applying $_patch"
-    git am --committer-date-is-author-date "${srcdir}/${_patch}"
-  done
-}
-
-del_file_exists() {
-  for _fname in "$@"
-  do
-    if [ -f $_fname ]; then
-      rm -rf $_fname
-    fi
-  done
-}
-# =========================================== #
-
+            '7b24f901bddfb4b92ed2982d8608e8a9fdd1d2e523ae028115b5f5e8d710fea4'
+            '2683c45d3d964c55738dc65c9897fe6b8344ba20ead4102c432c46e382923625'
+            'c335d965acc3d632f95ebabd68b1ccd29f09bc4de0be7b9eb5e8f51092a7512c'
+            'aee9c77565bb076d8641f2bbf83020ead6dc5a5407489592718ea1bff9c17dba'
+            '58ca67dc53b65075679f518915854590b5c14572b7b27824251d06675fd434fe'
+            '0fc81a9ebb06f1b445d1feaab5cad47f8d2dc9194cc4e8a089a995b00cfdc24b'
+            '7b4f1f59a1c872b453234320d1d4e4d9f232530c2c97e41016fdcd294f5cc1ae'
+            'd874063ea8aa51fb63f3329daa101f16b388f9efa64495375aa353bbd6a51106'
+            '769399c63146d0d49ffbf8e6fbd6b79cea9e82f9268cf134ce6599819821f424'
+            '2ca7d7269f07722a631ddea0f60146fb93c1003449f0287f73ecaa34572f3c81'
+            'c441aaac174f5f1511381aac687cc70d5923ad5e78f98951c010d1afef1cc630'
+            'f8d7975f56d1c1ca25492ba2c3283c225d7df4508d508f776463080f0d4a084d'
+            'd3ab995ac5141f38fc228800b0ef867428775df789cd6ea242ef790ccabe6f0e'
+            '05e5305a4562ade558efa572176fa2632ac8a0b8c1680c904f3fcc4e900f6604'
+            '0995138d7311f5515fcb33524747960624cadb2f22f8059b99f3ad5b95e0917c'
+            '4ed24fcd8a4d0ac4961da8707a357ec7021d8c0c0638c83fa2734b764c897d28'
+            '43a02d7c85c55e4b9abbfb0e3ffe7512eefacd4420e42686efa5ba6705a53d7b'
+            'acb7bb895dc93eb4cbec81d9026b63f35dbf954093f9507629a5a8e0274aae63'
+            '90d9f051cd13d1ec9c6d23adda9eed28f3219da59378d98fc9e2f0cb8de7ad48'
+            'fc067fe6bb2d7d15909e41c1982fed7ebb1d2e3622acd277dbdadfc64beaa4ad'
+            'fd2731afc3b6ff3d9e870e5b0a582280eeb1a1ed7bbfe944c15299112bd2eb21'
+            '673680ee81c15a5750c3c56bf8803cfa4f4bd698d0b875d8e1a5d9362e4ce865'
+            '8e3fdcd9c6914e5edbe415b164321ff588ec2f1259772e633629314c30eac6b7'
+            '671401f0a26c53edc2b72dc9e87cf72780f64bffe3a3465f8c7c4b6760dab192'
+			'501c1db94c588be6f483b6de3c936cc80ab0530b7a6fe01784d3ba6100f4e766')
 prepare() {
   cd "${srcdir}"/msys2-runtime
-  del_file_exists winsup/cygwin/msys2_path_conv.cc \
-    winsup/cygwin/msys2_path_conv.h 
- apply_git_am_with_msg 0001-Add-MSYS-triplets.patch \
-  0002-Rename-DLL-from-cygwin-to-msys.patch \
-  0003-Add-functionality-for-converting-UNIX-paths-in-argum.patch \
-  0004-Add-functionality-for-changing-OS-name-via-MSYSTEM-e.patch \
-  0005-Move-root-to-usr.-Change-sorting-mount-points.-Do-no.patch \
-  0006-Do-not-create-cygwin-symlinks.-Instead-use-deep-copy.patch \
-  0007-Automatically-rewrite-TERM-msys-to-TERM-cygwin.patch \
-  0008-Do-not-convert-environment-for-strace.patch \
-  0009-convert-be-more-careful-to-stay-within-the-buffer.patch \
-  0010-convert-check-safely-whether-we-could-allocate-the-b.patch \
-  0011-convert-use-the-elegant-realloc-call.patch \
-  0012-convert-plug-potential-memory-leak.patch \
-  0013-convert-warn-when-we-cut-off-a-path.patch \
-  0014-arg_heuristic-be-better-prepared-to-handle-path-list.patch \
-  0015-Fix-converting-argument-looks-like-DVAR-str1-c-path1.patch \
-  0016-Special-case-for-converting-root-directory-to-have-t.patch \
-  0017-dcrt0.cc-Untangle-allow_glob-from-winshell.patch \
-  0018-dcrt0.cc-globify-Don-t-quote-literal-strings-differe.patch \
-  0019-strace.cc-Don-t-set-MSYS-noglob.patch \
-  0020-Add-debugging-for-build_argv.patch \
-  0021-Add-debugging-for-strace-make_command_line.patch \
-  0022-environ.cc-New-facility-environment-variable-MSYS2_E.patch \
-  0023-path.cc-Ignore-zero-length-exclusions.patch \
-  0024-Cygwin-fix-build-with-GCC-7.patch
-
+  git am --committer-date-is-author-date "${srcdir}"/0001-Add-MSYS-triplets.patch
+  git am --committer-date-is-author-date "${srcdir}"/0002-Rename-DLL-from-cygwin-to-msys.patch
+  git am --committer-date-is-author-date "${srcdir}"/0003-Add-functionality-for-converting-UNIX-paths-in-argum.patch
+  git am --committer-date-is-author-date "${srcdir}"/0004-Add-functionality-for-changing-OS-name-via-MSYSTEM-e.patch
+  git am --committer-date-is-author-date "${srcdir}"/0005-Move-root-to-usr.-Change-sorting-mount-points.-Do-no.patch
+  git am --committer-date-is-author-date "${srcdir}"/0006-Do-not-create-cygwin-symlinks.-Instead-use-deep-copy.patch
+  git am --committer-date-is-author-date "${srcdir}"/0007-Automatically-rewrite-TERM-msys-to-TERM-cygwin.patch
+  git am --committer-date-is-author-date "${srcdir}"/0008-Do-not-convert-environment-for-strace.patch
+  git am --committer-date-is-author-date "${srcdir}"/0009-convert-be-more-careful-to-stay-within-the-buffer.patch
+  git am --committer-date-is-author-date "${srcdir}"/0010-convert-check-safely-whether-we-could-allocate-the-b.patch
+  git am --committer-date-is-author-date "${srcdir}"/0011-convert-use-the-elegant-realloc-call.patch
+  git am --committer-date-is-author-date "${srcdir}"/0012-convert-plug-potential-memory-leak.patch
+  git am --committer-date-is-author-date "${srcdir}"/0013-convert-warn-when-we-cut-off-a-path.patch
+  git am --committer-date-is-author-date "${srcdir}"/0014-arg_heuristic-be-better-prepared-to-handle-path-list.patch
+  git am --committer-date-is-author-date "${srcdir}"/0015-Fix-converting-argument-looks-like-DVAR-str1-c-path1.patch
+  git am --committer-date-is-author-date "${srcdir}"/0016-Special-case-for-converting-root-directory-to-have-t.patch
+  git am --committer-date-is-author-date "${srcdir}"/0017-dcrt0.cc-Untangle-allow_glob-from-winshell.patch
+  git am --committer-date-is-author-date "${srcdir}"/0018-dcrt0.cc-globify-Don-t-quote-literal-strings-differe.patch
+  git am --committer-date-is-author-date "${srcdir}"/0019-strace.cc-Don-t-set-MSYS-noglob.patch
+  git am --committer-date-is-author-date "${srcdir}"/0020-Add-debugging-for-build_argv.patch
+  git am --committer-date-is-author-date "${srcdir}"/0021-Add-debugging-for-strace-make_command_line.patch
+  git am --committer-date-is-author-date "${srcdir}"/0022-environ.cc-New-facility-environment-variable-MSYS2_E.patch
+  git am --committer-date-is-author-date "${srcdir}"/0023-path.cc-Ignore-zero-length-exclusions.patch
+  git am --committer-date-is-author-date "${srcdir}"/0024-machine-_types.h-__blkcnt_t-should-be-signed.patch
+  git am --committer-date-is-author-date "${srcdir}"/0025-Rename-__in-and-__out-in-headers-to-avoid-collision-.patch
+  
+  # remove 'mingw-w64-cross-crt-clang-git' and install 'mingw-w64-cross-crt-git'
+  (pacman -Q mingw-w64-cross-crt-clang-git &>/dev/null) && pacman -Rdd --noconfirm mingw-w64-cross-crt-clang-git
+  pacman -S --noconfirm mingw-w64-cross-crt-git
 }
 
 build() {
@@ -149,6 +124,11 @@ build() {
   CFLAGS="$OPTIM -pipe -ggdb"
   CXXFLAGS="$OPTIM -pipe -ggdb"
 
+  if (($(gcc --version | sed -n -r 's/[^.]*([0-9]+)\.([0-9]+)\.([0-9]+).*/\1/p') >= 6)); then
+	CFLAGS+=" -Wno-error=frame-address"
+	CXXFLAGS+=" -Wno-error=nonnull-compare -Wno-error=frame-address"
+  fi
+  
   "${srcdir}"/msys2-runtime/configure \
     --prefix=/usr \
     --build=${CHOST} \
@@ -169,8 +149,6 @@ package_msys2-runtime() {
   pkgdesc="Posix emulation engine for Windows"
   groups=('base')
   options=('!strip')
-  conflicts=('catgets' 'libcatgets')
-  replaces=('catgets' 'libcatgets')
   #install=msys2-runtime.install
 
   mkdir -p "${pkgdir}"/usr
@@ -185,11 +163,9 @@ package_msys2-runtime() {
 
 package_msys2-runtime-devel() {
   pkgdesc="MSYS2 headers and libraries"
-  groups=('msys2-devel')
+  groups=('MSYS2-devel')
   depends=("msys2-runtime=${pkgver}")
   options=('staticlibs' '!strip')
-  conflicts=('libcatgets-devel')
-  replaces=('libcatgets-devel')
 
   mkdir -p "${pkgdir}"/usr/bin
   cp -f "${srcdir}"/dest/usr/bin/msys-2.0.dbg "${pkgdir}"/usr/bin/

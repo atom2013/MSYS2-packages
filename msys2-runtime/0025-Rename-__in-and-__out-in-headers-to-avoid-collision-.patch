@@ -1,0 +1,59 @@
+From bf61b38d984539d63dce809923e4edb7865bf721 Mon Sep 17 00:00:00 2001
+From: David Macek <david.macek.0@gmail.com>
+Date: Fri, 7 Jul 2017 10:47:02 +0200
+Subject: [PATCH] Rename __in and __out in headers to avoid collision with
+ Windows APIs
+
+* string.h: Local variables in expansion of strdupa and strndupa
+* sys/wait.h: Fields in anonymous union in expansion of __wait_status_to_int
+---
+ newlib/libc/include/string.h     | 18 +++++++++---------
+ winsup/cygwin/include/sys/wait.h |  2 +-
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/newlib/libc/include/string.h b/newlib/libc/include/string.h
+index 29e0d44..7833aa1 100644
+--- a/newlib/libc/include/string.h
++++ b/newlib/libc/include/string.h
+@@ -141,16 +141,16 @@ int	 _EXFUN(strverscmp,(const char *, const char *));
+ 
+ #if __GNU_VISIBLE && defined(__GNUC__)
+ #define strdupa(__s) \
+-	(__extension__ ({const char *__in = (__s); \
+-			 size_t __len = strlen (__in) + 1; \
+-			 char * __out = (char *) __builtin_alloca (__len); \
+-			 (char *) memcpy (__out, __in, __len);}))
++	(__extension__ ({const char *__sin = (__s); \
++			 size_t __len = strlen (__sin) + 1; \
++			 char * __sout = (char *) __builtin_alloca (__len); \
++			 (char *) memcpy (__sout, __sin, __len);}))
+ #define strndupa(__s, __n) \
+-	(__extension__ ({const char *__in = (__s); \
+-			 size_t __len = strnlen (__in, (__n)) + 1; \
+-			 char *__out = (char *) __builtin_alloca (__len); \
+-			 __out[__len-1] = '\0'; \
+-			 (char *) memcpy (__out, __in, __len-1);}))
++	(__extension__ ({const char *__sin = (__s); \
++			 size_t __len = strnlen (__sin, (__n)) + 1; \
++			 char *__sout = (char *) __builtin_alloca (__len); \
++			 __sout[__len-1] = '\0'; \
++			 (char *) memcpy (__sout, __sin, __len-1);}))
+ #endif /* __GNU_VISIBLE && __GNUC__ */
+ 
+ /* There are two common basename variants.  If you do NOT #include <libgen.h>
+diff --git a/winsup/cygwin/include/sys/wait.h b/winsup/cygwin/include/sys/wait.h
+index 69e1b9d..dc89458 100644
+--- a/winsup/cygwin/include/sys/wait.h
++++ b/winsup/cygwin/include/sys/wait.h
+@@ -88,7 +88,7 @@ inline int __wait_status_to_int (const union wait & __status)
+ #else /* !__cplusplus */
+ 
+ #define __wait_status_to_int(__status)  (__extension__ \
+-  (((union { __typeof(__status) __in; int __out; }) { .__in = (__status) }).__out))
++  (((union { __typeof(__status) __sin; int __sout; }) { .__sin = (__status) }).__sout))
+ 
+ #endif /* __cplusplus */
+ 
+-- 
+2.10.1.windows.1
+
