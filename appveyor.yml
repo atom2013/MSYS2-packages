@@ -1,25 +1,34 @@
 environment:
     DEPLOY_PROVIDER: bintray
-    BINTRAY_ACCOUNT: alexpux
+    BINTRAY_ACCOUNT: atomlong
     BINTRAY_REPOSITORY: msys2
-    PACMAN_REPOSITORY_NAME: ci.msys
+    BINTRAY_API_KEY:
+        secure: 7Y8ikRknA3WY2ZtJJQy8RHYp6UOh8t70h2vvIQTC1voX0nAltZRKcfy6Z/gWzY9D
+    BINTRAY_VERSION: latest
+    PACMAN_REPOSITORY_NAME: msys
+    DISTRIB_PACKAGE_NAME: distrib
+    GPG_KEY_PASSWD:
+        secure: DVuRK/wrA/hczYhh65X1WA==
+    GPG_FILE_SECRET:
+        secure: HvVAsdbdYQGzdOUefe2VlQ==
+    arch: i686
+    MSYS2_ROOT: C:\msys32
     BUILD_URL: https://ci.appveyor.com/project/$(APPVEYOR_ACCOUNT_NAME)/$(APPVEYOR_PROJECT_NAME)/build/$(APPVEYOR_BUILD_VERSION)
 
+install:
+    - curl -fsSL -o msys2-base-i686-latest.tar.xz https://dl.bintray.com/%BINTRAY_ACCOUNT%/%BINTRAY_REPOSITORY%/%DISTRIB_PACKAGE_NAME%/%arch%/msys2-base-i686-latest.tar.xz
+    - C:\cygwin\bin\bash --login -c "cd \"%CD%\"; rm -rf /cygdrive/c/msys32; tar -xf msys2-base-i686-latest.tar.xz -C /cygdrive/c/; mv -vf /cygdrive/c/msys32{,-build}"
+    - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${APPVEYOR_BUILD_FOLDER})/ci-build.sh INSTALL"
+
 build_script:
-    - C:\msys64\usr\bin\pacman --noconfirm --ask 20 --sync --refresh --refresh --sysupgrade --sysupgrade
-    - C:\msys64\usr\bin\bash --login -c "$(cygpath ${APPVEYOR_BUILD_FOLDER})/ci-build.sh"
+    - C:\msys32-build\usr\bin\pacman --noconfirm --ask 20 --sync --refresh --refresh --sysupgrade --sysupgrade
+    - C:\msys32-build\usr\bin\pacman --noconfirm --sync --needed base-devel msys2-devel git
+    - C:\msys32-build\autorebase.bat
+    - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${APPVEYOR_BUILD_FOLDER})/ci-build.sh BUILD"
 
-artifacts:
-    - path: artifacts\*
+after_build:
+    - C:\cygwin\bin\bash --login -c "cd \"%CD%\"; rm -rf \"${MSYS2_ROOT}\"; tar -xf msys2-base-i686-latest.tar.xz -C \"$(dirname $(cygpath ${MSYS2_ROOT}))\"; rm -vf msys2-base-i686-latest.tar.xz"
+    - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${APPVEYOR_BUILD_FOLDER})/ci-build.sh  DISTRIB"
 
-deploy:
-    - provider: BinTray
-      username: $(BINTRAY_ACCOUNT)
-      subject: $(BINTRAY_ACCOUNT)
-      repo: $(BINTRAY_REPOSITORY)
-      package: $(PACMAN_REPOSITORY_NAME)
-      version: latest
-      publish: true
-      override: true
-      api_key:
-          secure: B2XBLbsX8EQOpWyyaHskipMoF2+Tbt6hc/afbVm82f01CBKruspjwhee4K4C7/xf
+deploy_script:
+    - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${APPVEYOR_BUILD_FOLDER})/ci-build.sh  DEPLOY"
