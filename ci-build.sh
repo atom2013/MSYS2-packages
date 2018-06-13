@@ -49,7 +49,11 @@ success 'All packages built successfully'
 # End Case [ "${1}" == BUILD ]
 elif [ "${1}" == DISTRIB ]; then
 
-distrib_enable || { echo "distrib disabled"; rm -rf artifacts/${DISTRIB_PACKAGE_NAME}/${arch}; exit 0; }
+distrib_enable || { rm -rf artifacts/${DISTRIB_PACKAGE_NAME}/${arch}; exit 0; }
+
+message 'Extracting installation package'
+rm -rf "${MSYS2_ROOT}"
+tar -xf msys2-base-i686-latest.tar.xz -C "$(dirname $(cygpath ${MSYS2_ROOT}))"
 
 message 'Modifying mirror to use custom repository'
 set_repository_mirror "${MSYS2_ROOT}"

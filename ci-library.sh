@@ -215,10 +215,14 @@ deploy_enabled() {
 distrib_enable() {
 	[ -n "${DISTRIB_PACKAGE_NAME}" ] && [ -n "${arch}" ] || return 1
 	local LOCAL_REPOSITORY_PATH="artifacts/${PACMAN_REPOSITORY_NAME}/${arch}"
-	[ -f "${LOCAL_REPOSITORY_PATH}/${PACMAN_REPOSITORY_NAME}.db" ] || return 1
-	[ -f "${LOCAL_REPOSITORY_PATH}/${PACMAN_REPOSITORY_NAME}.files" ] || return 1
-	[ -n "${MSYS2_ROOT}" ] && [ -d "${MSYS2_ROOT}" ] || return 1
-	return 0;
+	[ -f ${LOCAL_REPOSITORY_PATH}/packages.list ] && {
+	local pkg basepkgs
+	pacman --sync --refresh
+	basepkgs=($(for pkg in $(pacman -Qg base | cut -d ' ' -f2); do pactree -lu ${pkg}; done | sort -u))
+	pkg=$(echo $(cat ${LOCAL_REPOSITORY_PATH}/packages.list | sort -u) | sed -r 's/\S+/\\b&\\b/g' | tr ' ' '|')
+	[ -n "${pkg}" ] && (grep -Pq "${pkg}" <<< ${basepkgs[@]}) && return 0
+	}
+	return 1;
 }
 
 # Added commits
@@ -399,7 +403,10 @@ for package in "${packages[@]}"; do
     execute 'Building binary' makepkg --noconfirm --skippgpcheck --nocheck --syncdeps --rmdeps --cleanbuild
     execute 'Building source' makepkg --noconfirm --skippgpcheck --allsource
 	execute 'Installing' yes:pacman --noprogressbar --upgrade *.pkg.tar.xz
-    (ls "${package}"/*.pkg.tar.xz &>/dev/null) && mv "${package}"/*.pkg.tar.xz artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/
+    (ls "${package}"/*.pkg.tar.xz &>/dev/null) && {
+	mv "${package}"/*.pkg.tar.xz artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/
+	( source ${package}/PKGBUILD; echo ${pkgname[@]} ${provides[@]} | tr ' ' '\n'; ) >> artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/packages.list
+	}
     (ls "${package}"/*.src.tar.gz &>/dev/null) && mv "${package}"/*.src.tar.gz artifacts/${PACMAN_REPOSITORY_NAME}/sources/
     unset package
 done
@@ -589,9 +596,9 @@ esac
 
 pushd ${local_dir}
 [ "${type}" == binary ] && {
-filelist=($(ls | grep -v "^old_pkg.list$" | grep -Pv "${PACMAN_REPOSITORY_NAME}"'\.(db|file)(\.tar\.xz(\.old)?)?') $(ls | grep -P "${PACMAN_REPOSITORY_NAME}"'\.(db|file)(\.tar\.xz(\.old)?)?'))
+filelist=($(ls | grep -v "^old_pkg.list$" | grep -v "^packages.list$" | grep -Pv "${PACMAN_REPOSITORY_NAME}"'\.(db|file)(\.tar\.xz(\.old)?)?') $(ls | grep -P "${PACMAN_REPOSITORY_NAME}"'\.(db|file)(\.tar\.xz(\.old)?)?'))
 } || {
-filelist=($(ls | grep -v "^old_pkg.list$"))
+filelist=($(ls))
 }
 
 for pkg in ${filelist[@]}; do

@@ -27,7 +27,6 @@ build_script:
     - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${APPVEYOR_BUILD_FOLDER})/ci-build.sh BUILD"
 
 after_build:
-    - C:\cygwin\bin\bash --login -c "cd \"%CD%\"; rm -rf \"${MSYS2_ROOT}\"; tar -xf msys2-base-i686-latest.tar.xz -C \"$(dirname $(cygpath ${MSYS2_ROOT}))\"; rm -vf msys2-base-i686-latest.tar.xz"
     - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${APPVEYOR_BUILD_FOLDER})/ci-build.sh  DISTRIB"
 
 deploy_script:
