@@ -61,6 +61,23 @@ _list_changes_from_head() {
     _as_list "${list_name}" "${filter}" "${strip}" "$(git log "${git_options[@]}" HEAD^.. | sort -u)"
 }
 
+# Changes since last build
+_list_changes_from_marker() {
+    local list_name="${1}"
+    local filter="${2}"
+    local strip="${3}"
+    local git_options=("${@:4}")
+	local marker="${PACMAN_REPOSITORY_NAME:-msys}-build.marker"
+    local branch_url="$(git remote get-url origin | sed 's/\.git$//')/tree/$(git symbolic-ref --short HEAD)"
+	local commit_sha
+	
+	_download_previous binary "${marker}" && commit_sha=$(sed -rn "s|${branch_url}\s+([[:xdigit:]]+).*|\1|p" "${marker}")
+	rm -f ${marker}
+	[ -n "${commit_sha}" ] || commit_sha="HEAD^"
+	
+	_as_list "${list_name}" "${filter}" "${strip}" "$(git log "${git_options[@]}" ${commit_sha}.. | sort -u)"
+}
+
 # Get package information
 _package_info() {
     local package="${1}"
@@ -172,7 +189,7 @@ create_build_references() {
     _download_previous binary "${references}" || touch "${references}"
     for file in *.pkg.tar.xz; do
         sed -i "/^${file}.*/d" "${references}"
-        printf '%-80s%s\n' "${file}" "${BUILD_URL}" >> "${references}"
+        printf '%-80s%s\n' "${file}" "${CI_BUILD_URL}" >> "${references}"
     done
     sort "${references}" | tee "${references}.sorted" | sed -r 's/(\S+)\s.*\/([^/]+)/\2\t\1/'
     mv "${references}.sorted" "${references}"
@@ -200,9 +217,25 @@ create_pacman_repository() {
 	}
 }
 
+# log git sha for the current build
+create_build_marker() {
+	local name="${1}"
+	local branch_url="$(git remote get-url origin | sed 's/\.git$//')/tree/${CI_BRANCH}"
+	local marker="${name}-build.marker"
+
+	[ -d artifacts/${PACMAN_REPOSITORY_NAME}/${arch} ] || return 1
+	
+	pushd artifacts/${PACMAN_REPOSITORY_NAME}/${arch}
+	_download_previous binary "${marker}" || touch "${marker}"
+	(grep -q "${branch_url}" "${marker}") && \
+	sed -i -r "s|(${branch_url}\\s*).*|\1${CI_COMMIT}|g" "${marker}" || \
+	printf '%-80s%s\n' "${branch_url}" "${CI_COMMIT}" >> "${marker}"
+	popd
+}
+
 # Deployment is enabled
 deploy_enabled() {
-    test -n "${BUILD_URL}" || return 1
+    test -n "${CI_BUILD_URL}" || return 1
     [[ "${DEPLOY_PROVIDER}" = bintray ]] || return 1
 	[ -n "${PACMAN_REPOSITORY_NAME}" ] || return 1
 	local LOCAL_REPOSITORY_PATH="artifacts/${PACMAN_REPOSITORY_NAME}/${arch}"
@@ -235,6 +268,11 @@ list_commits_from_head()  {
     _list_changes_from_head commits '*' '#*::' --pretty=format:'%ai::[%h] %s'
 }
 
+# Added commits since last build
+list_commits_from_marker()  {
+    _list_changes_from_marker commits '*' '#*::' --pretty=format:'%ai::[%h] %s'
+}
+
 # Changed recipes
 list_packages() {
     local _packages
@@ -250,6 +288,17 @@ list_packages() {
 list_packages_from_head() {
     local _packages
     _list_changes_from_head _packages '*/PKGBUILD' '%/PKGBUILD' --pretty=format: --name-only || return 1
+    for _package in "${_packages[@]}"; do
+        local find_case_sensitive="$(find -name "${_package}" -type d -print -quit)"
+        test -n "${find_case_sensitive}" && packages+=("${_package}")
+    done
+    return 0
+}
+
+# Changed recipes
+list_packages_from_marker() {
+    local _packages
+    _list_changes_from_marker _packages '*/PKGBUILD' '%/PKGBUILD' --pretty=format: --name-only || return 1
     for _package in "${_packages[@]}"; do
         local find_case_sensitive="$(find -name "${_package}" -type d -print -quit)"
         test -n "${find_case_sensitive}" && packages+=("${_package}")
@@ -369,14 +418,20 @@ set_repository_mirror()
 local mirrorlist="$(cygpath ${1}/etc/pacman.d/mirrorlist.msys)"
 local pacmanconf="$(cygpath ${1}/etc/pacman.conf)"
 local REMOTE_REPOSITORY_PATH="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}"
-local LOCAL_REPOSITORY_PATH="artifacts/${PACMAN_REPOSITORY_NAME}/${arch}"
+local LOCAL_REPOSITORY_PATH="${PWD}/artifacts/${PACMAN_REPOSITORY_NAME}/${arch}"
 
-mv -vf ${mirrorlist}{,.orig}
-echo "Server = ${REMOTE_REPOSITORY_PATH}" >> ${mirrorlist}
+[ -f ${mirrorlist}.orig ] || mv -vf ${mirrorlist}{,.orig}
+
+touch ${mirrorlist}
 
 [ -f "${LOCAL_REPOSITORY_PATH}/${PACMAN_REPOSITORY_NAME}.db" ] && {
-echo "Server = file://${LOCAL_REPOSITORY_PATH}" >> ${mirrorlist}
+(grep -q "Server = file://${LOCAL_REPOSITORY_PATH}" ${mirrorlist}) || sed -i "1iServer = file://${LOCAL_REPOSITORY_PATH}" ${mirrorlist}
+true
+} || {
+(grep -q "Server = file://${LOCAL_REPOSITORY_PATH}" ${mirrorlist}) && sed -i "s|Server = file://${LOCAL_REPOSITORY_PATH}||g" ${mirrorlist}
 }
+
+(grep -q "Server = ${REMOTE_REPOSITORY_PATH}" ${mirrorlist}) || echo "Server = ${REMOTE_REPOSITORY_PATH}" >> ${mirrorlist}
 
 cp -vf ${pacmanconf}{,.orig}
 sed -i -r "s/^\s*(Architecture =).*/\1 ${arch}/g" ${pacmanconf}
@@ -447,7 +502,7 @@ data="{
   \"desc\": \"MSYS2 base packages\",
   \"labels\": [\"MSYS2\", \"Windows\"],
   \"licenses\": [\"GPL-3.0\"],
-  \"vcs_url\": \"https://gitee.com/atomlong/MSYS2-packages.git\",
+  \"vcs_url\": \"$(git remote get-url origin | sed 's/\.git$//')/tree/$(git symbolic-ref --short HEAD)\",
   \"issue_tracker_url\": \"https://gitee.com/atomlong/MSYS2-packages/issues\",
   \"public_download_numbers\": false,
   \"public_stats\": true
@@ -483,7 +538,7 @@ data="{
   \"desc\": \"MSYS2 packages\",
   \"labels\": [\"MSYS2\", \"Windows\"],
   \"licenses\": [\"GPL-3.0\"],
-  \"vcs_url\": \"https://gitee.com/atomlong/MSYS2-packages.git\",
+  \"vcs_url\": \"$(git remote get-url origin | sed 's/\.git$//')/tree/$(git symbolic-ref --short HEAD)\",
   \"issue_tracker_url\": \"https://gitee.com/atomlong/MSYS2-packages/issues\",
   \"public_download_numbers\": false,
   \"public_stats\": true
