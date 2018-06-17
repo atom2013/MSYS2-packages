@@ -68,7 +68,7 @@ _list_changes_from_marker() {
     local strip="${3}"
     local git_options=("${@:4}")
 	local marker="${PACMAN_REPOSITORY_NAME:-msys}-build.marker"
-    local branch_url="$(git remote get-url origin | sed 's/\.git$//')/tree/$(git symbolic-ref --short HEAD)"
+    local branch_url="$(git remote get-url origin | sed 's/\.git$//')/tree/${CI_BRANCH}"
 	local commit_sha
 	
 	_download_previous binary "${marker}" && commit_sha=$(sed -rn "s|${branch_url}\s+([[:xdigit:]]+).*|\1|p" "${marker}")
