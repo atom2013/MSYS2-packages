@@ -2,7 +2,7 @@
 
 _pkgname=pax
 pkgname=${_pkgname}-git
-pkgver=20161104.2
+pkgver=20171021
 pkgrel=1
 pkgdesc="POSIX standard archive tool"
 arch=('i686' 'x86_64')
@@ -13,14 +13,14 @@ url="https://www.openbsd.org/cgi-bin/cvsweb/src/bin/pax/"
 license=('BSD')
 provides=("${_pkgname}")
 conflicts=("${_pkgname}")
-source=("${_pkgname}"::"git://anonscm.debian.org/collab-maint/pax.git"
+source=("${_pkgname}"::"git+https://github.com/MirBSD/mircpio"
         Makefile.msys)
 sha256sums=('SKIP'
             'c4864ee6738dde01073bb690fea997153ce22116cc80930032352d14749a9303')
 
 pkgver() {
   cd ${srcdir}/${_pkgname}
-  git describe --tags | sed -e 's|-|.|g' -e 's|pax.||g'
+  git tag | sed -e 's|paxmirabilis.||g' | grep -Po '^\d+$' | tail -n1
 }
 
 prepare() {
