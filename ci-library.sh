@@ -649,6 +649,8 @@ case ${type} in
 			;;
 esac
 
+[ -d "${local_dir}" ] || return 1;
+
 pushd ${local_dir}
 [ "${type}" == binary ] && {
 filelist=($(ls | grep -v "^old_pkg.list$" | grep -v "^packages.list$" | grep -Pv "${PACMAN_REPOSITORY_NAME}"'\.(db|file)(\.tar\.xz(\.old)?)?') $(ls | grep -P "${PACMAN_REPOSITORY_NAME}"'\.(db|file)(\.tar\.xz(\.old)?)?'))
