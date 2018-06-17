@@ -1,0 +1,165 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Maintainer: Ray Donnelly <mingw.android@gmail.com>
+
+_realname=git
+pkgname="$_realname-for-windows"
+pkgver=2.17.1.83816.e2d2aac684
+pkgrel=1
+pkgdesc="The fast distributed version control system"
+arch=('i686' 'x86_64')
+url="https://git-scm.com/"
+license=('GPL2')
+groups=('VCS')
+depends=('curl'
+         'expat>=2.0'
+         #'info'
+         'libpcre'
+         'vim'
+         'openssh'
+         'openssl'
+         'perl-Error'
+         'perl>=5.14.0'
+         'perl-Authen-SASL'
+         'perl-libwww'
+         'perl-MIME-tools'
+         'perl-Net-SMTP-SSL'
+         'perl-TermReadKey')
+makedepends=('asciidoc'
+             'docbook-xml'
+             'docbook-xsl'
+             #'docbook2x'
+             'less'
+             'libcurl-devel'
+             'libiconv-devel'
+             'pcre-devel'
+             #'python2'
+             'rsync'
+             #'texinfo'
+             'xmlto')
+optdepends=(#'tk: gitk and git gui'
+            'python2: various helper scripts'
+            'subversion: git svn'
+            #'cvsps: git cvsimport'
+            )
+#install=git.install
+replaces=('git-core')
+provides=('git-core')
+conflicts=('git')
+#options=('debug' '!strip')
+source=("git+https://github.com/git-for-windows/git"
+        1.7.9-cygwin.patch
+        git-1.9.0-manifest-msys2.patch
+        git-1.8.4-msys2.patch
+        git-2.3.5-mingw-pwd.patch
+        git-2.8.2-Cygwin-Allow-DOS-paths.patch
+        git-prevent_xss-default.patch
+        git-bash-completion-egrep-color-fix.patch
+        git-tcsh-completion-fixes.patch
+        git-zsh-completion-fixes.patch)
+sha256sums=('SKIP'
+            'c5e735d829e11f79e2d508b663d0924030498f48fc716881031fb975dbf187a5'
+            '2c0301076a7b60b5be2491433560f6f87c510ec64d2d8f9db5a75c1295893885'
+            '8dd65f3b0c4320dd30eb5109de86accee699ef3201d8611576d664f9d6fcb5d6'
+            'e19151d7dfbe18b7e3c0e689661662684d2b26ab0a84a06fb5c872ac0fc18f8e'
+            '128d93e2413556726fb8f02707c15d0e2e41d4da49d2e2a6019e839ea88cf5ab'
+            'bbe523015863a4b2459624dcc4ad5c675c779c1134c8617f90d65a541b74e194'
+            'bc6ef4a066a8b206fbc162387918f801ef95c7a691fdaf284f895bc303a1ee01'
+            'b28b3e13de08911f027d19a557967fc21128318a8d6ca74b20b26ee997a9b992'
+            '261438a4bedd5563c702533c34792581ccfa46db873ca3e105e6c1ab803a3107')
+
+pkgver() {
+  cd "${srcdir}/${_realname}"
+  echo "$(grep -Po 'DEF_VER=v\K.*' GIT-VERSION-GEN | tr '-' '.').$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd "${srcdir}/${_realname}"
+
+  rm -f compat/win32/git.manifest compat/win32/resource.rc
+  patch -p2 -i "${srcdir}"/1.7.9-cygwin.patch
+  patch -p1 -i "${srcdir}"/git-1.8.4-msys2.patch
+  patch -p1 -i "${srcdir}"/git-1.9.0-manifest-msys2.patch
+  patch -p1 -i "${srcdir}"/git-2.3.5-mingw-pwd.patch
+  patch -p1 -i "${srcdir}"/git-2.8.2-Cygwin-Allow-DOS-paths.patch
+  patch -p1 -i "${srcdir}"/git-prevent_xss-default.patch
+  patch -p1 -i "${srcdir}"/git-bash-completion-egrep-color-fix.patch
+  patch -p1 -i "${srcdir}"/git-tcsh-completion-fixes.patch
+  patch -p1 -i "${srcdir}"/git-zsh-completion-fixes.patch
+  
+
+  local _arch=
+  if [ "${CARCH}" == 'x86_64' ]; then
+    _arch='amd64'
+  elif [ "${CARCH}" == 'i686' ]; then
+    _arch='x86'
+  fi
+  sed -e "s|@ARCH@|${_arch}|g" -i compat/win32/git.manifest
+
+  make configure
+}
+
+build() {
+  export PYTHON_PATH='/usr/bin/python2'
+  cd "${srcdir}/${_realname}"
+
+  ./configure --build=${CHOST} \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --libexecdir=/usr/lib \
+    --with-libpcre \
+    --with-editor=vim \
+    --htmldir=/usr/share/doc/git/html \
+    --mandir=/usr/share/man
+
+  make INSTALLDIRS=vendor all
+  make -j1 man
+  #make -j1 info
+  make -C contrib/subtree prefix=/usr all
+}
+
+check() {
+  export PYTHON_PATH='/usr/bin/python2'
+  cd "${srcdir}/${_realname}"
+  local jobs
+  jobs=$(expr "$MAKEFLAGS" : '.*\(-j[0-9]*\).*')
+  mkdir -p /tmp/git-test
+  # We used to use this, but silly git regressions:
+  #GIT_TEST_OPTS="--root=/dev/shm/" \
+  # https://comments.gmane.org/gmane.comp.version-control.git/202020
+  make \
+    NO_SVN_TESTS=y \
+    DEFAULT_TEST_TARGET=prove \
+    GIT_PROVE_OPTS="$jobs -Q" \
+    GIT_TEST_OPTS="--root=/tmp/git-test" \
+    test
+}
+
+package() {
+  export PYTHON_PATH='/usr/bin/python2'
+  cd "${srcdir}/${_realname}"
+  make INSTALLDIRS=vendor DESTDIR="$pkgdir" install
+  make INSTALLDIRS=vendor DESTDIR="${pkgdir}" install-man
+  #make INSTALLDIRS=vendor DESTDIR="${pkgdir}" install-info
+
+  # bash completion
+  mkdir -p "${pkgdir}"/usr/share/bash-completion/completions/
+  install -m644 ./contrib/completion/git-completion.bash "${pkgdir}"/usr/share/bash-completion/completions/git
+  # fancy git prompt
+  mkdir -p "${pkgdir}"/usr/share/git/
+  install -m644 ./contrib/completion/git-prompt.sh "${pkgdir}"/usr/share/git/git-prompt.sh
+  # subtree installation
+  sed "s|libexec/git-core|lib/git-core|" -i contrib/subtree/Makefile
+  make -C contrib/subtree prefix=/usr DESTDIR="${pkgdir}" install
+
+  # the rest of the contrib stuff
+  cp -a ./contrib/* ${pkgdir}/usr/share/git/
+
+  # scripts are for python 2.x
+  sed -i 's|#![ ]*/usr/bin/env python$|#!/usr/bin/env python2|' \
+    $(find "$pkgdir" -name '*.py') \
+    "${pkgdir}"/usr/lib/git-core/git-p4 \
+    "${pkgdir}"/usr/share/git/remote-helpers/git-remote-bzr \
+    "${pkgdir}"/usr/share/git/remote-helpers/git-remote-hg
+  sed -i 's|#![ ]*/usr/bin/python$|#!/usr/bin/python2|' \
+    "${pkgdir}"/usr/share/git/svn-fe/svnrdump_sim.py
+}
