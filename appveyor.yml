@@ -1,6 +1,6 @@
 environment:
     arch: i686
-    ARCH: 32
+    WIDTH: 32
     DEPLOY_PROVIDER: bintray
     BINTRAY_ACCOUNT: atomlong
     BINTRAY_REPOSITORY: msys2
@@ -13,9 +13,9 @@ environment:
         secure: DVuRK/wrA/hczYhh65X1WA==
     GPG_FILE_SECRET:
         secure: 4OO2rdWNRtdaJiS8aPotGQ==
-    MSYS2_ROOT: C:\msys%ARCH%
+    MSYS2_ROOT: C:\msys%WIDTH%
     DISTRIB_FILE_URL: https://dl.bintray.com/%BINTRAY_ACCOUNT%/%BINTRAY_REPOSITORY%/%DISTRIB_PACKAGE_NAME%/%arch%/msys2-base-%arch%-latest.tar.xz
-    DISTRIB_FILE_NAME: msys2-base-%arch%-latest.tar.xz    
+    DISTRIB_FILE_NAME: msys2-base-%arch%-latest.tar.xz   
     CI_NAME: appveyor
     CI_REPO: $(APPVEYOR_REPO_NAME)
     CI_BRANCH: $(APPVEYOR_REPO_BRANCH)
@@ -25,20 +25,20 @@ environment:
     CI_BUILD_URL: https://ci.appveyor.com/project/$(APPVEYOR_ACCOUNT_NAME)/$(APPVEYOR_PROJECT_NAME)/build/$(APPVEYOR_BUILD_VERSION)
 
 cache:
-    - C:\msys%archb%-build
+    - C:\msys%WIDTH%-build
 
 install:
     - install.cmd
 
 build_script:
-    - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${CI_BUILD_DIR})/ci-build.sh BUILD"
+    - C:\msys%WIDTH%-build\usr\bin\bash --login -c "$(cygpath ${CI_BUILD_DIR})/ci-build.sh BUILD"
 
 after_build:
-    - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${CI_BUILD_DIR})/ci-build.sh DISTRIB"
+    - C:\msys%WIDTH%-build\usr\bin\bash --login -c "$(cygpath ${CI_BUILD_DIR})/ci-build.sh DISTRIB"
 
 deploy_script:
-    - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${CI_BUILD_DIR})/ci-build.sh DEPLOY"
+    - C:\msys%WIDTH%-build\usr\bin\bash --login -c "$(cygpath ${CI_BUILD_DIR})/ci-build.sh DEPLOY"
 
 after_deploy:
-    - C:\msys32-build\usr\bin\bash --login -c "$(cygpath ${CI_BUILD_DIR})/ci-build.sh CACHE"
+    - C:\msys%WIDTH%-build\usr\bin\bash --login -c "$(cygpath ${CI_BUILD_DIR})/ci-build.sh CACHE"
 

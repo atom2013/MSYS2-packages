@@ -1,10 +1,10 @@
 build:
-  image: teaci/msys$$ARCH
+  image: teaci/msys$$WIDTH
   pull: true
-  shell: msys$$ARCH
+  shell: msys$$WIDTH
   commands:
     # TODO: remove this option when not anymore needed
-    - if [ $$ARCH = 32 ]; then
+    - if [ $$WIDTH = 32 ]; then
     - export DISABLE_QUALITY_CHECK=true;
     - export arch=i686
     - else
@@ -12,17 +12,17 @@ build:
     - fi
     - eval export DISTRIB_FILE_URL=${DISTRIB_FILE_URL}
     - eval export DISTRIB_FILE_NAME=${DISTRIB_FILE_NAME}
-    - if [ -d msys$$ARCH-build ]; then
-    - mv -vf msys$$ARCH-build /c/
+    - if [ -d msys$$WIDTH-build ]; then
+    - mv -vf msys$$WIDTH-build /c/
     - fi
     - cmd /C "install.cmd"
-    - cmd /C "C:\\msys$$ARCH-build\\usr\\bin\\bash --login -c \"$(cygpath -m ${DRONE_DIR})/ci-build.sh BUILD\""
-    - cmd /C "C:\\msys$$ARCH-build\\usr\\bin\\bash --login -c \"$(cygpath -m ${DRONE_DIR})/ci-build.sh DISTRIB\""
-    - cmd /C "C:\\msys$$ARCH-build\\usr\\bin\\bash --login -c \"$(cygpath -m ${DRONE_DIR})/ci-build.sh DEPLOY\""
-    - cmd /C "C:\\msys$$ARCH-build\\usr\\bin\\bash --login -c \"$(cygpath -m ${DRONE_DIR})/ci-build.sh CACHE\""
-    - mv -vf /c/msys$$ARCH-build ./
+    - cmd /C "C:\\msys$$WIDTH-build\\usr\\bin\\bash --login -c \"$(cygpath -m ${DRONE_DIR})/ci-build.sh BUILD\""
+    - cmd /C "C:\\msys$$WIDTH-build\\usr\\bin\\bash --login -c \"$(cygpath -m ${DRONE_DIR})/ci-build.sh DISTRIB\""
+    - cmd /C "C:\\msys$$WIDTH-build\\usr\\bin\\bash --login -c \"$(cygpath -m ${DRONE_DIR})/ci-build.sh DEPLOY\""
+    - cmd /C "C:\\msys$$WIDTH-build\\usr\\bin\\bash --login -c \"$(cygpath -m ${DRONE_DIR})/ci-build.sh CACHE\""
+    - mv -vf /c/msys$$WIDTH-build ./
   environment:
-    - ARCH=$$ARCH
+    - WIDTH=$$WIDTH
     - PRIVATE_KEY=$$PRIVATE_KEY
     - DEPLOY_PROVIDER=bintray
     - BINTRAY_ACCOUNT=atomlong
@@ -33,13 +33,13 @@ build:
     - DISTRIB_PACKAGE_NAME=distrib
     - GPG_KEY_PASSWD=$$GPG_KEY_PASSWD
     - GPG_FILE_SECRET=$$GPG_FILE_SECRET
-    - MSYS2_ROOT=C:\msys-install\msys$$ARCH
+    - MSYS2_ROOT=C:\msys-install\msys$$WIDTH
     - DISTRIB_FILE_URL=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch}/msys2-base-${arch}-latest.tar.xz
     - DISTRIB_FILE_NAME=msys2-base-${arch}-latest.tar.xz
 
 cache:
   mount:
-    - msys$$ARCH-build
+    - msys$$WIDTH-build
 
 notify:
   email:
@@ -52,8 +52,7 @@ notify:
       - atom.long@hotmail.com
 
 matrix:
-  ARCH:
+  WIDTH:
     # At present, I don't use the x86_64 target.
     # - 64
     - 32
-#FIXME: When a matrix build is done, only the build status of the last job in a matrix is sent to notification plugins, this confuses our irc plugin, see https://github.com/drone/drone/issues/1459. Github pull request Web UI status and Tea CI Web UI status works fine with matrix build.
