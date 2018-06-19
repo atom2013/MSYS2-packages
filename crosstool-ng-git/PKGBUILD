@@ -2,9 +2,9 @@
 # Maintainer: Martell Malone <martellmalone@gmail.com>
 
 _realname="crosstool-ng"
-pkgname="$_realname"-git
+pkgname="$_realname-git"
 replaces=("$_realname")
-pkgver=r4296.c609be17
+pkgver=r4579.c94c0b21
 pkgrel=1
 pkgdesc="A cross-platform open-source toolchain system (git)"
 arch=('i686' 'x86_64')
@@ -13,13 +13,18 @@ license=("MIT")
 makedepends=("autoconf" "automake-wrapper" "binutils" "bison"
              "flex" "gettext-devel" "git" "gcc" "gperf"
              "patch" "libtool" "make" "ncurses-devel"
-             "tar" "texinfo" "wget" "xz")
+             "tar" "texinfo" "wget" "xz" "unzip")
 depends=("ncurses" "libintl")
 options=('staticlibs' 'strip')
 source=('crosstool-ng::git+https://github.com/crosstool-ng/crosstool-ng.git#branch=master'
-         0001-stat-check.patch)
+		"0001-Modify-config-to-support-correct-Mingw64-Triplet-Nam.patch"
+		"0002-modify-kconfig-make-lintl.patch"
+		"0003-stat-check.patch")
 sha256sums=('SKIP'
-            '53a283a29972490d1ddc369aa68ef1837240a195dbcfefa6a0a24b2f848c87d3')
+			'a64a1caf173f9e894e7762cc0aecda0224007f6db292f2594453c4be326307fe'
+			'1da4882a4fbbb40c2d5051a2e8bc19f5c95f2807674c2d856fa35a47c24fbb30'
+			'4bda6f00ff40b62635e55f9003dd8a67515dbfc3977eda92ded59252bb59f3de')
+
 pkgver() {
   cd "${srcdir}/${_realname}"
   echo "r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
@@ -27,9 +32,15 @@ pkgver() {
 
 prepare() {
   cd "${srcdir}/${_realname}"
-  patch -p1 -i patch -p1 -i "${srcdir}/0001-stat-check.patch"
+  
+  git am ${srcdir}/0003-stat-check.patch
+  
   ./bootstrap
-  autoreconf -fiv
+  
+  patch -p1 -i "${srcdir}/0001-Modify-config-to-support-correct-Mingw64-Triplet-Nam.patch"
+  patch -p1 -i "${srcdir}/0002-modify-kconfig-make-lintl.patch"
+  
+  find packages/ncurses -type f -name "*.patch" | xargs dos2unix
 }
 
 build() {

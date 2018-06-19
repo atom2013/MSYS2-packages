@@ -1,0 +1,27 @@
+diff -durN crosstool-ng.orig/kconfig/Makefile.in crosstool-ng/kconfig/Makefile.in
+--- crosstool-ng.orig/kconfig/Makefile.in	2018-04-22 13:27:04.484375000 +0800
++++ crosstool-ng/kconfig/Makefile.in	2018-04-22 13:36:15.687500000 +0800
+@@ -117,7 +117,7 @@
+ PROGRAMS = $(pkglibexec_PROGRAMS)
+ am_conf_OBJECTS = conf.$(OBJEXT) zconf.$(OBJEXT)
+ conf_OBJECTS = $(am_conf_OBJECTS)
+-conf_LDADD = $(LDADD)
++conf_LDADD = $(LDADD) $(LIBINTL)
+ AM_V_lt = $(am__v_lt_@AM_V@)
+ am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+ am__v_lt_0 = --silent
+@@ -390,12 +390,12 @@
+ conf_SOURCES = conf.c zconf.c
+ nconf_SOURCES = nconf.c nconf.gui.c zconf.c
+ nconf_CFLAGS = $(CURSES_CFLAGS)
+-nconf_LDADD = $(MENU_LIBS) $(PANEL_LIBS) $(CURSES_LIBS)
++nconf_LDADD = $(MENU_LIBS) $(PANEL_LIBS) $(CURSES_LIBS) $(LIBINTL)
+ mconf_SOURCES = mconf.c zconf.c lxdialog/checklist.c lxdialog/inputbox.c \
+ 				  lxdialog/menubox.c lxdialog/textbox.c lxdialog/util.c \
+ 				  lxdialog/yesno.c
+ 
+-mconf_LDADD = $(CURSES_LIBS)
++mconf_LDADD = $(CURSES_LIBS) $(LIBINTL)
+ 
+ # automake's support for yacc/lex/gperf is too idiosyncratic. It doesn't
+ # support a common pattern of including lex-generated file into yacc, nor does
