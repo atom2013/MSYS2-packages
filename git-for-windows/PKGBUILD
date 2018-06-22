@@ -55,7 +55,8 @@ source=("git+https://github.com/git-for-windows/git"
         git-prevent_xss-default.patch
         git-bash-completion-egrep-color-fix.patch
         git-tcsh-completion-fixes.patch
-        git-zsh-completion-fixes.patch)
+        git-zsh-completion-fixes.patch
+        git-credential-wincred-fixes.patch)
 sha256sums=('SKIP'
             'c5e735d829e11f79e2d508b663d0924030498f48fc716881031fb975dbf187a5'
             '2c0301076a7b60b5be2491433560f6f87c510ec64d2d8f9db5a75c1295893885'
@@ -65,7 +66,8 @@ sha256sums=('SKIP'
             'bbe523015863a4b2459624dcc4ad5c675c779c1134c8617f90d65a541b74e194'
             'bc6ef4a066a8b206fbc162387918f801ef95c7a691fdaf284f895bc303a1ee01'
             'b28b3e13de08911f027d19a557967fc21128318a8d6ca74b20b26ee997a9b992'
-            '261438a4bedd5563c702533c34792581ccfa46db873ca3e105e6c1ab803a3107')
+            '261438a4bedd5563c702533c34792581ccfa46db873ca3e105e6c1ab803a3107'
+            'e1455ab6c943f070454f735660864234a97d5c6aa8e2f36fdb5358f3db7c9025')
 
 pkgver() {
   cd "${srcdir}/${_realname}"
@@ -85,6 +87,7 @@ prepare() {
   patch -p1 -i "${srcdir}"/git-bash-completion-egrep-color-fix.patch
   patch -p1 -i "${srcdir}"/git-tcsh-completion-fixes.patch
   patch -p1 -i "${srcdir}"/git-zsh-completion-fixes.patch
+  patch -p1 -i "${srcdir}"/git-credential-wincred-fixes.patch
   
 
   local _arch=
@@ -150,6 +153,11 @@ package() {
   # subtree installation
   sed "s|libexec/git-core|lib/git-core|" -i contrib/subtree/Makefile
   make -C contrib/subtree prefix=/usr DESTDIR="${pkgdir}" install
+  make -C contrib/subtree clean
+  # git-credential-wincred installation
+  sed "s|libexec/git-core|lib/git-core|" -i contrib/credential/wincred/Makefile
+  make -C contrib/credential/wincred DESTDIR="${pkgdir}" install
+  make -C contrib/credential/wincred clean
 
   # the rest of the contrib stuff
   cp -a ./contrib/* ${pkgdir}/usr/share/git/
