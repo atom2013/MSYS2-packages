@@ -1,5 +1,5 @@
 environment:
-    arch: i686
+    ARCH: i686
     WIDTH: 32
     DEPLOY_PROVIDER: bintray
     BINTRAY_ACCOUNT: atomlong
@@ -14,8 +14,8 @@ environment:
     GPG_FILE_SECRET:
         secure: 4OO2rdWNRtdaJiS8aPotGQ==
     MSYS2_ROOT: C:\msys%WIDTH%
-    DISTRIB_FILE_URL: https://dl.bintray.com/%BINTRAY_ACCOUNT%/%BINTRAY_REPOSITORY%/%DISTRIB_PACKAGE_NAME%/%arch%/msys2-base-%arch%-latest.tar.xz
-    DISTRIB_FILE_NAME: msys2-base-%arch%-latest.tar.xz   
+    DISTRIB_FILE_URL: https://dl.bintray.com/%BINTRAY_ACCOUNT%/%BINTRAY_REPOSITORY%/%DISTRIB_PACKAGE_NAME%/%ARCH%/msys2-base-%ARCH%-latest.tar.xz
+    DISTRIB_FILE_NAME: msys2-base-%ARCH%-latest.tar.xz   
     CI_NAME: appveyor
     CI_REPO: $(APPVEYOR_REPO_NAME)
     CI_BRANCH: $(APPVEYOR_REPO_BRANCH)

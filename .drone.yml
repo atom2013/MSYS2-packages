@@ -6,9 +6,9 @@ build:
     # TODO: remove this option when not anymore needed
     - if [ $$WIDTH = 32 ]; then
     - export DISABLE_QUALITY_CHECK=true;
-    - export arch=i686
+    - export ARCH=i686
     - else
-    - export arch=x86_64
+    - export ARCH=x86_64
     - fi
     - eval export DISTRIB_FILE_URL=${DISTRIB_FILE_URL}
     - eval export DISTRIB_FILE_NAME=${DISTRIB_FILE_NAME}
@@ -34,8 +34,8 @@ build:
     - GPG_KEY_PASSWD=$$GPG_KEY_PASSWD
     - GPG_FILE_SECRET=$$GPG_FILE_SECRET
     - MSYS2_ROOT=C:\msys-install\msys$$WIDTH
-    - DISTRIB_FILE_URL=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch}/msys2-base-${arch}-latest.tar.xz
-    - DISTRIB_FILE_NAME=msys2-base-${arch}-latest.tar.xz
+    - DISTRIB_FILE_URL=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${ARCH}/msys2-base-${ARCH}-latest.tar.xz
+    - DISTRIB_FILE_NAME=msys2-base-${ARCH}-latest.tar.xz
 
 cache:
   mount:

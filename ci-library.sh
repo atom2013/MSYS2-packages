@@ -127,8 +127,8 @@ _download_previous() {
 	local remote_dir
     [[ "${DEPLOY_PROVIDER}" = bintray ]] || return 1
 	case ${type} in
-		distrib) remote_dir=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch};;
-		binary) remote_dir=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch};;
+		distrib) remote_dir=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${ARCH};;
+		binary) remote_dir=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${ARCH};;
 		sources) remote_dir=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/sources;;
 	esac
     for filename in "${filenames[@]}"; do
@@ -165,7 +165,7 @@ execute(){
 
 # Update system
 update_system() {
-    repman add ${PACMAN_REPOSITORY_NAME} "https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}" || return 1
+    repman add ${PACMAN_REPOSITORY_NAME} "https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${ARCH}" || return 1
     pacman --noconfirm --noprogressbar --sync --refresh --refresh --sysupgrade --sysupgrade || return 1
     test -n "${DISABLE_QUALITY_CHECK}" && return 0 # TODO: remove this option when not anymore needed
     pacman --noconfirm --needed --noprogressbar --sync ${PACMAN_REPOSITORY_NAME}/pactoys
@@ -184,8 +184,8 @@ define_build_order() {
 create_build_references() {
     local repository_name="${1}"
     local references="${repository_name}.builds"
-	(ls artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/*.pkg.tar.xz &>/dev/null) && {
-	pushd artifacts/${PACMAN_REPOSITORY_NAME}/${arch}
+	(ls artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}/*.pkg.tar.xz &>/dev/null) && {
+	pushd artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}
     _download_previous binary "${references}" || touch "${references}"
     for file in *.pkg.tar.xz; do
         sed -i "/^${file}.*/d" "${references}"
@@ -195,25 +195,25 @@ create_build_references() {
     mv "${references}.sorted" "${references}"
 	popd
 	} || {
-	echo "Skiped, no file 'artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/*.pkg.tar.xz'"
+	echo "Skiped, no file 'artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}/*.pkg.tar.xz'"
 	}
 }
 
 # Add packages to repository
 create_pacman_repository() {
     local name="${1}"
-	(ls artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/*.pkg.tar.xz &>/dev/null) && {
+	(ls artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}/*.pkg.tar.xz &>/dev/null) && {
 	local LANG_bkp=${LANG}
 	export LANG=en_US.UTF-8
 	
-	pushd artifacts/${PACMAN_REPOSITORY_NAME}/${arch}
+	pushd artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}
     _download_previous binary "${name}".{db,files}{,.tar.xz}
     repo-add "${name}.db.tar.xz" *.pkg.tar.xz | tee /dev/stderr | grep -Po "\bRemoving existing entry '\K[^']+(?=')" >> old_pkg.list
 	popd
 
 	export LANG=${LANG_bkp}
 	} || {
-	echo "Skiped, no file 'artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/*.pkg.tar.xz'"
+	echo "Skiped, no file 'artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}/*.pkg.tar.xz'"
 	}
 }
 
@@ -223,9 +223,9 @@ create_build_marker() {
 	local branch_url="$(git remote get-url origin | sed 's/\.git$//')/tree/${CI_BRANCH}"
 	local marker="${name}-build.marker"
 
-	[ -d artifacts/${PACMAN_REPOSITORY_NAME}/${arch} ] || return 1
+	[ -d artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH} ] || return 1
 	
-	pushd artifacts/${PACMAN_REPOSITORY_NAME}/${arch}
+	pushd artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}
 	_download_previous binary "${marker}" || touch "${marker}"
 	(grep -q "${branch_url}" "${marker}") && \
 	sed -i -r "s|(${branch_url}\\s*).*|\1${CI_COMMIT}|g" "${marker}" || \
@@ -238,7 +238,7 @@ deploy_enabled() {
     test -n "${CI_BUILD_URL}" || return 1
     [[ "${DEPLOY_PROVIDER}" = bintray ]] || return 1
 	[ -n "${PACMAN_REPOSITORY_NAME}" ] || return 1
-	local LOCAL_REPOSITORY_PATH="artifacts/${PACMAN_REPOSITORY_NAME}/${arch}"
+	local LOCAL_REPOSITORY_PATH="artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}"
 	[ -f "${LOCAL_REPOSITORY_PATH}/${PACMAN_REPOSITORY_NAME}.db" ] || return 1
 	[ -f "${LOCAL_REPOSITORY_PATH}/${PACMAN_REPOSITORY_NAME}.files" ] || return 1
 	return 0
@@ -246,8 +246,8 @@ deploy_enabled() {
 
 # Distribution is enabled
 distrib_enable() {
-	[ -n "${DISTRIB_PACKAGE_NAME}" ] && [ -n "${arch}" ] || return 1
-	local LOCAL_REPOSITORY_PATH="artifacts/${PACMAN_REPOSITORY_NAME}/${arch}"
+	[ -n "${DISTRIB_PACKAGE_NAME}" ] && [ -n "${ARCH}" ] || return 1
+	local LOCAL_REPOSITORY_PATH="artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}"
 	[ -f ${LOCAL_REPOSITORY_PATH}/packages.list ] && {
 	local pkg basepkgs
 	pacman --sync --refresh
@@ -347,8 +347,8 @@ for type in ${all_types[@]}; do
 case ${type} in
 	distrib)
 # signature for distrib packages.
-[ -d artifacts/${DISTRIB_PACKAGE_NAME}/${arch} ] && {
-pushd artifacts/${DISTRIB_PACKAGE_NAME}/${arch}
+[ -d artifacts/${DISTRIB_PACKAGE_NAME}/${ARCH} ] && {
+pushd artifacts/${DISTRIB_PACKAGE_NAME}/${ARCH}
 for pkg in *.tar.xz; do
 expect << _EOF
 spawn gpg -o "${pkg}.sig" -b "${pkg}"
@@ -366,8 +366,8 @@ popd
 ;;
 	binary)
 # signature for binary packages.
-[ "${type}" == "binary" ] && [ -d artifacts/${PACMAN_REPOSITORY_NAME}/${arch} ] && {
-pushd artifacts/${PACMAN_REPOSITORY_NAME}/${arch}
+[ "${type}" == "binary" ] && [ -d artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH} ] && {
+pushd artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}
 for pkg in *.pkg.tar.xz; do
 expect << _EOF
 spawn gpg -o "${pkg}.sig" -b "${pkg}"
@@ -417,8 +417,8 @@ set_repository_mirror()
 [[ "${DEPLOY_PROVIDER}" = bintray ]] || return 1
 local mirrorlist="$(cygpath ${1}/etc/pacman.d/mirrorlist.msys)"
 local pacmanconf="$(cygpath ${1}/etc/pacman.conf)"
-local REMOTE_REPOSITORY_PATH="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}"
-local LOCAL_REPOSITORY_PATH="${PWD}/artifacts/${PACMAN_REPOSITORY_NAME}/${arch}"
+local REMOTE_REPOSITORY_PATH="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${ARCH}"
+local LOCAL_REPOSITORY_PATH="${PWD}/artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}"
 
 [ -f ${mirrorlist}.orig ] || mv -vf ${mirrorlist}{,.orig}
 
@@ -434,7 +434,7 @@ true
 (grep -q "Server = ${REMOTE_REPOSITORY_PATH}" ${mirrorlist}) || echo "Server = ${REMOTE_REPOSITORY_PATH}" >> ${mirrorlist}
 
 cp -vf ${pacmanconf}{,.orig}
-sed -i -r "s/^\s*(Architecture =).*/\1 ${arch}/g" ${pacmanconf}
+sed -i -r "s/^\s*(Architecture =).*/\1 ${ARCH}/g" ${pacmanconf}
 
 return 0
 }
@@ -452,15 +452,15 @@ local pacmanconf="$(cygpath ${1}/etc/pacman.conf)"
 build_packages()
 {
 [ ${#packages[@]} == 0 ] && return 0
-mkdir -pv artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/
+mkdir -pv artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}/
 mkdir -pv artifacts/${PACMAN_REPOSITORY_NAME}/sources/
 for package in "${packages[@]}"; do
     execute 'Building binary' makepkg --noconfirm --skippgpcheck --nocheck --syncdeps --rmdeps --cleanbuild
     execute 'Building source' makepkg --noconfirm --skippgpcheck --allsource
 	execute 'Installing' yes:pacman --noprogressbar --upgrade *.pkg.tar.xz
     (ls "${package}"/*.pkg.tar.xz &>/dev/null) && {
-	mv "${package}"/*.pkg.tar.xz artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/
-	( source ${package}/PKGBUILD; echo ${pkgname[@]} ${provides[@]} | tr ' ' '\n'; ) >> artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/packages.list
+	mv "${package}"/*.pkg.tar.xz artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}/
+	( source ${package}/PKGBUILD; echo ${pkgname[@]} ${provides[@]} | tr ' ' '\n'; ) >> artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}/packages.list
 	}
     (ls "${package}"/*.src.tar.gz &>/dev/null) && mv "${package}"/*.src.tar.gz artifacts/${PACMAN_REPOSITORY_NAME}/sources/
     unset package
@@ -575,8 +575,8 @@ local type="${1}" file="${2}"
 local download_link
 
 case ${type} in
-	distrib) download_link="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch}/${file}";;
-	binary) download_link="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/${file}";;
+	distrib) download_link="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${ARCH}/${file}";;
+	binary) download_link="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${ARCH}/${file}";;
 	sources) download_link="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/sources/${file}";;
 esac
 
@@ -594,8 +594,8 @@ local filelist=(${@})
 local file resp remote_dir
 
 case ${type} in
-	distrib) remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch};;
-	binary) remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch};;
+	distrib) remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${ARCH};;
+	binary) remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${ARCH};;
 	sources) remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/sources;;
 	*)
 		echo "Unknown type '${type}'."
@@ -612,11 +612,11 @@ done
 # Delete old files on the server.
 remote_clean_up()
 {
-local pkglist=artifacts/${PACMAN_REPOSITORY_NAME}/${arch}/old_pkg.list
+local pkglist=artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}/old_pkg.list
 local pkg
 [ -f "${pkglist}" ] && {
 while read pkg; do
-remote_file_delete binary ${pkg}-{${arch},any}.pkg.tar.xz{,.sig}
+remote_file_delete binary ${pkg}-{${ARCH},any}.pkg.tar.xz{,.sig}
 remote_file_delete sources ${pkg}.src.tar.gz{,.sig}
 done < ${pkglist}
 rm -vf ${pkglist}
@@ -631,12 +631,12 @@ local type="${1}"
 local pkg resp local_dir remote_dir remote_publish checksum filelist
 
 case ${type} in
-	distrib) local_dir=artifacts/${DISTRIB_PACKAGE_NAME}/${arch}
-			 remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${BINTRAY_VERSION}/${DISTRIB_PACKAGE_NAME}/${arch}
+	distrib) local_dir=artifacts/${DISTRIB_PACKAGE_NAME}/${ARCH}
+			 remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${BINTRAY_VERSION}/${DISTRIB_PACKAGE_NAME}/${ARCH}
 			 remote_publish=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/distrib/latest/publish
 			 ;;
-	binary)	 local_dir=artifacts/${PACMAN_REPOSITORY_NAME}/${arch}
-			 remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_VERSION}/${PACMAN_REPOSITORY_NAME}/${arch}
+	binary)	 local_dir=artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}
+			 remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_VERSION}/${PACMAN_REPOSITORY_NAME}/${ARCH}
 			 remote_publish=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_VERSION}/publish
 			 ;;
 	sources) local_dir=artifacts/${PACMAN_REPOSITORY_NAME}/sources

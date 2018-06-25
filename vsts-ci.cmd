@@ -16,7 +16,7 @@ set CI_BUILD_DIR=%SYSTEM_DEFAULTWORKINGDIRECTORY%
 set CI_BUILD_URL="https://atomlong.visualstudio.com/%SYSTEM_TEAMPROJECT%/_build/index?buildId=%BUILD_BUILDID%&_a=summary"
 
 REM Target application architecture information
-set arch=i686
+set ARCH=i686
 set WIDTH=32
 
 REM Information on demployment.
@@ -45,8 +45,8 @@ exit /b 1
 
 REM Information on MSYS2 distrib package.
 set MSYS2_ROOT=C:\msys%WIDTH%
-set DISTRIB_FILE_URL=https://dl.bintray.com/%BINTRAY_ACCOUNT%/%BINTRAY_REPOSITORY%/%DISTRIB_PACKAGE_NAME%/%arch%/msys2-base-%arch%-latest.tar.xz
-set DISTRIB_FILE_NAME=msys2-base-%arch%-latest.tar.xz
+set DISTRIB_FILE_URL=https://dl.bintray.com/%BINTRAY_ACCOUNT%/%BINTRAY_REPOSITORY%/%DISTRIB_PACKAGE_NAME%/%ARCH%/msys2-base-%ARCH%-latest.tar.xz
+set DISTRIB_FILE_NAME=msys2-base-%ARCH%-latest.tar.xz
 
 REM Install MSYS2 on the agent machine.
 if EXIST %BUILD_BINARIESDIRECTORY%\msys%WIDTH%-build.tar.xz (
