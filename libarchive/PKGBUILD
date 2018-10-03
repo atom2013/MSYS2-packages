@@ -37,6 +37,10 @@ build() {
     --enable-static \
     --without-libiconv-prefix \
     --without-xml2
+  # No bcrypt.dll on Windows XP, so all BCryptXXX APIs are not available on XP.
+  # Add by Atom Long
+  sed -i -r 's|^#define HAVE_BCRYPT_H 1|/* #undef HAVE_BCRYPT_H */|g' config.h
+  
   make
   make DESTDIR="${srcdir}/dest" install
 }
