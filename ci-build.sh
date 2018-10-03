@@ -58,7 +58,7 @@ success 'All packages built successfully'
 elif [ "${1}" == DISTRIB ]; then
 
 set_repository_mirror
-distrib_enable || { rm -rf artifacts/${DISTRIB_PACKAGE_NAME}/${${ARCH}}; exit 0; }
+distrib_enable || { rm -rf artifacts/${DISTRIB_PACKAGE_NAME}/${ARCH}; exit 0; }
 
 message 'Extracting installation package'
 [ -f ${DISTRIB_FILE_NAME} ] || {
@@ -82,7 +82,7 @@ cmd /C "${MSYS2_ROOT}\\usr\\bin\\pacman --sync --refresh"
 
 execute 'Remove redundant system files' purge_system_files "${MSYS2_ROOT}"
 message 'Generating latest MSYS2 base package'
-artifacts_path=${PWD}/artifacts/${DISTRIB_PACKAGE_NAME}/${${ARCH}}
+artifacts_path=${PWD}/artifacts/${DISTRIB_PACKAGE_NAME}/${ARCH}
 mkdir -pv ${artifacts_path}
 pushd "$(dirname ${MSYS2_ROOT})"
 tar -cJf ${artifacts_path}/${DISTRIB_FILE_NAME} "$(basename ${MSYS2_ROOT})"
