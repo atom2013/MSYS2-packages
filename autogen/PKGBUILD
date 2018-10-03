@@ -8,8 +8,8 @@ arch=('i686' 'x86_64')
 url="https://autogen.sourceforge.io/"
 groups=('base-devel')
 license=('GPL3')
-makedepends=('gcc' 'gmp-devel' 'libcrypt-devel' 'libffi-devel' 'libgc-devel' 'libguile-devel' 'libxml2-devel')
-depends=('gcc-libs' 'gmp' 'libcrypt' 'libffi' 'libgc' 'libguile' 'libxml2')
+makedepends=('gcc' 'gmp-devel' 'libcrypt-devel' 'libffi-devel' 'libgc-devel' 'libguile-devel' 'libxml2-devel' 'libunistring-devel')
+depends=('gcc-libs' 'gmp' 'libcrypt' 'libffi' 'libgc' 'libguile' 'libxml2' 'libunistring')
 install=autogen.install
 source=("https://ftp.gnu.org/gnu/${pkgname}/rel${pkgver}/${pkgname}-${pkgver}.tar.xz"{,.sig}
         autogen-5.18.1-msys2.patch
