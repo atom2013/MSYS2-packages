@@ -359,7 +359,7 @@ case ${type} in
 pushd artifacts/${DISTRIB_PACKAGE_NAME}/${ARCH}
 for pkg in *.tar.xz; do
 expect << _EOF
-spawn gpg -o "${pkg}.sig" -b "${pkg}"
+spawn gpg --pinentry-mode loopback -o "${pkg}.sig" -b "${pkg}"
 expect {
 "Enter passphrase:" {
 					send "${GPG_KEY_PASSWD}\r"
@@ -378,7 +378,7 @@ popd
 pushd artifacts/${PACMAN_REPOSITORY_NAME}/${ARCH}
 for pkg in *.pkg.tar.xz; do
 expect << _EOF
-spawn gpg -o "${pkg}.sig" -b "${pkg}"
+spawn gpg --pinentry-mode loopback -o "${pkg}.sig" -b "${pkg}"
 expect {
 "Enter passphrase:" {
 					send "${GPG_KEY_PASSWD}\r"
@@ -397,7 +397,7 @@ popd
 pushd artifacts/${PACMAN_REPOSITORY_NAME}/sources
 for pkg in *.src.tar.gz; do
 expect << _EOF
-spawn gpg -o "${pkg}.sig" -b "${pkg}"
+spawn gpg --pinentry-mode loopback -o "${pkg}.sig" -b "${pkg}"
 expect {
 "Enter passphrase:" {
 					send "${GPG_KEY_PASSWD}\r"
@@ -625,7 +625,9 @@ local pkg
 [ -f "${pkglist}" ] && {
 while read pkg; do
 remote_file_delete binary ${pkg}-{${ARCH},any}.pkg.tar.xz{,.sig}
-remote_file_delete sources ${pkg}.src.tar.gz{,.sig}
+pkg=$(sed -r 's/-devel-/-/' <<< ${pkg})
+pkg=(${pkg}.src.tar.gz{,.sig}  $(sed -r 's/^lib//' <<< ${pkg}).src.tar.gz{,.sig})
+remote_file_delete sources $(echo ${pkg[@]} | tr ' ' '\n' | sort -u)
 done < ${pkglist}
 rm -vf ${pkglist}
 }
