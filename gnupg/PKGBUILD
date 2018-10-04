@@ -2,7 +2,7 @@
 
 pkgname=gnupg
 pkgver=2.2.9
-pkgrel=2
+pkgrel=1
 pkgdesc='Complete and free implementation of the OpenPGP standard'
 provides=('dirmngr' "gnupg2=${pkgver}")
 url='https://gnupg.org/'
@@ -42,7 +42,7 @@ depends=('bzip2'
          'libreadline'
          'libsqlite'
          'nettle'
-         # 'pinentry' # Don't install pinentry in order to use the 'gpg' through command line interface.
+         'pinentry'
          'zlib'
         )
 source=("https://gnupg.org/ftp/gcrypt/${pkgname}/${pkgname}-${pkgver}.tar.bz2"{,.sig}
