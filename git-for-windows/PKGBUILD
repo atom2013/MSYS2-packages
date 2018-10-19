@@ -3,7 +3,7 @@
 
 _realname=git
 pkgname="$_realname-for-windows"
-pkgver=2.17.1.83816.e2d2aac684
+pkgver=2.19.1.89790.d4f95fc6d2
 pkgrel=1
 pkgdesc="The fast distributed version control system"
 arch=('i686' 'x86_64')
@@ -13,7 +13,7 @@ groups=('VCS')
 depends=('curl'
          'expat>=2.0'
          #'info'
-         'libpcre'
+         'libpcre2_8'
          'vim'
          'openssh'
          'openssl'
@@ -31,7 +31,7 @@ makedepends=('asciidoc'
              'less'
              'libcurl-devel'
              'libiconv-devel'
-             'pcre-devel'
+             'pcre2-devel'
              #'python2'
              'rsync'
              #'texinfo'
@@ -52,8 +52,6 @@ source=("git+https://github.com/git-for-windows/git"
         git-1.8.4-msys2.patch
         git-2.3.5-mingw-pwd.patch
         git-2.8.2-Cygwin-Allow-DOS-paths.patch
-        git-prevent_xss-default.patch
-        git-bash-completion-egrep-color-fix.patch
         git-tcsh-completion-fixes.patch
         git-zsh-completion-fixes.patch
         git-credential-wincred-fixes.patch)
@@ -63,8 +61,6 @@ sha256sums=('SKIP'
             '8dd65f3b0c4320dd30eb5109de86accee699ef3201d8611576d664f9d6fcb5d6'
             'e19151d7dfbe18b7e3c0e689661662684d2b26ab0a84a06fb5c872ac0fc18f8e'
             '128d93e2413556726fb8f02707c15d0e2e41d4da49d2e2a6019e839ea88cf5ab'
-            'bbe523015863a4b2459624dcc4ad5c675c779c1134c8617f90d65a541b74e194'
-            'bc6ef4a066a8b206fbc162387918f801ef95c7a691fdaf284f895bc303a1ee01'
             'b28b3e13de08911f027d19a557967fc21128318a8d6ca74b20b26ee997a9b992'
             '261438a4bedd5563c702533c34792581ccfa46db873ca3e105e6c1ab803a3107'
             'e1455ab6c943f070454f735660864234a97d5c6aa8e2f36fdb5358f3db7c9025')
@@ -83,8 +79,6 @@ prepare() {
   patch -p1 -i "${srcdir}"/git-1.9.0-manifest-msys2.patch
   patch -p1 -i "${srcdir}"/git-2.3.5-mingw-pwd.patch
   patch -p1 -i "${srcdir}"/git-2.8.2-Cygwin-Allow-DOS-paths.patch
-  patch -p1 -i "${srcdir}"/git-prevent_xss-default.patch
-  patch -p1 -i "${srcdir}"/git-bash-completion-egrep-color-fix.patch
   patch -p1 -i "${srcdir}"/git-tcsh-completion-fixes.patch
   patch -p1 -i "${srcdir}"/git-zsh-completion-fixes.patch
   patch -p1 -i "${srcdir}"/git-credential-wincred-fixes.patch
