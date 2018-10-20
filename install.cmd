@@ -31,7 +31,6 @@ bash --login -c "pushd C:/; mkdir msys%WIDTH%-build; cd msys%WIDTH%-build; tar -
 C:\msys%WIDTH%-build\usr\bin\bash --login -c "$(cygpath ${CI_BUILD_DIR})/ci-build.sh INSTALL"
 PATH=C:\msys%WIDTH%-build\usr\bin;%PATH% && pacman --noconfirm --ask 20 --sync --refresh --refresh --sysupgrade --sysupgrade
 PATH=C:\msys%WIDTH%-build\usr\bin;%PATH% && pacman --noconfirm --sync --needed base-devel msys2-devel git
-call C:\msys%WIDTH%-build\autorebasebase1st.bat
 call C:\msys%WIDTH%-build\autorebase.bat
 exit /b %ERRORLEVEL%
 
