@@ -91,7 +91,7 @@ diff -urN git-2.8.2-orig/pathspec.c git-2.8.2/pathspec.c
  	char *match;
 @@ -488,6 +492,10 @@
  	    item->prefix         > item->len) {
- 		die ("BUG: error initializing pathspec_item");
+ 		BUG("error initializing pathspec_item");
  	}
 +#if defined(__CYGWIN__)
 +	if (in_elt != elt)
