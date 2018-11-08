@@ -21,7 +21,7 @@ source=(https://github.com/heimdal/heimdal/archive/heimdal-${pkgver}.tar.gz
         7.5.0-use-python2.patch
         7.5.0-hcrypto-build-fix.patch
         7.5.0-names-clash-with-openssl.patch)
-sha256sums=('ad67fef994dc2268fb0b1a8164b39330d184f425057867485a178e9785a7f35a'
+sha256sums=('c5a2a0030fcc728022fa2332bad85569084d1c3b9a59587b7ebe141b0532acad'
             'b18c9ca3f2db08cea0a4b7d7f07e8656360af848b3a30a5fa8d748240989da49'
             'a99f0f5b69d32524399b1343a4f08b2de43351828b5b45a938f72bacb0eb9085'
             'd68bb0f8f01cc748a6ef63c74a4a15c75553c2322e9bd2649c54cb23077d521b'
@@ -33,7 +33,7 @@ sha256sums=('ad67fef994dc2268fb0b1a8164b39330d184f425057867485a178e9785a7f35a'
             'bfe321c0391d6f7e23abecc22e9941bcb79d0b67abb9975246a9f462ec32513b')
 
 prepare() {
-  cd ${srcdir}/heimdal-heimdal-${pkgver}
+  cd ${srcdir}/heimdal-${pkgver}
 
   patch -p2 -i "${srcdir}"/1.2.1-test-modules.patch
   patch -p2 -i "${srcdir}"/1.5.2-hdbdir.patch
@@ -49,7 +49,7 @@ prepare() {
 }
 
 build() {
-  cd ${srcdir}/heimdal-heimdal-${pkgver}
+  cd ${srcdir}/heimdal-${pkgver}
 
   ./configure \
     --build=${CHOST} \
@@ -80,7 +80,7 @@ build() {
 
 setup() {
   local destdir=${srcdir}/dest
-  cd ${srcdir}/heimdal-heimdal-${pkgver}
+  cd ${srcdir}/heimdal-${pkgver}
   make DESTDIR=${destdir} install
 
   # Remove daemons and their manpages
@@ -105,10 +105,10 @@ setup() {
 
   # install config
   # Do not install the config as this will conflict with krb5
-  install -D -m644 ${srcdir}/heimdal-heimdal-${pkgver}/krb5.conf ${destdir}/etc/krb5/krb5.conf
+  install -D -m644 ${srcdir}/heimdal-${pkgver}/krb5.conf ${destdir}/etc/krb5/krb5.conf
 
   # Install the license
-  install -Dm644 ${srcdir}/heimdal-heimdal-${pkgver}/LICENSE \
+  install -Dm644 ${srcdir}/heimdal-${pkgver}/LICENSE \
     ${destdir}/usr/share/licenses/${pkgname}/LICENSE
 }
 
