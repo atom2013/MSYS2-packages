@@ -10,3 +10,5 @@
 *.log.[0-9]*
 */src/
 */pkg/
+/build.config
+/seckey.asc
