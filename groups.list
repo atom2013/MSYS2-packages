@@ -12,7 +12,6 @@
 [base]gawk
 [base]gcc-libs
 [base]getent
-#[base]getopt
 [base]grep
 [base]gzip
 [base]inetutils
@@ -22,7 +21,6 @@
 [base]libargp
 [base]lndir
 [base]mintty
-#[base]mintty-git
 [base]msys2-keyring
 [base]msys2-launcher-git
 [base]msys2-runtime
@@ -274,7 +272,6 @@
 [midipix-cross-toolchain]midipix-cross-musl
 [midipix-cross-toolchain]midipix-cross-psxstub
 [mingw-w64-cross]mingw-w64-cross-binutils
-#[mingw-w64-cross]mingw-w64-cross-binutils-git
 [mingw-w64-cross]mingw-w64-cross-crt-git
 #[mingw-w64-cross]mingw-w64-cross-crt-clang-git
 [mingw-w64-cross]mingw-w64-cross-gcc

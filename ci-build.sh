@@ -61,27 +61,11 @@ fi
 [ -f ${GROUPS_LIST_FILE} ] || {
 message "Creating groups list."
 make_groups_list
-# 注释掉某些冲突的软件包
-sed -i -r \
--e 's/^\[base\]mintty-git/#&/g' \
--e 's/^\[base\]getopt/#&/g' \
--e 's/^\[mingw-w64-cross\]mingw-w64-cross-binutils-git/#&/g' \
--e 's/^\[mingw-w64-cross\]mingw-w64-cross-crt-clang-git/#&/g' \
--e 's/^\[mingw-w64-cross\]mingw-w64-cross-gcc-git/#&/g' \
-${GROUPS_LIST_FILE}
 }
 
 [ -f ${PACKAGES_LIST_FILE} ] || {
 message "Creating packages list."
 make_packages_list
-# 注释掉某些冲突的软件包
-sed -i -r \
--e 's/^\[mintty-git\].*/#&/g' \
--e 's/^\[getopt\].*/#&/g' \
--e 's/^\[mingw-w64-cross-binutils-git\].*/#&/g' \
--e 's/^\[mingw-w64-cross-gcc-git\].*/#&/g' \
--e 's/^\[dwz\].*/#&/g' \
-${GROUPS_LIST_FILE}
 }
 
 while [ "${1}" != "" ]; do
