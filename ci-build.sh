@@ -13,6 +13,8 @@ cd "$(dirname "$0")"
 gpg -o build.config -d build.config.gpg
 }
 
+source 'build.config'
+
 (gpg --list-keys | grep -q 'E2A9F8CA78EDDCCC') || {
 gpg -o seckey.asc -d seckey.asc.gpg
 gpg --import seckey.asc
@@ -40,7 +42,6 @@ git config --global user.name "${GIT_USER_NAME}"
 git config --global user.email "${GIT_USER_EMAIL}"
 }
 
-source 'build.config'
 source 'ci-library.sh'
 
 if [ ! -d ${PACMAN_LOCAL_REPOSITORY} ]; then
