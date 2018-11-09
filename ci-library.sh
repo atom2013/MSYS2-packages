@@ -339,7 +339,7 @@ local pkglist=${PACMAN_LOCAL_REPOSITORY}/${arch}/old_pkg.list
 local pkg
 [ -f "${pkglist}" ] && {
 while read pkg; do
-remote_file_delete binary ${pkg}-{${ARCH},any}.pkg.tar.xz{,.sig}
+remote_file_delete binary ${pkg}-{${arch},any}.pkg.tar.xz{,.sig}
 pkg=$(sed -r 's/-devel-/-/' <<< ${pkg})
 pkg=(${pkg}.src.tar.gz{,.sig}  $(sed -r -e 's/^lib//' -e 's/^python(3|2)/python/' <<< ${pkg}).src.tar.gz{,.sig})
 remote_file_delete sources $(echo ${pkg[@]} | tr ' ' '\n' | sort -u)

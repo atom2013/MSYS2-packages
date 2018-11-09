@@ -1,13 +1,11 @@
 #!/bin/bash
 # MSYS2软件包自动编译脚本
-# 请使用MSYS2终端执行本脚本。在执行之前，先安装base-devel、msys2-devel和git包:
-# pacman -S base-devel msys2-devel git
-# 配置git
-# git config --global user.email "you@example.com"
-# git config --global user.name "Your Name"
-# 参数1表示软件包名称，比如：
-# ./ci-build.sh gcc
-# 如果增加或删除了某个软件包，请删除groups.list和packages.list，然后重新执行此脚本
+# 请使用MSYS2终端执行本脚本。
+# 如果要编译安装某个包，只需执行：
+# ./ci-build.sh <pkg-name>
+# 如果有多个软件包要编译，可以在参数中一一列出:
+# ./ci-build.sh <pkg-name-1> <pkg-name-2> <pkg-name-3> 
+# 也可以同时开多个窗口编译不同的软件包。
 
 cd "$(dirname "$0")"
 
@@ -18,6 +16,28 @@ gpg -o build.config -d build.config.gpg
 (gpg --list-keys | grep -q 'E2A9F8CA78EDDCCC') || {
 gpg -o seckey.asc -d seckey.asc.gpg
 gpg --import seckey.asc
+}
+
+# Install base-devel, msys2-devel and git
+(pacman -Qg base-devel &>/dev/null) || {
+pacman --sync --noconfirm base-devel
+}
+
+(pacman -Qg msys2-devel &>/dev/null) || {
+pacman --sync --noconfirm msys2-devel
+}
+
+(which git &>/dev/null) || {
+pacman --sync --noconfirm git
+}
+
+# Configure git user
+(git config --global --get user.name > /dev/null) || {
+git config --global user.name "${GIT_USER_NAME}"
+}
+
+(git config --global --get user.email > /dev/null) || {
+git config --global user.email "${GIT_USER_EMAIL}"
 }
 
 source 'build.config'
