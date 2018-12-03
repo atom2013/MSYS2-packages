@@ -1,8 +1,8 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=nasm
-pkgver=2.13.03
-pkgrel=1
+pkgver=2.14
+pkgrel=2
 pkgdesc="An 80x86 assembler designed for portability and modularity"
 arch=('i686' 'x86_64')
 url="http://www.nasm.us"
@@ -18,7 +18,7 @@ source=("http://www.nasm.us/pub/nasm/releasebuilds/${pkgver}/${pkgname}-${pkgver
         "SourceCodePro-Bold.ttf"
         "SourceCodePro-Regular.ttf"
         "SourceCodePro-Semibold.ttf")
-sha256sums=('812ecfb0dcbc5bd409aaa8f61c7de94c5b8752a7b00c632883d15b2ed6452573'
+sha256sums=('97c615dbf02ef80e4e2b6c385f7e28368d51efc214daa98e600ca4572500eec0'
             '830bdfbfc031193a8272080a7ae3c8921955ec2fa8ac51783c3d249a511c7b6b'
             '4bf078af9e7623e99d16f08d3bf5444b1f0d14eb880ff38aab891b6fb2b8c5af'
             'dfc292434458f74eb94c66d25a28bd583a109c63dedec79c24091ad71f98eac1'
@@ -56,6 +56,6 @@ build() {
 
 package() {
   cd ${pkgname}-${pkgver}
-  make INSTALLROOT="${pkgdir}" install #install_rdf
+  make DESTDIR="${pkgdir}" install #install_rdf
   install -D -m644 LICENSE "${pkgdir}"/usr/share/licenses/nasm/LICENSE
 }
