@@ -13,9 +13,9 @@ if test -z "$build_alias"; then
     ${as_echo-echo} "$config_site_me:${as_lineno-$LINENO}: default build_alias set to $build_alias" >&5
 fi
 
-# Set default 'prefix' to "/mingw32"
+# Set default 'prefix' to "/clang32"
 if ( test -z "$prefix" || test "x$prefix" = "xNONE" ) && \
    ( test -z "$exec_prefix" || test "x$exec_prefix" = "xNONE" ); then
-  prefix="${MSYSTEM_PREFIX-/mingw32}" && \
+  prefix="${MSYSTEM_PREFIX-/clang32}" && \
     ${as_echo-echo} "$config_site_me:${as_lineno-$LINENO}: default prefix set to $prefix" >&5
 fi
