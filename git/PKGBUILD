@@ -53,7 +53,7 @@ source=("${pkgname}-${pkgver}.tar.gz"::https://github.com/git/git/archive/v${pkg
         git-tcsh-completion-fixes.patch
         git-zsh-completion-fixes.patch
         git-credential-wincred-fixes.patch)
-sha256sums=('7cc724cd9ea54b73f41ed53edbc75703df8a3108b9e30367bcf5c3a1daa3cee2'
+sha256sums=('6076f6f83b3c9c128a1b1c5987d4c202731c0cc9c84fb295d3adfb076eecd931'
             'c5e735d829e11f79e2d508b663d0924030498f48fc716881031fb975dbf187a5'
             '2c0301076a7b60b5be2491433560f6f87c510ec64d2d8f9db5a75c1295893885'
             '8dd65f3b0c4320dd30eb5109de86accee699ef3201d8611576d664f9d6fcb5d6'
