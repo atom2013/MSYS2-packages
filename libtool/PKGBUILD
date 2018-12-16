@@ -2,7 +2,7 @@
 
 pkgname=('libtool' 'libltdl')
 pkgver=2.4.6
-_gccver=7.3.0
+_gccver=7.4.0
 pkgrel=6
 pkgdesc="A generic library support script"
 arch=('i686' 'x86_64')

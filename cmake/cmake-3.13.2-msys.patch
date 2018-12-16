@@ -1,7 +1,7 @@
-diff -Naur cmake-3.10.2-orig/bootstrap cmake-3.10.2/bootstrap
---- cmake-3.10.2-orig/bootstrap	2018-01-18 17:48:44.000000000 +0300
-+++ cmake-3.10.2/bootstrap	2018-02-19 09:26:41.634714700 +0300
-@@ -87,8 +87,15 @@
+diff -Naur cmake-3.13.2-orig/bootstrap cmake-3.13.2/bootstrap
+--- cmake-3.13.2-orig/bootstrap	2018-12-13 14:57:42.000000000 +0300
++++ cmake-3.13.2/bootstrap	2018-12-14 08:59:01.639757400 +0300
+@@ -88,8 +88,15 @@
    cmake_system_cygwin=false
  fi
  
@@ -18,7 +18,7 @@ diff -Naur cmake-3.10.2-orig/bootstrap cmake-3.10.2/bootstrap
    cmake_system_mingw=true
  else
    cmake_system_mingw=false
-@@ -905,6 +912,10 @@
+@@ -920,6 +927,10 @@
    cmake_ld_flags="${LDFLAGS} -Wl,--enable-auto-import"
  fi
  
@@ -29,7 +29,7 @@ diff -Naur cmake-3.10.2-orig/bootstrap cmake-3.10.2/bootstrap
  # Add CoreFoundation framework on Darwin
  if ${cmake_system_darwin}; then
    cmake_ld_flags="${LDFLAGS} -framework CoreFoundation"
-@@ -926,6 +937,7 @@
+@@ -941,6 +952,7 @@
  case "${cmake_system}" in
    *AIX*)   cmake_toolchains='XL GNU' ;;
    *CYGWIN*) cmake_toolchains='GNU' ;;
@@ -37,9 +37,9 @@ diff -Naur cmake-3.10.2-orig/bootstrap cmake-3.10.2/bootstrap
    *Darwin*) cmake_toolchains='Clang GNU' ;;
    *Linux*) cmake_toolchains='GNU Clang XL PGI PathScale' ;;
    *MINGW*) cmake_toolchains='GNU' ;;
-diff -Naur cmake-3.10.2-orig/CMakeCPack.cmake cmake-3.10.2/CMakeCPack.cmake
---- cmake-3.10.2-orig/CMakeCPack.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/CMakeCPack.cmake	2018-02-19 09:26:41.641715100 +0300
+diff -Naur cmake-3.13.2-orig/CMakeCPack.cmake cmake-3.13.2/CMakeCPack.cmake
+--- cmake-3.13.2-orig/CMakeCPack.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/CMakeCPack.cmake	2018-12-14 09:04:18.207913600 +0300
 @@ -41,6 +41,8 @@
    # cygwin is good for the system name
    if("x${CMAKE_SYSTEM_NAME}" STREQUAL "xCYGWIN")
@@ -49,6 +49,15 @@ diff -Naur cmake-3.10.2-orig/CMakeCPack.cmake cmake-3.10.2/CMakeCPack.cmake
    else()
      set(CPACK_SYSTEM_NAME ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
    endif()
+@@ -99,7 +101,7 @@
+ # Components
+ if(CMake_INSTALL_COMPONENTS)
+   set(_CPACK_IFW_COMPONENTS_ALL cmake ctest cpack)
+-  if(WIN32 AND NOT CYGWIN)
++  if(WIN32 AND NOT CYGWIN AND NOT MSYS)
+       list(APPEND _CPACK_IFW_COMPONENTS_ALL cmcldeps)
+   endif()
+   if(APPLE)
 @@ -210,7 +212,7 @@
    # if the CPACK_PACKAGE_FILE_NAME is not defined by the cache
    # default to source package - system, on cygwin system is not
@@ -58,9 +67,9 @@ diff -Naur cmake-3.10.2-orig/CMakeCPack.cmake cmake-3.10.2/CMakeCPack.cmake
      set(CPACK_PACKAGE_FILE_NAME "${CPACK_SOURCE_PACKAGE_FILE_NAME}")
    else()
      set(CPACK_PACKAGE_FILE_NAME
-diff -Naur cmake-3.10.2-orig/Modules/CMakeCCompiler.cmake.in cmake-3.10.2/Modules/CMakeCCompiler.cmake.in
---- cmake-3.10.2-orig/Modules/CMakeCCompiler.cmake.in	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeCCompiler.cmake.in	2018-02-19 09:26:41.648715500 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CMakeCCompiler.cmake.in cmake-3.13.2/Modules/CMakeCCompiler.cmake.in
+--- cmake-3.13.2-orig/Modules/CMakeCCompiler.cmake.in	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeCCompiler.cmake.in	2018-12-14 08:59:01.670957400 +0300
 @@ -27,10 +27,15 @@
  set(CMAKE_C_ABI_COMPILED @CMAKE_C_ABI_COMPILED@)
  set(CMAKE_COMPILER_IS_MINGW @CMAKE_COMPILER_IS_MINGW@)
@@ -77,10 +86,10 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeCCompiler.cmake.in cmake-3.10.2/Module
  
  set(CMAKE_C_COMPILER_ENV_VAR "CC")
  
-diff -Naur cmake-3.10.2-orig/Modules/CMakeCXXCompiler.cmake.in cmake-3.10.2/Modules/CMakeCXXCompiler.cmake.in
---- cmake-3.10.2-orig/Modules/CMakeCXXCompiler.cmake.in	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeCXXCompiler.cmake.in	2018-02-19 09:26:41.654715800 +0300
-@@ -28,10 +28,15 @@
+diff -Naur cmake-3.13.2-orig/Modules/CMakeCXXCompiler.cmake.in cmake-3.13.2/Modules/CMakeCXXCompiler.cmake.in
+--- cmake-3.13.2-orig/Modules/CMakeCXXCompiler.cmake.in	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeCXXCompiler.cmake.in	2018-12-14 08:59:01.702157500 +0300
+@@ -29,10 +29,15 @@
  set(CMAKE_CXX_ABI_COMPILED @CMAKE_CXX_ABI_COMPILED@)
  set(CMAKE_COMPILER_IS_MINGW @CMAKE_COMPILER_IS_MINGW@)
  set(CMAKE_COMPILER_IS_CYGWIN @CMAKE_COMPILER_IS_CYGWIN@)
@@ -96,9 +105,9 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeCXXCompiler.cmake.in cmake-3.10.2/Modu
  
  set(CMAKE_CXX_COMPILER_ENV_VAR "CXX")
  
-diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineCCompiler.cmake cmake-3.10.2/Modules/CMakeDetermineCCompiler.cmake
---- cmake-3.10.2-orig/Modules/CMakeDetermineCCompiler.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeDetermineCCompiler.cmake	2018-02-19 09:26:41.660716200 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CMakeDetermineCCompiler.cmake cmake-3.13.2/Modules/CMakeDetermineCCompiler.cmake
+--- cmake-3.13.2-orig/Modules/CMakeDetermineCCompiler.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeDetermineCCompiler.cmake	2018-12-14 08:59:01.733357600 +0300
 @@ -120,6 +120,8 @@
      set(CMAKE_COMPILER_IS_MINGW 1)
    elseif(CMAKE_C_PLATFORM_ID MATCHES "Cygwin")
@@ -108,9 +117,9 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineCCompiler.cmake cmake-3.10.2/
    endif()
  endif()
  
-diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineCXXCompiler.cmake cmake-3.10.2/Modules/CMakeDetermineCXXCompiler.cmake
---- cmake-3.10.2-orig/Modules/CMakeDetermineCXXCompiler.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeDetermineCXXCompiler.cmake	2018-02-19 09:26:41.667716600 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CMakeDetermineCXXCompiler.cmake cmake-3.13.2/Modules/CMakeDetermineCXXCompiler.cmake
+--- cmake-3.13.2-orig/Modules/CMakeDetermineCXXCompiler.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeDetermineCXXCompiler.cmake	2018-12-14 08:59:01.764557600 +0300
 @@ -115,6 +115,8 @@
      set(CMAKE_COMPILER_IS_MINGW 1)
    elseif(CMAKE_CXX_PLATFORM_ID MATCHES "Cygwin")
@@ -120,10 +129,10 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineCXXCompiler.cmake cmake-3.10.
    endif()
  endif()
  
-diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineFortranCompiler.cmake cmake-3.10.2/Modules/CMakeDetermineFortranCompiler.cmake
---- cmake-3.10.2-orig/Modules/CMakeDetermineFortranCompiler.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeDetermineFortranCompiler.cmake	2018-02-19 09:26:41.674717000 +0300
-@@ -200,6 +200,9 @@
+diff -Naur cmake-3.13.2-orig/Modules/CMakeDetermineFortranCompiler.cmake cmake-3.13.2/Modules/CMakeDetermineFortranCompiler.cmake
+--- cmake-3.13.2-orig/Modules/CMakeDetermineFortranCompiler.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeDetermineFortranCompiler.cmake	2018-12-14 08:59:01.780157600 +0300
+@@ -208,6 +208,9 @@
          if(CMAKE_COMPILER_OUTPUT MATCHES "THIS_IS_CYGWIN")
            set(CMAKE_Fortran_PLATFORM_ID "Cygwin")
          endif()
@@ -133,7 +142,7 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineFortranCompiler.cmake cmake-3
        endif()
      endif()
    endif()
-@@ -216,6 +219,9 @@
+@@ -224,6 +227,9 @@
        if(CMAKE_COMPILER_OUTPUT MATCHES "THIS_IS_CYGWIN")
          set(CMAKE_Fortran_PLATFORM_ID "Cygwin")
        endif()
@@ -143,7 +152,7 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineFortranCompiler.cmake cmake-3
      endif()
    endif()
  
-@@ -227,6 +233,8 @@
+@@ -235,6 +241,8 @@
      set(CMAKE_COMPILER_IS_MINGW 1)
    elseif(CMAKE_Fortran_PLATFORM_ID MATCHES "Cygwin")
      set(CMAKE_COMPILER_IS_CYGWIN 1)
@@ -152,9 +161,9 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineFortranCompiler.cmake cmake-3
    endif()
  endif()
  
-diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineSystem.cmake cmake-3.10.2/Modules/CMakeDetermineSystem.cmake
---- cmake-3.10.2-orig/Modules/CMakeDetermineSystem.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeDetermineSystem.cmake	2018-02-19 09:26:41.680717300 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CMakeDetermineSystem.cmake cmake-3.13.2/Modules/CMakeDetermineSystem.cmake
+--- cmake-3.13.2-orig/Modules/CMakeDetermineSystem.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeDetermineSystem.cmake	2018-12-14 08:59:01.795757700 +0300
 @@ -28,6 +28,7 @@
  # Tru64                         Tru64
  # Ultrix                        ULTRIX
@@ -184,9 +193,9 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeDetermineSystem.cmake cmake-3.10.2/Mod
    # set CMAKE_SYSTEM to the CMAKE_SYSTEM_NAME
    set(${_PREFIX}  ${${_PREFIX}_NAME})
    # if there is a CMAKE_SYSTEM_VERSION then add a -${CMAKE_SYSTEM_VERSION}
-diff -Naur cmake-3.10.2-orig/Modules/CMakeFortranCompiler.cmake.in cmake-3.10.2/Modules/CMakeFortranCompiler.cmake.in
---- cmake-3.10.2-orig/Modules/CMakeFortranCompiler.cmake.in	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeFortranCompiler.cmake.in	2018-02-19 09:34:30.507532700 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CMakeFortranCompiler.cmake.in cmake-3.13.2/Modules/CMakeFortranCompiler.cmake.in
+--- cmake-3.13.2-orig/Modules/CMakeFortranCompiler.cmake.in	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeFortranCompiler.cmake.in	2018-12-14 08:59:01.795757700 +0300
 @@ -18,11 +18,17 @@
  set(CMAKE_Fortran_ABI_COMPILED @CMAKE_Fortran_ABI_COMPILED@)
  set(CMAKE_COMPILER_IS_MINGW @CMAKE_COMPILER_IS_MINGW@)
@@ -205,10 +214,10 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeFortranCompiler.cmake.in cmake-3.10.2/
  set(CMAKE_Fortran_COMPILER_ENV_VAR "FC")
  
  set(CMAKE_Fortran_COMPILER_SUPPORTS_F90 @CMAKE_Fortran_COMPILER_SUPPORTS_F90@)
-diff -Naur cmake-3.10.2-orig/Modules/CMakeFortranCompilerId.F.in cmake-3.10.2/Modules/CMakeFortranCompilerId.F.in
---- cmake-3.10.2-orig/Modules/CMakeFortranCompilerId.F.in	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeFortranCompilerId.F.in	2018-02-19 09:26:41.692718000 +0300
-@@ -131,6 +131,8 @@
+diff -Naur cmake-3.13.2-orig/Modules/CMakeFortranCompilerId.F.in cmake-3.13.2/Modules/CMakeFortranCompilerId.F.in
+--- cmake-3.13.2-orig/Modules/CMakeFortranCompilerId.F.in	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeFortranCompilerId.F.in	2018-12-14 08:59:01.842557700 +0300
+@@ -130,6 +130,8 @@
  #endif
  #if defined(__linux) || defined(__linux__) || defined(linux)
          PRINT *, 'INFO:platform[Linux]'
@@ -217,9 +226,9 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeFortranCompilerId.F.in cmake-3.10.2/Mo
  #elif defined(__CYGWIN__)
          PRINT *, 'INFO:platform[Cygwin]'
  #elif defined(__MINGW32__)
-diff -Naur cmake-3.10.2-orig/Modules/CMakeJavaInformation.cmake cmake-3.10.2/Modules/CMakeJavaInformation.cmake
---- cmake-3.10.2-orig/Modules/CMakeJavaInformation.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeJavaInformation.cmake	2018-02-19 09:26:41.697718300 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CMakeJavaInformation.cmake cmake-3.13.2/Modules/CMakeJavaInformation.cmake
+--- cmake-3.13.2-orig/Modules/CMakeJavaInformation.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeJavaInformation.cmake	2018-12-14 08:59:01.842557700 +0300
 @@ -42,7 +42,7 @@
  
  # set java include flag option and the separator for multiple include paths
@@ -229,9 +238,9 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeJavaInformation.cmake cmake-3.10.2/Mod
    set(CMAKE_INCLUDE_FLAG_SEP_Java ";")
  else()
    set(CMAKE_INCLUDE_FLAG_SEP_Java ":")
-diff -Naur cmake-3.10.2-orig/Modules/CMakePlatformId.h.in cmake-3.10.2/Modules/CMakePlatformId.h.in
---- cmake-3.10.2-orig/Modules/CMakePlatformId.h.in	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakePlatformId.h.in	2018-02-19 09:26:41.702718600 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CMakePlatformId.h.in cmake-3.13.2/Modules/CMakePlatformId.h.in
+--- cmake-3.13.2-orig/Modules/CMakePlatformId.h.in	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakePlatformId.h.in	2018-12-14 08:59:01.858157800 +0300
 @@ -5,6 +5,9 @@
  #if defined(__linux) || defined(__linux__) || defined(linux)
  # define PLATFORM_ID "Linux"
@@ -242,9 +251,9 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakePlatformId.h.in cmake-3.10.2/Modules/C
  #elif defined(__CYGWIN__)
  # define PLATFORM_ID "Cygwin"
  
-diff -Naur cmake-3.10.2-orig/Modules/CMakeSystemSpecificInformation.cmake cmake-3.10.2/Modules/CMakeSystemSpecificInformation.cmake
---- cmake-3.10.2-orig/Modules/CMakeSystemSpecificInformation.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeSystemSpecificInformation.cmake	2018-02-19 09:26:41.708718900 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CMakeSystemSpecificInformation.cmake cmake-3.13.2/Modules/CMakeSystemSpecificInformation.cmake
+--- cmake-3.13.2-orig/Modules/CMakeSystemSpecificInformation.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeSystemSpecificInformation.cmake	2018-12-14 08:59:01.873757800 +0300
 @@ -14,6 +14,7 @@
  set(APPLE  )
  set(UNIX   )
@@ -253,9 +262,9 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeSystemSpecificInformation.cmake cmake-
  set(WIN32  )
  
  
-diff -Naur cmake-3.10.2-orig/Modules/CMakeTestGNU.c cmake-3.10.2/Modules/CMakeTestGNU.c
---- cmake-3.10.2-orig/Modules/CMakeTestGNU.c	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CMakeTestGNU.c	2018-02-19 09:26:41.713719200 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CMakeTestGNU.c cmake-3.13.2/Modules/CMakeTestGNU.c
+--- cmake-3.13.2-orig/Modules/CMakeTestGNU.c	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CMakeTestGNU.c	2018-12-14 08:59:01.873757800 +0300
 @@ -4,6 +4,8 @@
  #ifdef __MINGW32__
  void THIS_IS_MINGW();
@@ -266,10 +275,10 @@ diff -Naur cmake-3.10.2-orig/Modules/CMakeTestGNU.c cmake-3.10.2/Modules/CMakeTe
 +#elif defined(__CYGWIN__)
  void THIS_IS_CYGWIN();
  #endif
-diff -Naur cmake-3.10.2-orig/Modules/CPack.cmake cmake-3.10.2/Modules/CPack.cmake
---- cmake-3.10.2-orig/Modules/CPack.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CPack.cmake	2018-02-19 09:26:41.742720900 +0300
-@@ -460,6 +460,8 @@
+diff -Naur cmake-3.13.2-orig/Modules/CPack.cmake cmake-3.13.2/Modules/CPack.cmake
+--- cmake-3.13.2-orig/Modules/CPack.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/CPack.cmake	2018-12-14 08:59:01.889357800 +0300
+@@ -527,6 +527,8 @@
    if(UNIX)
      if(CYGWIN)
        option(CPACK_BINARY_CYGWIN "Enable to build Cygwin binary packages" ON)
@@ -278,7 +287,7 @@ diff -Naur cmake-3.10.2-orig/Modules/CPack.cmake cmake-3.10.2/Modules/CPack.cmak
      else()
        if(APPLE)
          option(CPACK_BINARY_BUNDLE       "Enable to build OSX bundles"      OFF)
-@@ -490,6 +492,7 @@
+@@ -558,6 +560,7 @@
    cpack_optional_append(CPACK_GENERATOR  CPACK_BINARY_7Z           7Z)
    cpack_optional_append(CPACK_GENERATOR  CPACK_BINARY_BUNDLE       Bundle)
    cpack_optional_append(CPACK_GENERATOR  CPACK_BINARY_CYGWIN       CygwinBinary)
@@ -286,7 +295,7 @@ diff -Naur cmake-3.10.2-orig/Modules/CPack.cmake cmake-3.10.2/Modules/CPack.cmak
    cpack_optional_append(CPACK_GENERATOR  CPACK_BINARY_DEB          DEB)
    cpack_optional_append(CPACK_GENERATOR  CPACK_BINARY_DRAGNDROP    DragNDrop)
    cpack_optional_append(CPACK_GENERATOR  CPACK_BINARY_FREEBSD      FREEBSD)
-@@ -514,6 +517,8 @@
+@@ -583,6 +586,8 @@
    if(UNIX)
      if(CYGWIN)
        option(CPACK_SOURCE_CYGWIN "Enable to build Cygwin source packages" ON)
@@ -295,7 +304,7 @@ diff -Naur cmake-3.10.2-orig/Modules/CPack.cmake cmake-3.10.2/Modules/CPack.cmak
      else()
        option(CPACK_SOURCE_RPM  "Enable to build RPM source packages"  OFF)
        option(CPACK_SOURCE_TBZ2 "Enable to build TBZ2 source packages" ON)
-@@ -542,6 +547,7 @@
+@@ -611,6 +616,7 @@
    CPACK_BINARY_7Z
    CPACK_BINARY_BUNDLE
    CPACK_BINARY_CYGWIN
@@ -303,7 +312,7 @@ diff -Naur cmake-3.10.2-orig/Modules/CPack.cmake cmake-3.10.2/Modules/CPack.cmak
    CPACK_BINARY_DEB
    CPACK_BINARY_DRAGNDROP
    CPACK_BINARY_FREEBSD
-@@ -560,6 +566,7 @@
+@@ -630,6 +636,7 @@
    CPACK_BINARY_ZIP
    CPACK_SOURCE_7Z
    CPACK_SOURCE_CYGWIN
@@ -311,9 +320,9 @@ diff -Naur cmake-3.10.2-orig/Modules/CPack.cmake cmake-3.10.2/Modules/CPack.cmak
    CPACK_SOURCE_RPM
    CPACK_SOURCE_TBZ2
    CPACK_SOURCE_TGZ
-diff -Naur cmake-3.10.2-orig/Modules/CPackMsys.cmake cmake-3.10.2/Modules/CPackMsys.cmake
---- cmake-3.10.2-orig/Modules/CPackMsys.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/CPackMsys.cmake	2018-02-19 09:26:41.746721100 +0300
+diff -Naur cmake-3.13.2-orig/Modules/CPackMsys.cmake cmake-3.13.2/Modules/CPackMsys.cmake
+--- cmake-3.13.2-orig/Modules/CPackMsys.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/CPackMsys.cmake	2018-12-14 08:59:01.904957900 +0300
 @@ -0,0 +1,33 @@
 +##section Variables specific to CPack MSYS generator
 +##end
@@ -348,29 +357,10 @@ diff -Naur cmake-3.10.2-orig/Modules/CPackMsys.cmake cmake-3.10.2/Modules/CPackM
 +#=============================================================================
 +# (To distribute this file outside of CMake, substitute the full
 +#  License text for the above reference.)
-diff -Naur cmake-3.10.2-orig/Modules/CPackZIP.cmake cmake-3.10.2/Modules/CPackZIP.cmake
---- cmake-3.10.2-orig/Modules/CPackZIP.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/CPackZIP.cmake	2018-02-19 09:26:41.751721400 +0300
-@@ -21,6 +21,15 @@
- endif()
- 
- if(NOT ZIP_EXECUTABLE)
-+  find_package(Msys)
-+  find_program(ZIP_EXECUTABLE zip PATHS "${MSYS_INSTALL_PATH}/usr/bin")
-+  if(ZIP_EXECUTABLE)
-+    set(CPACK_ZIP_COMMAND "\"${ZIP_EXECUTABLE}\" -r \"<ARCHIVE>\" . -i@<FILELIST>")
-+    set(CPACK_ZIP_NEED_QUOTES FALSE)
-+  endif()
-+endif()
-+
-+if(NOT ZIP_EXECUTABLE)
-   find_package(Cygwin)
-   find_program(ZIP_EXECUTABLE zip PATHS "${CYGWIN_INSTALL_PATH}/bin")
-   if(ZIP_EXECUTABLE)
-diff -Naur cmake-3.10.2-orig/Modules/ExternalProject.cmake cmake-3.10.2/Modules/ExternalProject.cmake
---- cmake-3.10.2-orig/Modules/ExternalProject.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/ExternalProject.cmake	2018-02-19 09:26:41.759721800 +0300
-@@ -1812,7 +1812,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/ExternalProject.cmake cmake-3.13.2/Modules/ExternalProject.cmake
+--- cmake-3.13.2-orig/Modules/ExternalProject.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/ExternalProject.cmake	2018-12-14 08:59:01.904957900 +0300
+@@ -1864,7 +1864,7 @@
      string(REGEX REPLACE "^\\$\\(MAKE\\)" "\${make}" command "${command}")
      set(make "-Dmake=$(MAKE)")
  
@@ -379,10 +369,10 @@ diff -Naur cmake-3.10.2-orig/Modules/ExternalProject.cmake cmake-3.10.2/Modules/
        set(code_cygpath_make "
  if(\${make} MATCHES \"^/\")
    execute_process(
-diff -Naur cmake-3.10.2-orig/Modules/FindBoost.cmake cmake-3.10.2/Modules/FindBoost.cmake
---- cmake-3.10.2-orig/Modules/FindBoost.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindBoost.cmake	2018-02-19 09:26:41.767722300 +0300
-@@ -1331,7 +1331,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/FindBoost.cmake cmake-3.13.2/Modules/FindBoost.cmake
+--- cmake-3.13.2-orig/Modules/FindBoost.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindBoost.cmake	2018-12-14 08:59:01.920557900 +0300
+@@ -1418,7 +1418,7 @@
  
  set(Boost_LIB_PREFIX "")
  if ( (GHSMULTI AND Boost_USE_STATIC_LIBS) OR
@@ -391,9 +381,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindBoost.cmake cmake-3.10.2/Modules/FindBo
    set(Boost_LIB_PREFIX "lib")
  endif()
  
-diff -Naur cmake-3.10.2-orig/Modules/FindCoin3D.cmake cmake-3.10.2/Modules/FindCoin3D.cmake
---- cmake-3.10.2-orig/Modules/FindCoin3D.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindCoin3D.cmake	2018-02-19 09:26:41.772722600 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindCoin3D.cmake cmake-3.13.2/Modules/FindCoin3D.cmake
+--- cmake-3.13.2-orig/Modules/FindCoin3D.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindCoin3D.cmake	2018-12-14 08:59:01.936157900 +0300
 @@ -19,7 +19,7 @@
  #   COIN3D_LIBRARIES     - Link to this to use Coin3D
  
@@ -403,9 +393,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindCoin3D.cmake cmake-3.10.2/Modules/FindC
  
      find_path(COIN3D_INCLUDE_DIRS Inventor/So.h)
      find_library(COIN3D_LIBRARIES Coin)
-diff -Naur cmake-3.10.2-orig/Modules/FindCurses.cmake cmake-3.10.2/Modules/FindCurses.cmake
---- cmake-3.10.2-orig/Modules/FindCurses.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindCurses.cmake	2018-02-19 09:30:38.051236900 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindCurses.cmake cmake-3.13.2/Modules/FindCurses.cmake
+--- cmake-3.13.2-orig/Modules/FindCurses.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindCurses.cmake	2018-12-14 08:59:01.936157900 +0300
 @@ -67,7 +67,7 @@
  # cygwin ncurses stopped providing curses.h symlinks see above
  # message.  Cygwin is an ncurses package, so force ncurses on
@@ -415,10 +405,10 @@ diff -Naur cmake-3.10.2-orig/Modules/FindCurses.cmake cmake-3.10.2/Modules/FindC
    if (CURSES_NEED_WIDE)
      if(NOT EXISTS /usr/include/ncursesw/curses.h)
        set(CURSES_USE_NCURSES TRUE)
-diff -Naur cmake-3.10.2-orig/Modules/FindFLTK.cmake cmake-3.10.2/Modules/FindFLTK.cmake
---- cmake-3.10.2-orig/Modules/FindFLTK.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindFLTK.cmake	2018-02-19 09:26:41.784723300 +0300
-@@ -63,7 +63,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/FindFLTK.cmake cmake-3.13.2/Modules/FindFLTK.cmake
+--- cmake-3.13.2-orig/Modules/FindFLTK.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindFLTK.cmake	2018-12-14 08:59:01.951757900 +0300
+@@ -84,7 +84,7 @@
  
  #  Platform dependent libraries required by FLTK
  if(WIN32)
@@ -427,9 +417,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindFLTK.cmake cmake-3.10.2/Modules/FindFLT
      if(BORLAND)
        set( FLTK_PLATFORM_DEPENDENT_LIBS import32 )
      else()
-diff -Naur cmake-3.10.2-orig/Modules/FindFLTK2.cmake cmake-3.10.2/Modules/FindFLTK2.cmake
---- cmake-3.10.2-orig/Modules/FindFLTK2.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindFLTK2.cmake	2018-02-19 09:26:41.790723600 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindFLTK2.cmake cmake-3.13.2/Modules/FindFLTK2.cmake
+--- cmake-3.13.2-orig/Modules/FindFLTK2.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindFLTK2.cmake	2018-12-14 08:59:01.967358000 +0300
 @@ -29,7 +29,7 @@
  
  #  Platform dependent libraries required by FLTK2
@@ -439,9 +429,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindFLTK2.cmake cmake-3.10.2/Modules/FindFL
      if(BORLAND)
        set( FLTK2_PLATFORM_DEPENDENT_LIBS import32 )
      else()
-diff -Naur cmake-3.10.2-orig/Modules/FindGnuplot.cmake cmake-3.10.2/Modules/FindGnuplot.cmake
---- cmake-3.10.2-orig/Modules/FindGnuplot.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindGnuplot.cmake	2018-02-19 09:26:41.796724000 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindGnuplot.cmake cmake-3.13.2/Modules/FindGnuplot.cmake
+--- cmake-3.13.2-orig/Modules/FindGnuplot.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindGnuplot.cmake	2018-12-14 08:59:01.967358000 +0300
 @@ -22,6 +22,7 @@
  # GNUPLOT_VERSION_STRING will not work for old versions like 3.7.1.
  
@@ -458,9 +448,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindGnuplot.cmake cmake-3.10.2/Modules/Find
  )
  
  if (GNUPLOT_EXECUTABLE)
-diff -Naur cmake-3.10.2-orig/Modules/FindMsys.cmake cmake-3.10.2/Modules/FindMsys.cmake
---- cmake-3.10.2-orig/Modules/FindMsys.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/FindMsys.cmake	2018-02-19 09:26:41.800724200 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindMsys.cmake cmake-3.13.2/Modules/FindMsys.cmake
+--- cmake-3.13.2-orig/Modules/FindMsys.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/FindMsys.cmake	2018-12-14 08:59:01.982958000 +0300
 @@ -0,0 +1,28 @@
 +# - this module looks for MSYS
 +#
@@ -490,10 +480,10 @@ diff -Naur cmake-3.10.2-orig/Modules/FindMsys.cmake cmake-3.10.2/Modules/FindMsy
 +    MSYS_INSTALL_PATH
 +  )
 +endif ()
-diff -Naur cmake-3.10.2-orig/Modules/FindOpenGL.cmake cmake-3.10.2/Modules/FindOpenGL.cmake
---- cmake-3.10.2-orig/Modules/FindOpenGL.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindOpenGL.cmake	2018-02-19 09:31:12.532209100 +0300
-@@ -128,7 +128,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/FindOpenGL.cmake cmake-3.13.2/Modules/FindOpenGL.cmake
+--- cmake-3.13.2-orig/Modules/FindOpenGL.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindOpenGL.cmake	2018-12-14 08:59:01.982958000 +0300
+@@ -129,7 +129,7 @@
    set(OPENGL_USE_${_COMPONENT} 1)
  endforeach()
  
@@ -502,10 +492,10 @@ diff -Naur cmake-3.10.2-orig/Modules/FindOpenGL.cmake cmake-3.10.2/Modules/FindO
    find_path(OPENGL_INCLUDE_DIR GL/gl.h )
    list(APPEND _OpenGL_REQUIRED_VARS OPENGL_INCLUDE_DIR)
  
-diff -Naur cmake-3.10.2-orig/Modules/FindOpenSSL.cmake cmake-3.10.2/Modules/FindOpenSSL.cmake
---- cmake-3.10.2-orig/Modules/FindOpenSSL.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindOpenSSL.cmake	2018-02-19 09:26:41.812724900 +0300
-@@ -97,7 +97,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/FindOpenSSL.cmake cmake-3.13.2/Modules/FindOpenSSL.cmake
+--- cmake-3.13.2-orig/Modules/FindOpenSSL.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindOpenSSL.cmake	2018-12-14 08:59:01.998558000 +0300
+@@ -104,7 +104,7 @@
      include
  )
  
@@ -514,9 +504,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindOpenSSL.cmake cmake-3.10.2/Modules/Find
    if(MSVC)
      # /MD and /MDd are the standard values - if someone wants to use
      # others, the libnames have to change here too
-diff -Naur cmake-3.10.2-orig/Modules/FindPerl.cmake cmake-3.10.2/Modules/FindPerl.cmake
---- cmake-3.10.2-orig/Modules/FindPerl.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindPerl.cmake	2018-02-19 09:26:41.817725200 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindPerl.cmake cmake-3.13.2/Modules/FindPerl.cmake
+--- cmake-3.13.2-orig/Modules/FindPerl.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindPerl.cmake	2018-12-14 08:59:02.014158000 +0300
 @@ -16,9 +16,11 @@
  #   PERL_VERSION_STRING - version of perl found (since CMake 2.8.8)
  
@@ -529,10 +519,10 @@ diff -Naur cmake-3.10.2-orig/Modules/FindPerl.cmake cmake-3.10.2/Modules/FindPer
    )
  
  if(WIN32)
-diff -Naur cmake-3.10.2-orig/Modules/FindPNG.cmake cmake-3.10.2/Modules/FindPNG.cmake
---- cmake-3.10.2-orig/Modules/FindPNG.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindPNG.cmake	2018-02-19 09:26:41.823725500 +0300
-@@ -96,7 +96,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/FindPNG.cmake cmake-3.13.2/Modules/FindPNG.cmake
+--- cmake-3.13.2-orig/Modules/FindPNG.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindPNG.cmake	2018-12-14 08:59:02.014158000 +0300
+@@ -94,7 +94,7 @@
        set(PNG_INCLUDE_DIR ${PNG_INCLUDE_DIRS} ) # for backward compatibility
        set(PNG_LIBRARIES ${PNG_LIBRARY} ${ZLIB_LIBRARY})
  
@@ -541,10 +531,10 @@ diff -Naur cmake-3.10.2-orig/Modules/FindPNG.cmake cmake-3.10.2/Modules/FindPNG.
          if(BUILD_SHARED_LIBS)
             # No need to define PNG_USE_DLL here, because it's default for Cygwin.
          else()
-diff -Naur cmake-3.10.2-orig/Modules/FindPythonLibs.cmake cmake-3.10.2/Modules/FindPythonLibs.cmake
---- cmake-3.10.2-orig/Modules/FindPythonLibs.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindPythonLibs.cmake	2018-02-19 09:26:41.828725800 +0300
-@@ -291,7 +291,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/FindPythonLibs.cmake cmake-3.13.2/Modules/FindPythonLibs.cmake
+--- cmake-3.13.2-orig/Modules/FindPythonLibs.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindPythonLibs.cmake	2018-12-14 08:59:02.029758100 +0300
+@@ -338,7 +338,7 @@
  
      if(PYTHON_MODULE_${_NAME}_BUILD_SHARED)
        set_target_properties(${_NAME} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}")
@@ -553,10 +543,10 @@ diff -Naur cmake-3.10.2-orig/Modules/FindPythonLibs.cmake cmake-3.10.2/Modules/F
          set_target_properties(${_NAME} PROPERTIES SUFFIX ".pyd")
        endif()
      endif()
-diff -Naur cmake-3.10.2-orig/Modules/FindQt3.cmake cmake-3.10.2/Modules/FindQt3.cmake
---- cmake-3.10.2-orig/Modules/FindQt3.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindQt3.cmake	2018-02-19 09:26:41.833726100 +0300
-@@ -230,7 +230,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/FindQt3.cmake cmake-3.13.2/Modules/FindQt3.cmake
+--- cmake-3.13.2-orig/Modules/FindQt3.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindQt3.cmake	2018-12-14 08:59:02.045358100 +0300
+@@ -207,7 +207,7 @@
    set( QT_LIBRARIES ${QT_LIBRARIES} ${QT_QT_LIBRARY} )
    set( QT_DEFINITIONS "")
  
@@ -565,9 +555,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindQt3.cmake cmake-3.10.2/Modules/FindQt3.
      if (QT_QTMAIN_LIBRARY)
        # for version 3
        set (QT_DEFINITIONS -DQT_DLL -DQT_THREAD_SUPPORT -DNO_DEBUG)
-diff -Naur cmake-3.10.2-orig/Modules/FindSelfPackers.cmake cmake-3.10.2/Modules/FindSelfPackers.cmake
---- cmake-3.10.2-orig/Modules/FindSelfPackers.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindSelfPackers.cmake	2018-02-19 09:26:41.838726400 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindSelfPackers.cmake cmake-3.13.2/Modules/FindSelfPackers.cmake
+--- cmake-3.13.2-orig/Modules/FindSelfPackers.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindSelfPackers.cmake	2018-12-14 08:59:02.045358100 +0300
 @@ -16,15 +16,18 @@
  #   UPX: http://wildsau.idv.uni-linz.ac.at/mfx/upx.html
  
@@ -587,9 +577,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindSelfPackers.cmake cmake-3.10.2/Modules/
  )
  
  mark_as_advanced(
-diff -Naur cmake-3.10.2-orig/Modules/FindTclsh.cmake cmake-3.10.2/Modules/FindTclsh.cmake
---- cmake-3.10.2-orig/Modules/FindTclsh.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindTclsh.cmake	2018-02-19 09:26:41.844726700 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindTclsh.cmake cmake-3.13.2/Modules/FindTclsh.cmake
+--- cmake-3.13.2-orig/Modules/FindTclsh.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindTclsh.cmake	2018-12-14 08:59:02.060958100 +0300
 @@ -19,7 +19,7 @@
  # In cygwin, look for the cygwin version first.  Don't look for it later
  # to avoid finding the cygwin version on a Win32 build.
@@ -599,9 +589,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindTclsh.cmake cmake-3.10.2/Modules/FindTc
    find_program(TCL_TCLSH NAMES cygtclsh83 cygtclsh80)
  endif()
  
-diff -Naur cmake-3.10.2-orig/Modules/FindThreads.cmake cmake-3.10.2/Modules/FindThreads.cmake
---- cmake-3.10.2-orig/Modules/FindThreads.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindThreads.cmake	2018-02-19 09:26:41.849727000 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindThreads.cmake cmake-3.13.2/Modules/FindThreads.cmake
+--- cmake-3.13.2-orig/Modules/FindThreads.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindThreads.cmake	2018-12-14 08:59:02.076558200 +0300
 @@ -192,7 +192,7 @@
      set(CMAKE_THREAD_LIBS_INIT )
    endif()
@@ -611,9 +601,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindThreads.cmake cmake-3.10.2/Modules/Find
      set(CMAKE_USE_PTHREADS_INIT 1)
      set(Threads_FOUND TRUE)
      set(CMAKE_THREAD_LIBS_INIT )
-diff -Naur cmake-3.10.2-orig/Modules/FindUnixCommands.cmake cmake-3.10.2/Modules/FindUnixCommands.cmake
---- cmake-3.10.2-orig/Modules/FindUnixCommands.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindUnixCommands.cmake	2018-02-19 09:26:41.855727300 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindUnixCommands.cmake cmake-3.13.2/Modules/FindUnixCommands.cmake
+--- cmake-3.13.2-orig/Modules/FindUnixCommands.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindUnixCommands.cmake	2018-12-14 08:59:02.076558200 +0300
 @@ -11,10 +11,12 @@
  # and stores the result in the variables BASH, CP, GZIP, MV, RM, and TAR.
  
@@ -627,7 +617,7 @@ diff -Naur cmake-3.10.2-orig/Modules/FindUnixCommands.cmake cmake-3.10.2/Modules
  )
  mark_as_advanced(
    BASH
-@@ -27,6 +29,7 @@
+@@ -23,6 +25,7 @@
  find_program(CP
    cp
    ${CYGWIN_INSTALL_PATH}/bin
@@ -635,7 +625,7 @@ diff -Naur cmake-3.10.2-orig/Modules/FindUnixCommands.cmake cmake-3.10.2/Modules
  )
  mark_as_advanced(
    CP
-@@ -39,6 +42,7 @@
+@@ -31,6 +34,7 @@
  find_program(GZIP
    gzip
    ${CYGWIN_INSTALL_PATH}/bin
@@ -643,7 +633,7 @@ diff -Naur cmake-3.10.2-orig/Modules/FindUnixCommands.cmake cmake-3.10.2/Modules
  )
  mark_as_advanced(
    GZIP
-@@ -51,6 +55,7 @@
+@@ -39,6 +43,7 @@
  find_program(MV
    mv
    ${CYGWIN_INSTALL_PATH}/bin
@@ -651,7 +641,7 @@ diff -Naur cmake-3.10.2-orig/Modules/FindUnixCommands.cmake cmake-3.10.2/Modules
  )
  mark_as_advanced(
    MV
-@@ -63,6 +68,7 @@
+@@ -47,6 +52,7 @@
  find_program(RM
    rm
    ${CYGWIN_INSTALL_PATH}/bin
@@ -659,7 +649,7 @@ diff -Naur cmake-3.10.2-orig/Modules/FindUnixCommands.cmake cmake-3.10.2/Modules
  )
  mark_as_advanced(
    RM
-@@ -78,6 +84,7 @@
+@@ -58,6 +64,7 @@
    gtar
    PATH
    ${CYGWIN_INSTALL_PATH}/bin
@@ -667,9 +657,9 @@ diff -Naur cmake-3.10.2-orig/Modules/FindUnixCommands.cmake cmake-3.10.2/Modules
  )
  mark_as_advanced(
    TAR
-diff -Naur cmake-3.10.2-orig/Modules/FindWget.cmake cmake-3.10.2/Modules/FindWget.cmake
---- cmake-3.10.2-orig/Modules/FindWget.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/FindWget.cmake	2018-02-19 09:26:41.861727700 +0300
+diff -Naur cmake-3.13.2-orig/Modules/FindWget.cmake cmake-3.13.2/Modules/FindWget.cmake
+--- cmake-3.13.2-orig/Modules/FindWget.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/FindWget.cmake	2018-12-14 08:59:02.092158200 +0300
 @@ -15,10 +15,12 @@
  #   WGET_FOUND: True if wget has been found.
  
@@ -683,10 +673,10 @@ diff -Naur cmake-3.10.2-orig/Modules/FindWget.cmake cmake-3.10.2/Modules/FindWge
  )
  
  include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
-diff -Naur cmake-3.10.2-orig/Modules/GenerateExportHeader.cmake cmake-3.10.2/Modules/GenerateExportHeader.cmake
---- cmake-3.10.2-orig/Modules/GenerateExportHeader.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/GenerateExportHeader.cmake	2018-02-19 09:26:41.866728000 +0300
-@@ -209,6 +209,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/GenerateExportHeader.cmake cmake-3.13.2/Modules/GenerateExportHeader.cmake
+--- cmake-3.13.2-orig/Modules/GenerateExportHeader.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/GenerateExportHeader.cmake	2018-12-14 08:59:02.092158200 +0300
+@@ -218,6 +218,7 @@
        AND NOT _INTEL_TOO_OLD
        AND NOT WIN32
        AND NOT CYGWIN
@@ -694,7 +684,7 @@ diff -Naur cmake-3.10.2-orig/Modules/GenerateExportHeader.cmake cmake-3.10.2/Mod
        AND NOT CMAKE_CXX_COMPILER_ID MATCHES XL
        AND NOT CMAKE_CXX_COMPILER_ID MATCHES PGI
        AND NOT CMAKE_CXX_COMPILER_ID MATCHES Watcom)
-@@ -261,7 +262,7 @@
+@@ -289,7 +290,7 @@
    get_property(type TARGET ${TARGET_LIBRARY} PROPERTY TYPE)
  
    if(NOT ${type} STREQUAL "STATIC_LIBRARY")
@@ -703,9 +693,9 @@ diff -Naur cmake-3.10.2-orig/Modules/GenerateExportHeader.cmake cmake-3.10.2/Mod
        set(DEFINE_EXPORT "__declspec(dllexport)")
        set(DEFINE_IMPORT "__declspec(dllimport)")
      elseif(COMPILER_HAS_HIDDEN_VISIBILITY)
-diff -Naur cmake-3.10.2-orig/Modules/KDE3Macros.cmake cmake-3.10.2/Modules/KDE3Macros.cmake
---- cmake-3.10.2-orig/Modules/KDE3Macros.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/KDE3Macros.cmake	2018-02-19 09:26:41.871728200 +0300
+diff -Naur cmake-3.13.2-orig/Modules/KDE3Macros.cmake cmake-3.13.2/Modules/KDE3Macros.cmake
+--- cmake-3.13.2-orig/Modules/KDE3Macros.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/KDE3Macros.cmake	2018-12-14 08:59:02.107758200 +0300
 @@ -310,7 +310,7 @@
     file(APPEND ${_laname} "# The name that we can dlopen(3).\n")
     file(APPEND ${_laname} "dlname='${_soname}'\n")
@@ -715,9 +705,9 @@ diff -Naur cmake-3.10.2-orig/Modules/KDE3Macros.cmake cmake-3.10.2/Modules/KDE3M
       file(APPEND ${_laname} "library_names='${_soname}'\n")
     else()
       file(APPEND ${_laname} "library_names='${_soname} ${_soname} ${_soname}'\n")
-diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS.cmake cmake-3.10.2/Modules/Platform/MSYS.cmake
---- cmake-3.10.2-orig/Modules/Platform/MSYS.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/Platform/MSYS.cmake	2018-02-19 09:26:41.881728800 +0300
+diff -Naur cmake-3.13.2-orig/Modules/Platform/MSYS.cmake cmake-3.13.2/Modules/Platform/MSYS.cmake
+--- cmake-3.13.2-orig/Modules/Platform/MSYS.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/Platform/MSYS.cmake	2018-12-14 08:59:02.123358200 +0300
 @@ -0,0 +1,75 @@
 +if("${CMAKE_MINIMUM_REQUIRED_VERSION}" VERSION_LESS "2.8.3.20101214")
 +  set(__USE_CMAKE_LEGACY_CYGWIN_WIN32 1)
@@ -794,9 +784,19 @@ diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS.cmake cmake-3.10.2/Modules/Pl
 +list(APPEND CMAKE_SYSTEM_LIBRARY_PATH
 +  /usr/lib/w32api
 +  )
-diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-Determine-CXX.cmake cmake-3.10.2/Modules/Platform/MSYS-Determine-CXX.cmake
---- cmake-3.10.2-orig/Modules/Platform/MSYS-Determine-CXX.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/Platform/MSYS-Determine-CXX.cmake	2018-02-19 09:26:41.885729000 +0300
+diff -Naur cmake-3.13.2-orig/Modules/Platform/MSYS-Clang-C.cmake cmake-3.13.2/Modules/Platform/MSYS-Clang-C.cmake
+--- cmake-3.13.2-orig/Modules/Platform/MSYS-Clang-C.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/Platform/MSYS-Clang-C.cmake	2018-12-14 08:59:02.138958300 +0300
+@@ -0,0 +1 @@
++include(Platform/MSYS-GNU-C)
+diff -Naur cmake-3.13.2-orig/Modules/Platform/MSYS-Clang-CXX.cmake cmake-3.13.2/Modules/Platform/MSYS-Clang-CXX.cmake
+--- cmake-3.13.2-orig/Modules/Platform/MSYS-Clang-CXX.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/Platform/MSYS-Clang-CXX.cmake	2018-12-14 08:59:02.154558300 +0300
+@@ -0,0 +1 @@
++include(Platform/MSYS-GNU-CXX)
+diff -Naur cmake-3.13.2-orig/Modules/Platform/MSYS-Determine-CXX.cmake cmake-3.13.2/Modules/Platform/MSYS-Determine-CXX.cmake
+--- cmake-3.13.2-orig/Modules/Platform/MSYS-Determine-CXX.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/Platform/MSYS-Determine-CXX.cmake	2018-12-14 08:59:02.123358200 +0300
 @@ -0,0 +1,7 @@
 +if(NOT CMAKE_CXX_COMPILER_NAMES)
 +  set(CMAKE_CXX_COMPILER_NAMES c++)
@@ -805,9 +805,9 @@ diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-Determine-CXX.cmake cmake-3.1
 +# Exclude C++ compilers differing from C compiler only by case
 +# because this platform may have a case-insensitive filesystem.
 +set(CMAKE_CXX_COMPILER_EXCLUDE CC aCC xlC)
-diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-GNU.cmake cmake-3.10.2/Modules/Platform/MSYS-GNU.cmake
---- cmake-3.10.2-orig/Modules/Platform/MSYS-GNU.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/Platform/MSYS-GNU.cmake	2018-02-19 09:26:41.877728600 +0300
+diff -Naur cmake-3.13.2-orig/Modules/Platform/MSYS-GNU.cmake cmake-3.13.2/Modules/Platform/MSYS-GNU.cmake
+--- cmake-3.13.2-orig/Modules/Platform/MSYS-GNU.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/Platform/MSYS-GNU.cmake	2018-12-14 08:59:02.138958300 +0300
 @@ -0,0 +1,51 @@
 +# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
 +# file Copyright.txt or https://cmake.org/licensing for details.
@@ -860,43 +860,33 @@ diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-GNU.cmake cmake-3.10.2/Module
 +
 +  enable_language(RC)
 +endmacro()
-diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-Clang-C.cmake cmake-3.10.2/Modules/Platform/MSYS-Clang-C.cmake
---- cmake-3.10.2-orig/Modules/Platform/MSYS-Clang-C.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/Platform/MSYS-Clang-C.cmake	2018-02-19 09:26:41.889729300 +0300
-@@ -0,0 +1,1 @@
-+include(Platform/MSYS-GNU-C)
-diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-Clang-CXX.cmake cmake-3.10.2/Modules/Platform/MSYS-Clang-CXX.cmake
---- cmake-3.10.2-orig/Modules/Platform/MSYS-Clang-CXX.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/Platform/MSYS-Clang-CXX.cmake	2018-02-19 09:26:41.893729500 +0300
-@@ -0,0 +1,1 @@
-+include(Platform/MSYS-GNU-CXX)
-diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-GNU-C.cmake cmake-3.10.2/Modules/Platform/MSYS-GNU-C.cmake
---- cmake-3.10.2-orig/Modules/Platform/MSYS-GNU-C.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/Platform/MSYS-GNU-C.cmake	2018-02-19 09:26:41.889729300 +0300
+diff -Naur cmake-3.13.2-orig/Modules/Platform/MSYS-GNU-C.cmake cmake-3.13.2/Modules/Platform/MSYS-GNU-C.cmake
+--- cmake-3.13.2-orig/Modules/Platform/MSYS-GNU-C.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/Platform/MSYS-GNU-C.cmake	2018-12-14 08:59:02.154558300 +0300
 @@ -0,0 +1,2 @@
 +include(Platform/MSYS-GNU)
 +__msys_compiler_gnu(C)
-diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-GNU-CXX.cmake cmake-3.10.2/Modules/Platform/MSYS-GNU-CXX.cmake
---- cmake-3.10.2-orig/Modules/Platform/MSYS-GNU-CXX.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/Platform/MSYS-GNU-CXX.cmake	2018-02-19 09:26:41.893729500 +0300
+diff -Naur cmake-3.13.2-orig/Modules/Platform/MSYS-GNU-CXX.cmake cmake-3.13.2/Modules/Platform/MSYS-GNU-CXX.cmake
+--- cmake-3.13.2-orig/Modules/Platform/MSYS-GNU-CXX.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/Platform/MSYS-GNU-CXX.cmake	2018-12-14 08:59:02.154558300 +0300
 @@ -0,0 +1,2 @@
 +include(Platform/MSYS-GNU)
 +__msys_compiler_gnu(CXX)
-diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-GNU-Fortran.cmake cmake-3.10.2/Modules/Platform/MSYS-GNU-Fortran.cmake
---- cmake-3.10.2-orig/Modules/Platform/MSYS-GNU-Fortran.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/Platform/MSYS-GNU-Fortran.cmake	2018-02-19 09:26:41.896729700 +0300
+diff -Naur cmake-3.13.2-orig/Modules/Platform/MSYS-GNU-Fortran.cmake cmake-3.13.2/Modules/Platform/MSYS-GNU-Fortran.cmake
+--- cmake-3.13.2-orig/Modules/Platform/MSYS-GNU-Fortran.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/Platform/MSYS-GNU-Fortran.cmake	2018-12-14 08:59:02.170158300 +0300
 @@ -0,0 +1,2 @@
 +include(Platform/MSYS-GNU)
 +__msys_compiler_gnu(Fortran)
-diff -Naur cmake-3.10.2-orig/Modules/Platform/MSYS-windres.cmake cmake-3.10.2/Modules/Platform/MSYS-windres.cmake
---- cmake-3.10.2-orig/Modules/Platform/MSYS-windres.cmake	1970-01-01 03:00:00.000000000 +0300
-+++ cmake-3.10.2/Modules/Platform/MSYS-windres.cmake	2018-02-19 09:26:41.900729900 +0300
+diff -Naur cmake-3.13.2-orig/Modules/Platform/MSYS-windres.cmake cmake-3.13.2/Modules/Platform/MSYS-windres.cmake
+--- cmake-3.13.2-orig/Modules/Platform/MSYS-windres.cmake	1970-01-01 03:00:00.000000000 +0300
++++ cmake-3.13.2/Modules/Platform/MSYS-windres.cmake	2018-12-14 08:59:02.170158300 +0300
 @@ -0,0 +1 @@
 +set(CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> -O coff <DEFINES> <INCLUDES> <FLAGS> <SOURCE> <OBJECT>")
-diff -Naur cmake-3.10.2-orig/Modules/UseJava.cmake cmake-3.10.2/Modules/UseJava.cmake
---- cmake-3.10.2-orig/Modules/UseJava.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/UseJava.cmake	2018-02-19 09:26:41.904730100 +0300
-@@ -505,7 +505,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/UseJava.cmake cmake-3.13.2/Modules/UseJava.cmake
+--- cmake-3.13.2-orig/Modules/UseJava.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/UseJava.cmake	2018-12-14 08:59:02.170158300 +0300
+@@ -561,7 +561,7 @@
          ${CMAKE_JAVA_LIBRARY_OUTPUT_PATH}
      )
  
@@ -905,7 +895,7 @@ diff -Naur cmake-3.10.2-orig/Modules/UseJava.cmake cmake-3.10.2/Modules/UseJava.
          set(CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
      else ()
          set(CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
-@@ -1263,7 +1263,7 @@
+@@ -1337,7 +1337,7 @@
      endif()
  
      set (_output_files)
@@ -914,10 +904,10 @@ diff -Naur cmake-3.10.2-orig/Modules/UseJava.cmake cmake-3.10.2/Modules/UseJava.
        set(_classpath_sep "$<SEMICOLON>")
      else ()
        set(_classpath_sep ":")
-diff -Naur cmake-3.10.2-orig/Modules/UseSWIG.cmake cmake-3.10.2/Modules/UseSWIG.cmake
---- cmake-3.10.2-orig/Modules/UseSWIG.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Modules/UseSWIG.cmake	2018-02-19 09:26:41.909730400 +0300
-@@ -646,7 +646,7 @@
+diff -Naur cmake-3.13.2-orig/Modules/UseSWIG.cmake cmake-3.13.2/Modules/UseSWIG.cmake
+--- cmake-3.13.2-orig/Modules/UseSWIG.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Modules/UseSWIG.cmake	2018-12-14 08:59:02.185758300 +0300
+@@ -690,7 +690,7 @@
      if (APPLE)
        set_target_properties (${target_name} PROPERTIES SUFFIX ".jnilib")
      endif()
@@ -926,7 +916,7 @@ diff -Naur cmake-3.10.2-orig/Modules/UseSWIG.cmake cmake-3.10.2/Modules/UseSWIG.
        set_target_properties(${target_name} PROPERTIES PREFIX "")
      endif()
    elseif (swig_lowercase_language STREQUAL "lua")
-@@ -670,7 +670,7 @@
+@@ -714,7 +714,7 @@
      # Windows: .dll is no longer supported as a filename extension for extension modules.
      # .pyd is now the only filename extension that will be searched for.
      # </quote>
@@ -935,22 +925,22 @@ diff -Naur cmake-3.10.2-orig/Modules/UseSWIG.cmake cmake-3.10.2/Modules/UseSWIG.
        set_target_properties(${target_name} PROPERTIES SUFFIX ".pyd")
      endif()
    elseif (swig_lowercase_language STREQUAL "r")
-diff -Naur cmake-3.10.2-orig/Source/CMakeInstallDestinations.cmake cmake-3.10.2/Source/CMakeInstallDestinations.cmake
---- cmake-3.10.2-orig/Source/CMakeInstallDestinations.cmake	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Source/CMakeInstallDestinations.cmake	2018-02-19 09:26:41.916730800 +0300
-@@ -5,7 +5,7 @@
+diff -Naur cmake-3.13.2-orig/Source/CMakeInstallDestinations.cmake cmake-3.13.2/Source/CMakeInstallDestinations.cmake
+--- cmake-3.13.2-orig/Source/CMakeInstallDestinations.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Source/CMakeInstallDestinations.cmake	2018-12-14 08:59:02.201358400 +0300
+@@ -6,7 +6,7 @@
+   set(CMAKE_INFO_DIR_DEFAULT "documentation/info") # HAIKU
    set(CMAKE_MAN_DIR_DEFAULT "documentation/man") # HAIKU
-   set(CMAKE_DOC_DIR_DEFAULT "documentation/doc/cmake-${CMake_VERSION_MAJOR}.${CMake_VERSION_MINOR}") # HAIKU
    set(CMAKE_XDGDATA_DIR_DEFAULT "share") # HAIKU
 -elseif(CYGWIN)
 +elseif(CYGWIN OR MSYS)
    set(CMAKE_BIN_DIR_DEFAULT "bin") # CYGWIN
    set(CMAKE_DATA_DIR_DEFAULT "share/cmake-${CMake_VERSION}") # CYGWIN
    set(CMAKE_DOC_DIR_DEFAULT "share/doc/cmake-${CMake_VERSION}") # CYGWIN
-diff -Naur cmake-3.10.2-orig/Source/CMakeLists.txt cmake-3.10.2/Source/CMakeLists.txt
---- cmake-3.10.2-orig/Source/CMakeLists.txt	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Source/CMakeLists.txt	2018-02-19 09:26:41.924731300 +0300
-@@ -721,7 +721,7 @@
+diff -Naur cmake-3.13.2-orig/Source/CMakeLists.txt cmake-3.13.2/Source/CMakeLists.txt
+--- cmake-3.13.2-orig/Source/CMakeLists.txt	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Source/CMakeLists.txt	2018-12-14 09:09:33.272395300 +0300
+@@ -743,7 +743,7 @@
  # Temporary variable for tools targets
  set(_tools)
  
@@ -959,7 +949,7 @@ diff -Naur cmake-3.10.2-orig/Source/CMakeLists.txt cmake-3.10.2/Source/CMakeList
    set_source_files_properties(cmcldeps.cxx PROPERTIES COMPILE_DEFINITIONS _WIN32_WINNT=0x0501)
    add_executable(cmcldeps cmcldeps.cxx ${MANIFEST_FILE})
    list(APPEND _tools cmcldeps)
-@@ -894,7 +894,7 @@
+@@ -918,7 +918,7 @@
    CPack/IFW/cmCPackIFWRepository.h
    )
  
@@ -968,7 +958,7 @@ diff -Naur cmake-3.10.2-orig/Source/CMakeLists.txt cmake-3.10.2/Source/CMakeList
    set(CPACK_SRCS ${CPACK_SRCS}
      CPack/cmCPackCygwinBinaryGenerator.cxx
      CPack/cmCPackCygwinSourceGenerator.cxx
-@@ -952,10 +952,10 @@
+@@ -960,10 +960,10 @@
    endif()
  endif()
  
@@ -981,7 +971,7 @@ diff -Naur cmake-3.10.2-orig/Source/CMakeLists.txt cmake-3.10.2/Source/CMakeList
    set(CPACK_SRCS ${CPACK_SRCS}
      CPack/WiX/cmCMakeToWixPath.cxx
      CPack/WiX/cmCMakeToWixPath.h
-@ -1012,7 +1012,7 @@
+@@ -1020,7 +1020,7 @@
        "See CMakeFiles/CMakeError.log for details of the failure.")
    endif()
  endif()
@@ -990,10 +980,10 @@ diff -Naur cmake-3.10.2-orig/Source/CMakeLists.txt cmake-3.10.2/Source/CMakeList
    target_link_libraries(CPackLib ${LibUUID_LIBRARIES})
    include_directories(CPackLib ${LibUUID_INCLUDE_DIRS})
    set_property(SOURCE CPack/cmCPackGeneratorFactory.cxx PROPERTY COMPILE_DEFINITIONS HAVE_LIBUUID)
-diff -Naur cmake-3.10.2-orig/Source/cmLocalGenerator.cxx cmake-3.10.2/Source/cmLocalGenerator.cxx
---- cmake-3.10.2-orig/Source/cmLocalGenerator.cxx	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Source/cmLocalGenerator.cxx	2018-02-19 09:26:41.949732700 +0300
-@@ -1014,7 +1014,7 @@
+diff -Naur cmake-3.13.2-orig/Source/cmLocalGenerator.cxx cmake-3.13.2/Source/cmLocalGenerator.cxx
+--- cmake-3.13.2-orig/Source/cmLocalGenerator.cxx	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Source/cmLocalGenerator.cxx	2018-12-14 08:59:02.232558400 +0300
+@@ -1031,7 +1031,7 @@
          linkFlags += " ";
        }
        if (this->Makefile->IsOn("WIN32") &&
@@ -1002,10 +992,10 @@ diff -Naur cmake-3.10.2-orig/Source/cmLocalGenerator.cxx cmake-3.10.2/Source/cmL
          std::vector<cmSourceFile*> sources;
          target->GetSourceFiles(sources, buildType);
          std::string defFlag =
-diff -Naur cmake-3.10.2-orig/Source/kwsys/CMakeLists.txt cmake-3.10.2/Source/kwsys/CMakeLists.txt
---- cmake-3.10.2-orig/Source/kwsys/CMakeLists.txt	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Source/kwsys/CMakeLists.txt	2018-02-19 09:26:41.949732700 +0300
-@@ -531,7 +531,7 @@
+diff -Naur cmake-3.13.2-orig/Source/kwsys/CMakeLists.txt cmake-3.13.2/Source/kwsys/CMakeLists.txt
+--- cmake-3.13.2-orig/Source/kwsys/CMakeLists.txt	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Source/kwsys/CMakeLists.txt	2018-12-14 08:59:02.248158500 +0300
+@@ -532,7 +532,7 @@
  IF(KWSYS_USE_SystemInformation)
    SET_PROPERTY(SOURCE SystemInformation.cxx APPEND PROPERTY
      COMPILE_DEFINITIONS SIZEOF_VOID_P=${CMAKE_SIZEOF_VOID_P})
@@ -1014,7 +1004,7 @@ diff -Naur cmake-3.10.2-orig/Source/kwsys/CMakeLists.txt cmake-3.10.2/Source/kws
      INCLUDE(CheckIncludeFiles)
      CHECK_INCLUDE_FILES("sys/types.h;ifaddrs.h" KWSYS_SYS_HAS_IFADDRS_H)
      IF(KWSYS_SYS_HAS_IFADDRS_H)
-@@ -693,7 +693,7 @@
+@@ -694,7 +694,7 @@
        COMPILE_DEFINITIONS KWSYS_BUILD_SHARED=1)
    ENDIF()
  
@@ -1023,7 +1013,7 @@ diff -Naur cmake-3.10.2-orig/Source/kwsys/CMakeLists.txt cmake-3.10.2/Source/kws
      KWSYS_PLATFORM_CXX_TEST(KWSYS_CXX_HAS_GETLOADAVG
        "Checking whether CXX compiler has getloadavg" DIRECT)
      IF(KWSYS_CXX_HAS_GETLOADAVG)
-@@ -1180,7 +1180,7 @@
+@@ -1184,7 +1184,7 @@
      ADD_EXECUTABLE(${KWSYS_NAMESPACE}TestProcess testProcess.c)
      SET_PROPERTY(TARGET ${KWSYS_NAMESPACE}TestProcess PROPERTY LABELS ${KWSYS_LABELS_EXE})
      TARGET_LINK_LIBRARIES(${KWSYS_NAMESPACE}TestProcess ${KWSYS_TARGET_C_LINK})
@@ -1032,9 +1022,50 @@ diff -Naur cmake-3.10.2-orig/Source/kwsys/CMakeLists.txt cmake-3.10.2/Source/kws
        SET(KWSYS_TEST_PROCESS_7 7)
      ENDIF()
      FOREACH(n 1 2 3 4 5 6 ${KWSYS_TEST_PROCESS_7} 9 10)
-diff -Naur cmake-3.10.2-orig/Tests/CMakeOnly/CheckCXXCompilerFlag/CMakeLists.txt cmake-3.10.2/Tests/CMakeOnly/CheckCXXCompilerFlag/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/CMakeOnly/CheckCXXCompilerFlag/CMakeLists.txt	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Tests/CMakeOnly/CheckCXXCompilerFlag/CMakeLists.txt	2018-02-19 09:26:41.956733100 +0300
+diff -Naur cmake-3.13.2-orig/Source/Modules/FindLibUUID.cmake cmake-3.13.2/Source/Modules/FindLibUUID.cmake
+--- cmake-3.13.2-orig/Source/Modules/FindLibUUID.cmake	2018-12-13 14:57:40.000000000 +0300
++++ cmake-3.13.2/Source/Modules/FindLibUUID.cmake	2018-12-14 09:12:29.008704100 +0300
+@@ -50,6 +50,16 @@
+     NAMES cyguuid-1.dll
+     )
+   set(CMAKE_FIND_LIBRARY_SUFFIXES ${old_suffixes})
++elseif(MSYS)
++  # Note: on current version of MSYS2, linking to libuuid.dll.a doesn't
++  #       import the right symbols sometimes. Fix this by linking directly
++  #       to the DLL that provides the symbols, instead.
++  set(old_suffixes ${CMAKE_FIND_LIBRARY_SUFFIXES})
++  set(CMAKE_FIND_LIBRARY_SUFFIXES .dll)
++  find_library(LibUUID_LIBRARY
++    NAMES msys-uuid-1.dll
++    )
++  set(CMAKE_FIND_LIBRARY_SUFFIXES ${old_suffixes})
+ else()
+   find_library(LibUUID_LIBRARY
+     NAMES uuid
+diff -Naur cmake-3.13.2-orig/Tests/CMakeLists.txt cmake-3.13.2/Tests/CMakeLists.txt
+--- cmake-3.13.2-orig/Tests/CMakeLists.txt	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/CMakeLists.txt	2018-12-14 09:15:53.150662600 +0300
+@@ -104,7 +104,7 @@
+   # assume no resources building to test
+   set(CMake_TEST_RESOURCES FALSE)
+   # for windows and cygwin assume we have resources
+-  if(WIN32 OR CYGWIN)
++  if(WIN32 OR CYGWIN OR MSYS)
+     set(CMake_TEST_RESOURCES TRUE)
+   endif()
+   # for borland and watcom there is no resource support
+@@ -2870,7 +2870,7 @@
+   set(CTestTestBadExe_REGEX "BAD_COMMAND")
+   # some cygwin can not be made to produce a BAD_COMMAND error
+   # the best we can get from it is a failed test
+-  if(CYGWIN)
++  if(CYGWIN OR MSYS)
+     set(CTestTestBadExe_REGEX "(\\*\\*\\*Failed)|BAD_COMMAND")
+   endif()
+   set_tests_properties(CTestTestBadExe PROPERTIES
+diff -Naur cmake-3.13.2-orig/Tests/CMakeOnly/CheckCXXCompilerFlag/CMakeLists.txt cmake-3.13.2/Tests/CMakeOnly/CheckCXXCompilerFlag/CMakeLists.txt
+--- cmake-3.13.2-orig/Tests/CMakeOnly/CheckCXXCompilerFlag/CMakeLists.txt	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/CMakeOnly/CheckCXXCompilerFlag/CMakeLists.txt	2018-12-14 08:59:02.263758500 +0300
 @@ -36,7 +36,7 @@
    string (REGEX REPLACE ".*Version ([0-9]+(\\.[0-9]+)+).*" "\\1" _intel_version "${_intel_version_info}")
  endif()
@@ -1044,10 +1075,10 @@ diff -Naur cmake-3.10.2-orig/Tests/CMakeOnly/CheckCXXCompilerFlag/CMakeLists.txt
    "  MSVC: ${MSVC}\n  MSVC60: ${MSVC60}\n  MSVC70: ${MSVC70}\n  MSVC71: ${MSVC71}\n  MSVC80: ${MSVC80}\n  MSVC90: ${MSVC90}\n  MSVC10: ${MSVC10}\n"
    "  GCC: ${_gcc_version}\n"
    "  Clang: ${_clang_version}\n"
-diff -Naur cmake-3.10.2-orig/Tests/CMakeTests/ImplicitLinkInfoTest.cmake.in cmake-3.10.2/Tests/CMakeTests/ImplicitLinkInfoTest.cmake.in
---- cmake-3.10.2-orig/Tests/CMakeTests/ImplicitLinkInfoTest.cmake.in	2018-01-18 17:48:42.000000000 +0300
-+++ cmake-3.10.2/Tests/CMakeTests/ImplicitLinkInfoTest.cmake.in	2018-02-19 09:26:41.978734400 +0300
-@@ -507,21 +507,23 @@
+diff -Naur cmake-3.13.2-orig/Tests/CMakeTests/ImplicitLinkInfoTest.cmake.in cmake-3.13.2/Tests/CMakeTests/ImplicitLinkInfoTest.cmake.in
+--- cmake-3.13.2-orig/Tests/CMakeTests/ImplicitLinkInfoTest.cmake.in	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/CMakeTests/ImplicitLinkInfoTest.cmake.in	2018-12-14 08:59:02.279358500 +0300
+@@ -513,21 +513,23 @@
  # MSYS
  
  # gcc dummy.c -v
@@ -1080,9 +1111,9 @@ diff -Naur cmake-3.10.2-orig/Tests/CMakeTests/ImplicitLinkInfoTest.cmake.in cmak
  list(APPEND platforms msys_g77)
  
  #-----------------------------------------------------------------------------
-diff -Naur cmake-3.10.2-orig/Tests/Complex/Library/CMakeLists.txt cmake-3.10.2/Tests/Complex/Library/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/Complex/Library/CMakeLists.txt	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/Complex/Library/CMakeLists.txt	2018-02-19 09:26:41.984734700 +0300
+diff -Naur cmake-3.13.2-orig/Tests/Complex/Library/CMakeLists.txt cmake-3.13.2/Tests/Complex/Library/CMakeLists.txt
+--- cmake-3.13.2-orig/Tests/Complex/Library/CMakeLists.txt	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/Complex/Library/CMakeLists.txt	2018-12-14 08:59:02.294958500 +0300
 @@ -24,7 +24,7 @@
  add_library(CMakeTestLibrary ${LibrarySources})
  
@@ -1092,9 +1123,9 @@ diff -Naur cmake-3.10.2-orig/Tests/Complex/Library/CMakeLists.txt cmake-3.10.2/T
      if(NOT BORLAND)
        if(NOT MINGW)
          target_link_libraries(CMakeTestLibrary
-diff -Naur cmake-3.10.2-orig/Tests/ComplexOneConfig/Library/CMakeLists.txt cmake-3.10.2/Tests/ComplexOneConfig/Library/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/ComplexOneConfig/Library/CMakeLists.txt	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/ComplexOneConfig/Library/CMakeLists.txt	2018-02-19 09:26:41.997735500 +0300
+diff -Naur cmake-3.13.2-orig/Tests/ComplexOneConfig/Library/CMakeLists.txt cmake-3.13.2/Tests/ComplexOneConfig/Library/CMakeLists.txt
+--- cmake-3.13.2-orig/Tests/ComplexOneConfig/Library/CMakeLists.txt	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/ComplexOneConfig/Library/CMakeLists.txt	2018-12-14 08:59:02.326158600 +0300
 @@ -24,7 +24,7 @@
  add_library(CMakeTestLibrary ${LibrarySources})
  
@@ -1104,9 +1135,9 @@ diff -Naur cmake-3.10.2-orig/Tests/ComplexOneConfig/Library/CMakeLists.txt cmake
      if(NOT BORLAND)
        if(NOT MINGW)
          target_link_libraries(CMakeTestLibrary
-diff -Naur cmake-3.10.2-orig/Tests/ExternalProject/CMakeLists.txt cmake-3.10.2/Tests/ExternalProject/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/ExternalProject/CMakeLists.txt	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/ExternalProject/CMakeLists.txt	2018-02-19 09:26:42.015736500 +0300
+diff -Naur cmake-3.13.2-orig/Tests/ExternalProject/CMakeLists.txt cmake-3.13.2/Tests/ExternalProject/CMakeLists.txt
+--- cmake-3.13.2-orig/Tests/ExternalProject/CMakeLists.txt	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/ExternalProject/CMakeLists.txt	2018-12-14 08:59:02.357358600 +0300
 @@ -110,7 +110,7 @@
  endif()
  
@@ -1125,9 +1156,9 @@ diff -Naur cmake-3.10.2-orig/Tests/ExternalProject/CMakeLists.txt cmake-3.10.2/T
      message(STATUS "No ExternalProject hg tests with cygwin hg outside cygwin!")
      set(do_hg_tests 0)
    endif()
-diff -Naur cmake-3.10.2-orig/Tests/FindPackageTest/CMakeLists.txt cmake-3.10.2/Tests/FindPackageTest/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/FindPackageTest/CMakeLists.txt	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/FindPackageTest/CMakeLists.txt	2018-02-19 09:26:42.041738000 +0300
+diff -Naur cmake-3.13.2-orig/Tests/FindPackageTest/CMakeLists.txt cmake-3.13.2/Tests/FindPackageTest/CMakeLists.txt
+--- cmake-3.13.2-orig/Tests/FindPackageTest/CMakeLists.txt	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/FindPackageTest/CMakeLists.txt	2018-12-14 08:59:02.388558700 +0300
 @@ -65,7 +65,7 @@
  #-----------------------------------------------------------------------------
  # Test system package registry if possible.
@@ -1137,9 +1168,9 @@ diff -Naur cmake-3.10.2-orig/Tests/FindPackageTest/CMakeLists.txt cmake-3.10.2/T
    # Try writing a value to the system package registry.
    set(_data "${FindPackageTest_SOURCE_DIR}/SystemPackage")
    set(_key "HKLM\\Software\\Kitware\\CMake\\Packages\\CMakeTestSystemPackage")
-diff -Naur cmake-3.10.2-orig/Tests/Fortran/CMakeLists.txt cmake-3.10.2/Tests/Fortran/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/Fortran/CMakeLists.txt	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/Fortran/CMakeLists.txt	2018-02-19 09:26:42.057738900 +0300
+diff -Naur cmake-3.13.2-orig/Tests/Fortran/CMakeLists.txt cmake-3.13.2/Tests/Fortran/CMakeLists.txt
+--- cmake-3.13.2-orig/Tests/Fortran/CMakeLists.txt	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/Fortran/CMakeLists.txt	2018-12-14 08:59:02.419758800 +0300
 @@ -25,7 +25,7 @@
  
  # Pick a module .def file with the properly mangled symbol name.
@@ -1149,9 +1180,9 @@ diff -Naur cmake-3.10.2-orig/Tests/Fortran/CMakeLists.txt cmake-3.10.2/Tests/For
    if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
      set(world_def world_gnu.def)
    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel" OR
-diff -Naur cmake-3.10.2-orig/Tests/Jump/Library/Shared/CMakeLists.txt cmake-3.10.2/Tests/Jump/Library/Shared/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/Jump/Library/Shared/CMakeLists.txt	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/Jump/Library/Shared/CMakeLists.txt	2018-02-19 09:26:42.073739800 +0300
+diff -Naur cmake-3.13.2-orig/Tests/Jump/Library/Shared/CMakeLists.txt cmake-3.13.2/Tests/Jump/Library/Shared/CMakeLists.txt
+--- cmake-3.13.2-orig/Tests/Jump/Library/Shared/CMakeLists.txt	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/Jump/Library/Shared/CMakeLists.txt	2018-12-14 08:59:02.669359200 +0300
 @@ -1,6 +1,6 @@
  add_library(jumpShared SHARED jumpShared.cxx)
  
@@ -1160,9 +1191,9 @@ diff -Naur cmake-3.10.2-orig/Tests/Jump/Library/Shared/CMakeLists.txt cmake-3.10
    set(SHARED_MUST_BE_IN_EXE_DIR 1)
  endif()
  
-diff -Naur cmake-3.10.2-orig/Tests/PerConfig/CMakeLists.txt cmake-3.10.2/Tests/PerConfig/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/PerConfig/CMakeLists.txt	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/PerConfig/CMakeLists.txt	2018-02-19 09:26:42.090740800 +0300
+diff -Naur cmake-3.13.2-orig/Tests/PerConfig/CMakeLists.txt cmake-3.13.2/Tests/PerConfig/CMakeLists.txt
+--- cmake-3.13.2-orig/Tests/PerConfig/CMakeLists.txt	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/PerConfig/CMakeLists.txt	2018-12-14 08:59:02.809759400 +0300
 @@ -9,7 +9,7 @@
  set_property(TARGET pcShared PROPERTY DEBUG_POSTFIX -dbg)
  set_property(TARGET pcShared PROPERTY VERSION 1.2)
@@ -1172,10 +1203,10 @@ diff -Naur cmake-3.10.2-orig/Tests/PerConfig/CMakeLists.txt cmake-3.10.2/Tests/P
    set(soname_file -DpcShared_soname_file=$<TARGET_SONAME_FILE:pcShared>)
  endif()
  add_executable(perconfig perconfig.c)
-diff -Naur cmake-3.10.2-orig/Tests/RunCMake/CommandLine/RunCMakeTest.cmake cmake-3.10.2/Tests/RunCMake/CommandLine/RunCMakeTest.cmake
---- cmake-3.10.2-orig/Tests/RunCMake/CommandLine/RunCMakeTest.cmake	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/RunCMake/CommandLine/RunCMakeTest.cmake	2018-02-19 09:26:42.104741600 +0300
-@@ -335,6 +335,6 @@
+diff -Naur cmake-3.13.2-orig/Tests/RunCMake/CommandLine/RunCMakeTest.cmake cmake-3.13.2/Tests/RunCMake/CommandLine/RunCMakeTest.cmake
+--- cmake-3.13.2-orig/Tests/RunCMake/CommandLine/RunCMakeTest.cmake	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/RunCMake/CommandLine/RunCMakeTest.cmake	2018-12-14 08:59:02.856559500 +0300
+@@ -384,6 +384,6 @@
      run_cmake_command(reject_fifo ${BASH_EXECUTABLE} -c ${BASH_COMMAND_ARGUMENT})
    endif()
  endfunction()
@@ -1183,21 +1214,21 @@ diff -Naur cmake-3.10.2-orig/Tests/RunCMake/CommandLine/RunCMakeTest.cmake cmake
 +if(CMAKE_HOST_UNIX AND NOT CMAKE_SYSTEM_NAME STREQUAL "CYGWIN" NOT CMAKE_SYSTEM_NAME STREQUAL "MSYS")
    reject_fifo()
  endif()
-diff -Naur cmake-3.10.2-orig/Tests/RunCMake/file/RunCMakeTest.cmake cmake-3.10.2/Tests/RunCMake/file/RunCMakeTest.cmake
---- cmake-3.10.2-orig/Tests/RunCMake/file/RunCMakeTest.cmake	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/RunCMake/file/RunCMakeTest.cmake	2018-02-19 09:26:42.111742000 +0300
-@@ -36,7 +36,7 @@
- run_cmake(GLOB-error-LIST_DIRECTORIES-no-arg)
- run_cmake(GLOB-noexp-LIST_DIRECTORIES)
+diff -Naur cmake-3.13.2-orig/Tests/RunCMake/file/RunCMakeTest.cmake cmake-3.13.2/Tests/RunCMake/file/RunCMakeTest.cmake
+--- cmake-3.13.2-orig/Tests/RunCMake/file/RunCMakeTest.cmake	2018-12-13 14:57:42.000000000 +0300
++++ cmake-3.13.2/Tests/RunCMake/file/RunCMakeTest.cmake	2018-12-14 08:59:02.887759600 +0300
+@@ -50,7 +50,7 @@
+ run_cmake_command(GLOB-error-CONFIGURE_DEPENDS-SCRIPT_MODE ${CMAKE_COMMAND} -P
+   ${RunCMake_SOURCE_DIR}/GLOB-error-CONFIGURE_DEPENDS-SCRIPT_MODE.cmake)
  
 -if(NOT WIN32 OR CYGWIN)
 +if(NOT WIN32 OR CYGWIN OR MSYS)
    run_cmake(GLOB_RECURSE-cyclic-recursion)
    run_cmake(INSTALL-SYMLINK)
  endif()
-diff -Naur cmake-3.10.2-orig/Tests/RunCMake/find_file/RunCMakeTest.cmake cmake-3.10.2/Tests/RunCMake/find_file/RunCMakeTest.cmake
---- cmake-3.10.2-orig/Tests/RunCMake/find_file/RunCMakeTest.cmake	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/RunCMake/find_file/RunCMakeTest.cmake	2018-02-19 09:26:42.117742300 +0300
+diff -Naur cmake-3.13.2-orig/Tests/RunCMake/find_file/RunCMakeTest.cmake cmake-3.13.2/Tests/RunCMake/find_file/RunCMakeTest.cmake
+--- cmake-3.13.2-orig/Tests/RunCMake/find_file/RunCMakeTest.cmake	2018-12-13 14:57:42.000000000 +0300
++++ cmake-3.13.2/Tests/RunCMake/find_file/RunCMakeTest.cmake	2018-12-14 08:59:02.903359600 +0300
 @@ -1,5 +1,5 @@
  include(RunCMake)
  
@@ -1205,9 +1236,9 @@ diff -Naur cmake-3.10.2-orig/Tests/RunCMake/find_file/RunCMakeTest.cmake cmake-3
 +if(WIN32 OR CYGWIN OR MSYS)
    run_cmake(PrefixInPATH)
  endif()
-diff -Naur cmake-3.10.2-orig/Tests/RunCMake/find_library/RunCMakeTest.cmake cmake-3.10.2/Tests/RunCMake/find_library/RunCMakeTest.cmake
---- cmake-3.10.2-orig/Tests/RunCMake/find_library/RunCMakeTest.cmake	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/RunCMake/find_library/RunCMakeTest.cmake	2018-02-19 09:26:42.123742700 +0300
+diff -Naur cmake-3.13.2-orig/Tests/RunCMake/find_library/RunCMakeTest.cmake cmake-3.13.2/Tests/RunCMake/find_library/RunCMakeTest.cmake
+--- cmake-3.13.2-orig/Tests/RunCMake/find_library/RunCMakeTest.cmake	2018-12-13 14:57:42.000000000 +0300
++++ cmake-3.13.2/Tests/RunCMake/find_library/RunCMakeTest.cmake	2018-12-14 08:59:02.918959600 +0300
 @@ -4,6 +4,6 @@
  if(CMAKE_HOST_UNIX)
    run_cmake(LibArchLink)
@@ -1216,9 +1247,9 @@ diff -Naur cmake-3.10.2-orig/Tests/RunCMake/find_library/RunCMakeTest.cmake cmak
 +if(WIN32 OR CYGWIN OR MSYS)
    run_cmake(PrefixInPATH)
  endif()
-diff -Naur cmake-3.10.2-orig/Tests/RunCMake/find_path/RunCMakeTest.cmake cmake-3.10.2/Tests/RunCMake/find_path/RunCMakeTest.cmake
---- cmake-3.10.2-orig/Tests/RunCMake/find_path/RunCMakeTest.cmake	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/RunCMake/find_path/RunCMakeTest.cmake	2018-02-19 09:26:42.129743000 +0300
+diff -Naur cmake-3.13.2-orig/Tests/RunCMake/find_path/RunCMakeTest.cmake cmake-3.13.2/Tests/RunCMake/find_path/RunCMakeTest.cmake
+--- cmake-3.13.2-orig/Tests/RunCMake/find_path/RunCMakeTest.cmake	2018-12-13 14:57:42.000000000 +0300
++++ cmake-3.13.2/Tests/RunCMake/find_path/RunCMakeTest.cmake	2018-12-14 08:59:02.918959600 +0300
 @@ -1,6 +1,6 @@
  include(RunCMake)
  
@@ -1227,22 +1258,22 @@ diff -Naur cmake-3.10.2-orig/Tests/RunCMake/find_path/RunCMakeTest.cmake cmake-3
    run_cmake(PrefixInPATH)
  endif()
  
-diff -Naur cmake-3.10.2-orig/Tests/RunCMake/find_program/RunCMakeTest.cmake cmake-3.10.2/Tests/RunCMake/find_program/RunCMakeTest.cmake
---- cmake-3.10.2-orig/Tests/RunCMake/find_program/RunCMakeTest.cmake	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/RunCMake/find_program/RunCMakeTest.cmake	2018-02-19 09:26:42.134743300 +0300
-@@ -4,7 +4,7 @@
- run_cmake(DirsPerName)
+diff -Naur cmake-3.13.2-orig/Tests/RunCMake/find_program/RunCMakeTest.cmake cmake-3.13.2/Tests/RunCMake/find_program/RunCMakeTest.cmake
+--- cmake-3.13.2-orig/Tests/RunCMake/find_program/RunCMakeTest.cmake	2018-12-13 14:57:42.000000000 +0300
++++ cmake-3.13.2/Tests/RunCMake/find_program/RunCMakeTest.cmake	2018-12-14 08:59:02.934559700 +0300
+@@ -5,7 +5,7 @@
  run_cmake(NamesPerDir)
+ run_cmake(RelAndAbsPath)
  
 -if(CMAKE_SYSTEM_NAME MATCHES "^(Windows|CYGWIN)$")
 +if(CMAKE_SYSTEM_NAME MATCHES "^(Windows|CYGWIN|MSYS)$")
    run_cmake(WindowsCom)
    run_cmake(WindowsExe)
  endif()
-diff -Naur cmake-3.10.2-orig/Tests/RunCMake/GenerateExportHeader/GEH.cmake cmake-3.10.2/Tests/RunCMake/GenerateExportHeader/GEH.cmake
---- cmake-3.10.2-orig/Tests/RunCMake/GenerateExportHeader/GEH.cmake	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/RunCMake/GenerateExportHeader/GEH.cmake	2018-02-19 09:26:42.145743900 +0300
-@@ -92,13 +92,13 @@
+diff -Naur cmake-3.13.2-orig/Tests/RunCMake/GenerateExportHeader/GEH.cmake cmake-3.13.2/Tests/RunCMake/GenerateExportHeader/GEH.cmake
+--- cmake-3.13.2-orig/Tests/RunCMake/GenerateExportHeader/GEH.cmake	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/RunCMake/GenerateExportHeader/GEH.cmake	2018-12-14 08:59:02.950159700 +0300
+@@ -102,13 +102,13 @@
  add_executable(GenerateExportHeader exportheader_test.cpp)
  
  target_link_libraries(GenerateExportHeader ${link_libraries})
@@ -1258,9 +1289,9 @@ diff -Naur cmake-3.10.2-orig/Tests/RunCMake/GenerateExportHeader/GEH.cmake cmake
      set(_platform MinGW)
    else()
      set(_platform WinEmpty)
-diff -Naur cmake-3.10.2-orig/Tests/RunCMake/GenerateExportHeader/GEH-failures.cmake cmake-3.10.2/Tests/RunCMake/GenerateExportHeader/GEH-failures.cmake
---- cmake-3.10.2-orig/Tests/RunCMake/GenerateExportHeader/GEH-failures.cmake	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/RunCMake/GenerateExportHeader/GEH-failures.cmake	2018-02-19 09:26:42.139743600 +0300
+diff -Naur cmake-3.13.2-orig/Tests/RunCMake/GenerateExportHeader/GEH-failures.cmake cmake-3.13.2/Tests/RunCMake/GenerateExportHeader/GEH-failures.cmake
+--- cmake-3.13.2-orig/Tests/RunCMake/GenerateExportHeader/GEH-failures.cmake	2018-12-13 14:57:41.000000000 +0300
++++ cmake-3.13.2/Tests/RunCMake/GenerateExportHeader/GEH-failures.cmake	2018-12-14 08:59:02.950159700 +0300
 @@ -5,7 +5,7 @@
  # Check if we should do anything. If the compiler doesn't support hidden
  # visibility, the failure tests won't fail, so just write an empty targets
@@ -1270,64 +1301,10 @@ diff -Naur cmake-3.10.2-orig/Tests/RunCMake/GenerateExportHeader/GEH-failures.cm
    return()
  endif()
  
-diff -Naur cmake-3.10.2-orig/Tests/SimpleInstall/CMakeLists.txt cmake-3.10.2/Tests/SimpleInstall/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/SimpleInstall/CMakeLists.txt	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/SimpleInstall/CMakeLists.txt	2018-02-19 09:26:42.150744200 +0300
-@@ -44,7 +44,7 @@
-     message(SEND_ERROR "Stage 1 did not run install script 2.")
-   endif()
- 
--  if(CYGWIN OR MINGW)
-+  if(CYGWIN OR MSYS OR MINGW)
-     set(LIBPATHS ${LIBPATHS} "${CMAKE_INSTALL_PREFIX}/MyTest/bin")
-   endif()
-   message("Search for library in: ${LIBPATHS}")
-@@ -110,7 +110,7 @@
-   endif()
- 
-   # Check that scripts properly installed.
--  if(WIN32 AND NOT CYGWIN)
-+  if(WIN32 AND NOT CYGWIN AND NOT MSYS)
-     set(BAT .bat)
-   else()
-     set(BAT)
-diff -Naur cmake-3.10.2-orig/Tests/SimpleInstallS2/CMakeLists.txt cmake-3.10.2/Tests/SimpleInstallS2/CMakeLists.txt
---- cmake-3.10.2-orig/Tests/SimpleInstallS2/CMakeLists.txt	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Tests/SimpleInstallS2/CMakeLists.txt	2018-02-19 09:26:42.186746300 +0300
-@@ -44,7 +44,7 @@
-     message(SEND_ERROR "Stage 1 did not run install script 2.")
-   endif()
- 
--  if(CYGWIN OR MINGW)
-+  if(CYGWIN OR MSYS OR MINGW)
-     set(LIBPATHS ${LIBPATHS} "${CMAKE_INSTALL_PREFIX}/MyTest/bin")
-   endif()
-   message("Search for library in: ${LIBPATHS}")
-@@ -110,7 +110,7 @@
-   endif()
- 
-   # Check that scripts properly installed.
--  if(WIN32 AND NOT CYGWIN)
-+  if(WIN32 AND NOT CYGWIN AND NOT MSYS)
-     set(BAT .bat)
-   else()
-     set(BAT)
-diff -Naur cmake-3.10.2-orig/Utilities/cmcurl/CMakeLists.txt cmake-3.10.2/Utilities/cmcurl/CMakeLists.txt
---- cmake-3.10.2-orig/Utilities/cmcurl/CMakeLists.txt	2018-01-18 17:48:44.000000000 +0300
-+++ cmake-3.10.2/Utilities/cmcurl/CMakeLists.txt	2018-02-19 09:26:42.209747600 +0300
-@@ -1265,7 +1265,7 @@
- 
- endfunction()
- 
--if(WIN32 AND NOT CYGWIN)
-+if(WIN32 AND NOT (CYGWIN OR MSYS))
-     set(CURL_INSTALL_CMAKE_DIR CMake)
- else()
-     set(CURL_INSTALL_CMAKE_DIR lib/cmake/curl)
-diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/Utilities/cmlibarchive/CMakeLists.txt
---- cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt	2018-01-18 17:48:44.000000000 +0300
-+++ cmake-3.10.2/Utilities/cmlibarchive/CMakeLists.txt	2018-02-19 09:26:42.209747600 +0300
-@@ -152,7 +152,7 @@
+diff -Naur cmake-3.13.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.13.2/Utilities/cmlibarchive/CMakeLists.txt
+--- cmake-3.13.2-orig/Utilities/cmlibarchive/CMakeLists.txt	2018-12-13 14:57:42.000000000 +0300
++++ cmake-3.13.2/Utilities/cmlibarchive/CMakeLists.txt	2018-12-14 08:59:02.981359700 +0300
+@@ -153,7 +153,7 @@
  #
  MACRO (TRY_MACRO_FOR_LIBRARY INCLUDES LIBRARIES
         TRY_TYPE SAMPLE_SOURCE MACRO_LIST)
@@ -1336,7 +1313,7 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
      CMAKE_PUSH_CHECK_STATE()	# Save the state of the variables
      SET(CMAKE_REQUIRED_INCLUDES ${INCLUDES})
      SET(CMAKE_REQUIRED_LIBRARIES ${LIBRARIES})
-@@ -177,15 +177,15 @@
+@@ -178,15 +178,15 @@
            "Macro ${VAR} is checked with")
      ENDFOREACH(VAR)
      CMAKE_POP_CHECK_STATE()	# Restore the state of the variables
@@ -1355,7 +1332,7 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
  IF(DEFINED __GNUWIN32PATH AND EXISTS "${__GNUWIN32PATH}")
    # You have to add a path availabel DLL file into PATH environment variable.
    # Maybe DLL path is "C:/Program Files/GnuWin32/bin".
-@@ -228,7 +228,7 @@
+@@ -229,7 +229,7 @@
    SET(HAVE_ZLIB_H 1)
    INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
    LIST(APPEND ADDITIONAL_LIBS ${ZLIB_LIBRARIES})
@@ -1364,7 +1341,7 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
      #
      # Test if ZLIB_WINAPI macro is needed to use.
      #
-@@ -250,7 +250,7 @@
+@@ -251,7 +251,7 @@
          ADD_DEFINITIONS(-DZLIB_DLL)
        ENDIF(ZLIB_DLL)
      ENDIF(ZLIB_WINAPI)
@@ -1373,7 +1350,7 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
  ELSE(ZLIB_FOUND)
    MESSAGE(FATAL_ERROR "CMake requires zlib to be available to libarchive")
  ENDIF(ZLIB_FOUND)
-@@ -650,7 +650,7 @@
+@@ -681,7 +681,7 @@
  # of Windows XP do not support SHA256, SHA384 and SHA512.
  #
  MACRO(CHECK_CRYPTO_WIN CRYPTO_LIST)
@@ -1382,7 +1359,7 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
      FOREACH(CRYPTO ${CRYPTO_LIST})
        IF(NOT ARCHIVE_CRYPTO_${CRYPTO})
        IF(NOT DEFINED ARCHIVE_CRYPTO_${CRYPTO}_WIN)
-@@ -717,7 +717,7 @@
+@@ -748,7 +748,7 @@
        ENDIF(NOT DEFINED ARCHIVE_CRYPTO_${CRYPTO}_WIN)
        ENDIF(NOT ARCHIVE_CRYPTO_${CRYPTO})
      ENDFOREACH(CRYPTO)
@@ -1391,7 +1368,7 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
  ENDMACRO(CHECK_CRYPTO_WIN CRYPTO_LIST)
  
  #
-@@ -821,7 +821,7 @@
+@@ -852,7 +852,7 @@
      FIND_LIBRARY(LIBCHARSET_PATH NAMES charset libcharset)
      IF(LIBCHARSET_PATH)
        SET(CMAKE_REQUIRED_LIBRARIES ${LIBCHARSET_PATH})
@@ -1400,7 +1377,7 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
          # Test if a macro is needed for the library.
          TRY_MACRO_FOR_LIBRARY(
            "${ICONV_INCLUDE_DIR}" "${LIBCHARSET_PATH}"
-@@ -835,9 +835,9 @@
+@@ -866,9 +866,9 @@
            SET(HAVE_LOCALE_CHARSET ON CACHE INTERNAL
                "Have function locale_charset")
          ENDIF(WITHOUT_LIBCHARSET_STATIC OR LIBCHARSET_STATIC)
@@ -1412,7 +1389,7 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
        IF(HAVE_LOCALE_CHARSET)
          LIST(APPEND ADDITIONAL_LIBS ${LIBCHARSET_PATH})
        ENDIF(HAVE_LOCALE_CHARSET)
-@@ -1609,7 +1609,7 @@
+@@ -1640,7 +1640,7 @@
  #
  # Register installation of PDF documents.
  #
@@ -1421,7 +1398,7 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
    #
    # On Windows platform, It's better that we install PDF documents
    # on one's computer.
-@@ -1621,7 +1621,7 @@
+@@ -1652,7 +1652,7 @@
              FILES_MATCHING PATTERN "*.pdf"
      )
    ENDIF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/doc/pdf)
@@ -1430,10 +1407,10 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/CMakeLists.txt cmake-3.10.2/
  #
  #
  #
-diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/libarchive/CMakeLists.txt cmake-3.10.2/Utilities/cmlibarchive/libarchive/CMakeLists.txt
---- cmake-3.10.2-orig/Utilities/cmlibarchive/libarchive/CMakeLists.txt	2018-01-18 17:48:44.000000000 +0300
-+++ cmake-3.10.2/Utilities/cmlibarchive/libarchive/CMakeLists.txt	2018-02-19 09:26:42.231748800 +0300
-@@ -204,14 +204,14 @@
+diff -Naur cmake-3.13.2-orig/Utilities/cmlibarchive/libarchive/CMakeLists.txt cmake-3.13.2/Utilities/cmlibarchive/libarchive/CMakeLists.txt
+--- cmake-3.13.2-orig/Utilities/cmlibarchive/libarchive/CMakeLists.txt	2018-12-13 14:57:42.000000000 +0300
++++ cmake-3.13.2/Utilities/cmlibarchive/libarchive/CMakeLists.txt	2018-12-14 08:59:02.996959800 +0300
+@@ -206,14 +206,14 @@
    tar.5
  )
  
@@ -1450,9 +1427,9 @@ diff -Naur cmake-3.10.2-orig/Utilities/cmlibarchive/libarchive/CMakeLists.txt cm
  
  IF(ARCHIVE_ACL_DARWIN)
    LIST(APPEND libarchive_SOURCES archive_disk_acl_darwin.c)
-diff -Naur cmake-3.10.2-orig/Utilities/Release/release_cmake.cmake cmake-3.10.2/Utilities/Release/release_cmake.cmake
---- cmake-3.10.2-orig/Utilities/Release/release_cmake.cmake	2018-01-18 17:48:43.000000000 +0300
-+++ cmake-3.10.2/Utilities/Release/release_cmake.cmake	2018-02-19 09:26:42.255750200 +0300
+diff -Naur cmake-3.13.2-orig/Utilities/Release/release_cmake.cmake cmake-3.13.2/Utilities/Release/release_cmake.cmake
+--- cmake-3.13.2-orig/Utilities/Release/release_cmake.cmake	2018-12-13 14:57:42.000000000 +0300
++++ cmake-3.13.2/Utilities/Release/release_cmake.cmake	2018-12-14 08:59:03.028159800 +0300
 @@ -115,6 +115,10 @@
    if("${gen}" STREQUAL "TBZ2")
      set(SUFFIXES ${SUFFIXES} "*.tar.bz2")
