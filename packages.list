@@ -168,7 +168,7 @@
 [gnu-netcat]netcat
 [gnupg]gnupg
 [gnupg]dirmngr
-[gnupg]gnupg2=2.2.11
+[gnupg]gnupg2=2.2.12
 [gnutls]gnutls
 [gnutls]libgnutls
 [gnutls]libgnutls-devel
@@ -258,9 +258,6 @@
 [libksba]libksba-devel
 [libmetalink]libmetalink
 [libmetalink]libmetalink-devel
-[libnghttp2]nghttp2
-[libnghttp2]libnghttp2
-[libnghttp2]libnghttp2-devel
 [libpipeline]libpipeline
 [libpipeline]libpipeline-devel
 [libpsl]libpsl
@@ -364,6 +361,9 @@
 [nettle]libnettle
 [nettle]libhogweed
 [nettle]libnettle-devel
+[nghttp2]nghttp2
+[nghttp2]libnghttp2
+[nghttp2]libnghttp2-devel
 [ninja]ninja
 [npth]libnpth
 [npth]libnpth-devel
