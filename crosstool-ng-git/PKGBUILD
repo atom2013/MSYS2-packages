@@ -4,7 +4,7 @@
 _realname="crosstool-ng"
 pkgname="$_realname-git"
 replaces=("$_realname")
-pkgver=r4579.c94c0b21
+pkgver=r4738.eb72b4eb
 pkgrel=1
 pkgdesc="A cross-platform open-source toolchain system (git)"
 arch=('i686' 'x86_64')
@@ -18,12 +18,10 @@ depends=("ncurses" "libintl")
 options=('staticlibs' 'strip')
 source=('crosstool-ng::git+https://github.com/crosstool-ng/crosstool-ng.git#branch=master'
 		"0001-Modify-config-to-support-correct-Mingw64-Triplet-Nam.patch"
-		"0002-modify-kconfig-make-lintl.patch"
-		"0003-stat-check.patch")
+		"0002-modify-kconfig-Makefile-to-include-lintl.patch")
 sha256sums=('SKIP'
-			'a64a1caf173f9e894e7762cc0aecda0224007f6db292f2594453c4be326307fe'
-			'1da4882a4fbbb40c2d5051a2e8bc19f5c95f2807674c2d856fa35a47c24fbb30'
-			'4bda6f00ff40b62635e55f9003dd8a67515dbfc3977eda92ded59252bb59f3de')
+			'08c162f8199c45def9ac92098110b6b58c683c1561a04a7d475334a83b31ca1c'
+			'c39c0971d09f217efc440a99a68bdec0b3c34d8c3b00c310f46f03348c225423')
 
 pkgver() {
   cd "${srcdir}/${_realname}"
@@ -33,12 +31,10 @@ pkgver() {
 prepare() {
   cd "${srcdir}/${_realname}"
   
-  git am ${srcdir}/0003-stat-check.patch
-  
   ./bootstrap
   
   patch -p1 -i "${srcdir}/0001-Modify-config-to-support-correct-Mingw64-Triplet-Nam.patch"
-  patch -p1 -i "${srcdir}/0002-modify-kconfig-make-lintl.patch"
+  patch -p1 -i "${srcdir}/0002-modify-kconfig-Makefile-to-include-lintl.patch"
   
   find packages/ncurses -type f -name "*.patch" | xargs dos2unix
 }
