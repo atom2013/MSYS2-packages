@@ -1,0 +1,31 @@
+From f493839545d9e4576af20cc67ddcce111a06d388 Mon Sep 17 00:00:00 2001
+From: "atom.long" <atom.long@hotmail.com>
+Date: Thu, 20 Dec 2018 22:25:38 +0800
+Subject: [PATCH 2/4] Add a new gmp patch
+
+---
+ .../6.1.2/0010-fixed-mp_limb_t-check-on-mingw.patch  | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+ create mode 100644 packages/gmp/6.1.2/0010-fixed-mp_limb_t-check-on-mingw.patch
+
+diff --git a/packages/gmp/6.1.2/0010-fixed-mp_limb_t-check-on-mingw.patch b/packages/gmp/6.1.2/0010-fixed-mp_limb_t-check-on-mingw.patch
+new file mode 100644
+index 00000000..9319da67
+--- /dev/null
++++ b/packages/gmp/6.1.2/0010-fixed-mp_limb_t-check-on-mingw.patch
+@@ -0,0 +1,12 @@
++diff -durN gmp-6.1.2.orig/configure gmp-6.1.2/configure
++--- gmp-6.1.2.orig/configure	2016-12-16 23:45:32.000000000 +0800
+++++ gmp-6.1.2/configure	2018-12-19 21:24:44.500000000 +0800
++@@ -27500,7 +27500,7 @@
++ #define GMP_NAIL_BITS $GMP_NAIL_BITS
++ #define GMP_LIMB_BITS 123
++ $DEFN_LONG_LONG_LIMB
++-#include \"$srcdir/gmp-h.in\"
+++#include \"$((which cygpath &>/dev/null) && cygpath -w $srcdir/gmp-h.in || echo $srcdir/gmp-h.in)\"
++ 
++ "; then :
++ 
+-- 
+2.19.1
+

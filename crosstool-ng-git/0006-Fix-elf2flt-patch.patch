@@ -1,0 +1,56 @@
+From cdc50af1adb31c877e57da8c309f13cbedd022ac Mon Sep 17 00:00:00 2001
+From: "atom.long" <atom.long@hotmail.com>
+Date: Thu, 20 Dec 2018 22:27:04 +0800
+Subject: [PATCH 4/4] Fix elf2flt patch
+
+---
+ .../git-6d80ab6c/0000-diagnostics.h.patch     | 22 ++++++++++---------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/packages/elf2flt/git-6d80ab6c/0000-diagnostics.h.patch b/packages/elf2flt/git-6d80ab6c/0000-diagnostics.h.patch
+index b74a0ac2..0cae3673 100644
+--- a/packages/elf2flt/git-6d80ab6c/0000-diagnostics.h.patch
++++ b/packages/elf2flt/git-6d80ab6c/0000-diagnostics.h.patch
+@@ -1,18 +1,18 @@
+-commit 2c8ab83ec84662f4916b5237da3e4330956a32eb
+-Author: Alexey Neyman <stilor@att.net>
+-Date:   Sat Sep 29 13:12:08 2018 -0700
++From 940ca85125fdb9fa0efd993b1434698702aac65a Mon Sep 17 00:00:00 2001
++From: "atom.long" <atom.long@hotmail.com>
++Date: Thu, 20 Dec 2018 22:09:23 +0800
++Subject: [PATCH] Create symlink to <bfd/diagnostics.h> in bfd-headers
+ 
+-    Create symlink to <bfd/diagnostics.h> in bfd-headers
+-    
+     Included by <bfd/bfd.h>.
+-    
+-    Signed-off-by: Alexey Neyman <stilor@att.net>
++---
++ Makefile.in | 4 +++-
++ 1 file changed, 3 insertions(+), 1 deletion(-)
+ 
+ diff --git a/Makefile.in b/Makefile.in
+-index cfad06c..8162cba 100644
++index cfad06c..d65841d 100644
+ --- a/Makefile.in
+ +++ b/Makefile.in
+-@@ -123,11 +123,14 @@ sinclude .deps
++@@ -123,11 +123,13 @@ sinclude .deps
+  	$(CC) -MM $(CPPFLAGS) $(srcdir)/*.c > .deps
+  
+  
+@@ -23,8 +23,10 @@ index cfad06c..8162cba 100644
+  	mkdir bfd-headers
+  	ln -sf $(BFD_INCLUDE_DIR)/bfd.h bfd-headers/bfd.h
+ -	for f in ansidecl filenames hashtab libiberty symcat; do \
+-+	ln -sf $(BFD_INCLUDE_DIR)/diagnostics.h bfd-headers/diagnostics.h
+ +	for f in ansidecl filenames hashtab libiberty symcat diagnostics; do \
+  		ln -sf $(BINUTILS_INCLUDE_DIR)/$$f.h bfd-headers/$$f.h || exit 1; \
+  	done
+  	ln -sf $(BINUTILS_INCLUDE_DIR)/elf bfd-headers/elf
++-- 
++2.19.1
++
+-- 
+2.19.1
+

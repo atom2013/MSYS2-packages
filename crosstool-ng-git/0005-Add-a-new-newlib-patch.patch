@@ -1,0 +1,188 @@
+From 975cf914e3757de52cbb409bd26b62493cea93e2 Mon Sep 17 00:00:00 2001
+From: "atom.long" <atom.long@hotmail.com>
+Date: Thu, 20 Dec 2018 22:26:25 +0800
+Subject: [PATCH 3/4] Add a new newlib patch.
+
+---
+ .../0010-port-for-cortex-m4.patch             | 169 ++++++++++++++++++
+ 1 file changed, 169 insertions(+)
+ create mode 100644 packages/newlib/2.5.0.20171222/0010-port-for-cortex-m4.patch
+
+diff --git a/packages/newlib/2.5.0.20171222/0010-port-for-cortex-m4.patch b/packages/newlib/2.5.0.20171222/0010-port-for-cortex-m4.patch
+new file mode 100644
+index 00000000..13db9098
+--- /dev/null
++++ b/packages/newlib/2.5.0.20171222/0010-port-for-cortex-m4.patch
+@@ -0,0 +1,169 @@
++diff -durN newlib-2.5.0.20171222.orig/libgloss/arm/_kill.c newlib-2.5.0.20171222/libgloss/arm/_kill.c
++--- newlib-2.5.0.20171222.orig/libgloss/arm/_kill.c	2017-12-20 01:58:06.000000000 +0800
+++++ newlib-2.5.0.20171222/libgloss/arm/_kill.c	2018-12-20 21:14:34.718750000 +0800
++@@ -4,7 +4,9 @@
++ 
++ int _kill _PARAMS ((int, int));
++ 
++-int
+++#define DEFAULTSYSCALL __attribute__((weak))
+++
+++int DEFAULTSYSCALL
++ _kill (int pid, int sig)
++ {
++   (void) pid; (void) sig;
++diff -durN newlib-2.5.0.20171222.orig/libgloss/arm/syscalls.c newlib-2.5.0.20171222/libgloss/arm/syscalls.c
++--- newlib-2.5.0.20171222.orig/libgloss/arm/syscalls.c	2017-12-20 01:58:06.000000000 +0800
+++++ newlib-2.5.0.20171222/libgloss/arm/syscalls.c	2018-12-20 21:17:51.328125000 +0800
++@@ -17,31 +17,33 @@
++ #include <sys/wait.h>
++ #include "swi.h"
++ 
+++#define DEFAULTSYSCALL __attribute__((weak))
+++
++ /* Forward prototypes.  */
++-int     _system     _PARAMS ((const char *));
++-int     _rename     _PARAMS ((const char *, const char *));
++-int     _isatty		_PARAMS ((int));
++-clock_t _times		_PARAMS ((struct tms *));
++-int     _gettimeofday	_PARAMS ((struct timeval *, void *));
++-int     _unlink		_PARAMS ((const char *));
++-int     _link 		_PARAMS ((void));
++-int     _stat 		_PARAMS ((const char *, struct stat *));
++-int     _fstat 		_PARAMS ((int, struct stat *));
++-int	_swistat	_PARAMS ((int fd, struct stat * st));
++-caddr_t _sbrk		_PARAMS ((int));
++-int     _getpid		_PARAMS ((int));
++-int     _close		_PARAMS ((int));
++-clock_t _clock		_PARAMS ((void));
++-int     _swiclose	_PARAMS ((int));
++-int     _open		_PARAMS ((const char *, int, ...));
++-int     _swiopen	_PARAMS ((const char *, int));
++-int     _write 		_PARAMS ((int, char *, int));
++-int     _swiwrite	_PARAMS ((int, char *, int));
++-int     _lseek		_PARAMS ((int, int, int));
++-int     _swilseek	_PARAMS ((int, int, int));
++-int     _read		_PARAMS ((int, char *, int));
++-int     _swiread	_PARAMS ((int, char *, int));
++-void    initialise_monitor_handles _PARAMS ((void));
+++int     DEFAULTSYSCALL _system     _PARAMS ((const char *));
+++int     DEFAULTSYSCALL _rename     _PARAMS ((const char *, const char *));
+++int     DEFAULTSYSCALL _isatty		_PARAMS ((int));
+++clock_t DEFAULTSYSCALL _times		_PARAMS ((struct tms *));
+++int     DEFAULTSYSCALL _gettimeofday	_PARAMS ((struct timeval *, void *));
+++int     DEFAULTSYSCALL _unlink		_PARAMS ((const char *));
+++int     DEFAULTSYSCALL _link 		_PARAMS ((void));
+++int     DEFAULTSYSCALL _stat 		_PARAMS ((const char *, struct stat *));
+++int     DEFAULTSYSCALL _fstat 		_PARAMS ((int, struct stat *));
+++int		DEFAULTSYSCALL _swistat	_PARAMS ((int fd, struct stat * st));
+++caddr_t DEFAULTSYSCALL _sbrk		_PARAMS ((int));
+++int     DEFAULTSYSCALL _getpid		_PARAMS ((int));
+++int     DEFAULTSYSCALL _close		_PARAMS ((int));
+++clock_t DEFAULTSYSCALL _clock		_PARAMS ((void));
+++int     DEFAULTSYSCALL _swiclose	_PARAMS ((int));
+++int     DEFAULTSYSCALL _open		_PARAMS ((const char *, int, ...));
+++int     DEFAULTSYSCALL _swiopen	_PARAMS ((const char *, int));
+++int     DEFAULTSYSCALL _write 		_PARAMS ((int, char *, int));
+++int     DEFAULTSYSCALL _swiwrite	_PARAMS ((int, char *, int));
+++int     DEFAULTSYSCALL _lseek		_PARAMS ((int, int, int));
+++int     DEFAULTSYSCALL _swilseek	_PARAMS ((int, int, int));
+++int     DEFAULTSYSCALL _read		_PARAMS ((int, char *, int));
+++int     DEFAULTSYSCALL _swiread	_PARAMS ((int, char *, int));
+++void    DEFAULTSYSCALL initialise_monitor_handles _PARAMS ((void));
++ 
++ static int	checkerror	_PARAMS ((int));
++ static int	error		_PARAMS ((int));
++diff -durN newlib-2.5.0.20171222.orig/newlib/libc/sys/arm/crt0.S newlib-2.5.0.20171222/newlib/libc/sys/arm/crt0.S
++--- newlib-2.5.0.20171222.orig/newlib/libc/sys/arm/crt0.S	2017-12-20 01:58:06.000000000 +0800
+++++ newlib-2.5.0.20171222/newlib/libc/sys/arm/crt0.S	2018-12-20 20:24:32.155356800 +0800
++@@ -137,7 +137,7 @@
++ 	beq	.LC27
++ 
++ 	/*  Allow slop for stack overflow handling and small frames.  */
++-#ifdef __ARM_ARCH_6M__
+++#if defined(__ARM_ARCH_6M__) || defined(__ARM_ARCH_8M_BASE__)
++ 	adds	r2, #128
++ 	adds	r2, #128
++ 	mov	sl, r2
++diff -durN newlib-2.5.0.20171222.orig/newlib/libc/sys/arm/syscalls.c newlib-2.5.0.20171222/newlib/libc/sys/arm/syscalls.c
++--- newlib-2.5.0.20171222.orig/newlib/libc/sys/arm/syscalls.c	2017-12-20 01:58:06.000000000 +0800
+++++ newlib-2.5.0.20171222/newlib/libc/sys/arm/syscalls.c	2018-12-20 21:19:54.828125000 +0800
++@@ -17,32 +17,34 @@
++ #include <sys/wait.h>
++ #include "swi.h"
++ 
+++#define DEFAULTSYSCALL __attribute__((weak))
+++
++ /* Forward prototypes.  */
++-int     _system     _PARAMS ((const char *));
++-int     _rename     _PARAMS ((const char *, const char *));
++-int     _isatty		_PARAMS ((int));
++-clock_t _times		_PARAMS ((struct tms *));
++-int     _gettimeofday	_PARAMS ((struct timeval *, void *));
++-void    _raise 		_PARAMS ((void));
++-int     _unlink		_PARAMS ((const char *));
++-int     _link 		_PARAMS ((void));
++-int     _stat 		_PARAMS ((const char *, struct stat *));
++-int     _fstat 		_PARAMS ((int, struct stat *));
++-caddr_t _sbrk		_PARAMS ((int));
++-int     _getpid		_PARAMS ((int));
++-int     _kill		_PARAMS ((int, int));
++-void    _exit		_PARAMS ((int));
++-int     _close		_PARAMS ((int));
++-int     _swiclose	_PARAMS ((int));
++-int     _open		_PARAMS ((const char *, int, ...));
++-int     _swiopen	_PARAMS ((const char *, int));
++-int     _write 		_PARAMS ((int, char *, int));
++-int     _swiwrite	_PARAMS ((int, char *, int));
++-int     _lseek		_PARAMS ((int, int, int));
++-int     _swilseek	_PARAMS ((int, int, int));
++-int     _read		_PARAMS ((int, char *, int));
++-int     _swiread	_PARAMS ((int, char *, int));
++-void    initialise_monitor_handles _PARAMS ((void));
+++int     DEFAULTSYSCALL _system     _PARAMS ((const char *));
+++int     DEFAULTSYSCALL _rename     _PARAMS ((const char *, const char *));
+++int     DEFAULTSYSCALL _isatty		_PARAMS ((int));
+++clock_t DEFAULTSYSCALL _times		_PARAMS ((struct tms *));
+++int     DEFAULTSYSCALL _gettimeofday	_PARAMS ((struct timeval *, void *));
+++void    DEFAULTSYSCALL _raise 		_PARAMS ((void));
+++int     DEFAULTSYSCALL _unlink		_PARAMS ((const char *));
+++int     DEFAULTSYSCALL _link 		_PARAMS ((void));
+++int     DEFAULTSYSCALL _stat 		_PARAMS ((const char *, struct stat *));
+++int     DEFAULTSYSCALL _fstat 		_PARAMS ((int, struct stat *));
+++caddr_t DEFAULTSYSCALL _sbrk		_PARAMS ((int));
+++int     DEFAULTSYSCALL _getpid		_PARAMS ((int));
+++int     DEFAULTSYSCALL _kill		_PARAMS ((int, int));
+++void    DEFAULTSYSCALL _exit		_PARAMS ((int));
+++int     DEFAULTSYSCALL _close		_PARAMS ((int));
+++int     DEFAULTSYSCALL _swiclose	_PARAMS ((int));
+++int     DEFAULTSYSCALL _open		_PARAMS ((const char *, int, ...));
+++int     DEFAULTSYSCALL _swiopen	_PARAMS ((const char *, int));
+++int     DEFAULTSYSCALL _write 		_PARAMS ((int, char *, int));
+++int     DEFAULTSYSCALL _swiwrite	_PARAMS ((int, char *, int));
+++int     DEFAULTSYSCALL _lseek		_PARAMS ((int, int, int));
+++int     DEFAULTSYSCALL _swilseek	_PARAMS ((int, int, int));
+++int     DEFAULTSYSCALL _read		_PARAMS ((int, char *, int));
+++int     DEFAULTSYSCALL _swiread	_PARAMS ((int, char *, int));
+++void    DEFAULTSYSCALL initialise_monitor_handles _PARAMS ((void));
++ 
++ static int	wrap		_PARAMS ((int));
++ static int	error		_PARAMS ((int));
++diff -durN newlib-2.5.0.20171222.orig/newlib/libc/sys/arm/trap.S newlib-2.5.0.20171222/newlib/libc/sys/arm/trap.S
++--- newlib-2.5.0.20171222.orig/newlib/libc/sys/arm/trap.S	2017-12-20 01:58:06.000000000 +0800
+++++ newlib-2.5.0.20171222/newlib/libc/sys/arm/trap.S	2018-12-20 20:22:48.905356800 +0800
++@@ -84,8 +84,14 @@
++         @        should always be "dropped" first to cover the data. This
++         @        protects the data against any events that may try and use
++         @        the stack.
++-
+++#if defined(__ARM_ARCH_6M__) || defined(__ARM_ARCH_8M_BASE__)
+++		mov		r2, sp
+++		mov		r3, ip
+++		SUB		r3, r2, r3
+++		mov		ip, r3
+++#else
++         SUB     ip, sp, ip      @ extra stack required for function
+++#endif
++         @ Add stack extension code here.  If desired a new stack chunk
++         @ can be allocated, and the register state updated suitably.
++ 
+-- 
+2.19.1
+
