@@ -674,6 +674,8 @@
 [python-pbr]python2-pbr
 [python-pip]python3-pip
 [python-pip]python2-pip
+[python-pluggy]python2-pluggy
+[python-pluggy]python3-pluggy
 [python-py]python3-py
 [python-py]python2-py
 [python-pyalpm]python2-pyalpm
