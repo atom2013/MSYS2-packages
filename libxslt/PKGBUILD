@@ -7,7 +7,7 @@ pkgdesc="XML stylesheet transformation library"
 arch=('i686' 'x86_64')
 url="http://xmlsoft.org/XSLT/"
 license=('custom')
-makedepends=('gcc' 'python2' 'libxml2-devel' 'libgcrypt-devel')
+makedepends=('gcc' 'python2' 'libxml2-devel' 'libcrypt-devel')
 checkdepends=('docbook-xml')
 options=('!libtool')
 source=(http://xmlsoft.org/sources/${pkgname}-${pkgver}.tar.gz
@@ -61,7 +61,7 @@ check() {
 }
 
 package_libxslt() {
-  depends=('libxml2' 'libgcrypt')
+  depends=('libxml2' 'libcrypt')
   groups=('libraries')
 
   mkdir -p ${pkgdir}/usr/share
@@ -75,7 +75,7 @@ package_libxslt-devel() {
   pkgdesc="Libxslt headers and libraries"
   groups=('development')
   options=('staticlibs')
-  depends=("libxslt=${pkgver}" 'libxml2-devel' 'libgcrypt-devel')
+  depends=("libxslt=${pkgver}" 'libxml2-devel' 'libcrypt-devel')
 
   mkdir -p ${pkgdir}/usr/{bin,share}
   cp -f ${srcdir}/dest/usr/bin/*-config ${pkgdir}/usr/bin/
