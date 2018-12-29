@@ -51,7 +51,8 @@ source=("${pkgname}-${pkgver}.tar.gz"::https://github.com/git/git/archive/v${pkg
         git-2.3.5-mingw-pwd.patch
         git-2.8.2-Cygwin-Allow-DOS-paths.patch
         git-tcsh-completion-fixes.patch
-        git-zsh-completion-fixes.patch)
+        git-zsh-completion-fixes.patch
+		git-credential-wincred-fixes.patch)
 sha256sums=('a3fe1d35b00ec2e48f21f690d4d4b2b061ff132cba3d68684c530b12c8ef227f'
             'c5e735d829e11f79e2d508b663d0924030498f48fc716881031fb975dbf187a5'
             '2c0301076a7b60b5be2491433560f6f87c510ec64d2d8f9db5a75c1295893885'
