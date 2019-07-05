@@ -50,7 +50,7 @@ update_system() {
 # 参数：
 # <pkgball>		软件包文件名称，比如gcc-6.3.0-1-i686.pkg.tar.xz
 # 备注：
-# (1) 指定的软件包必须事先存放在${PACMAN_LOCAL_REPOSITORY}/${arch}目录下
+# (1) 指定的软件包必须事先存放在${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}目录下
 repository_add_package()
 {
 [ $# == 0 ] && { echo "Usage: repository_add_package	<pkgball> [pkgball ...]"; return 1; }
@@ -59,13 +59,13 @@ local pkg
 
 pkgnames=()
 for pkg in ${@}; do
-[ -f ${PACMAN_LOCAL_REPOSITORY}/${arch}/${pkg} ] && pkgnames+=(${pkg})
+[ -f ${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/${pkg} ] && pkgnames+=(${pkg})
 done
 [ ${#pkgnames[@]} == 0 ] || {
 local LANG_bkp=${LANG}
 export LANG=en_US.UTF-8
 
-pushd ${PACMAN_LOCAL_REPOSITORY}/${arch}
+pushd ${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}
 while [ -f ${PACMAN_REPOSITORY_NAME}.db.tar.xz.lck ]; do
 true
 done
@@ -92,7 +92,7 @@ for pkg in ${@}; do
 [[ "${pkg}" != *.pkg.tar.xz ]] || pkgnames+=($(grep -Po '^\w+(-devel)?' <<< ${pkg}))
 done
 [ ${#pkgnames[@]} == 0 ] || {
-pushd ${PACMAN_LOCAL_REPOSITORY}/${arch}
+pushd ${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}
 repo-remove "${PACMAN_REPOSITORY_NAME}.db.tar.xz" ${pkgnames[@]}
 pacman --sync --refresh
 popd
@@ -129,11 +129,11 @@ local pkg="${1}"
 local remote_path
 
 case ${type} in
-	distrib) remote_path=${BINTRAY_DOWNLOAD_PATH}/distrib/${arch}/${pkg};;
-	binary) remote_path=${BINTRAY_DOWNLOAD_PATH}/${PACMAN_REPOSITORY_NAME}/${arch}/${pkg};;
-	sources) remote_path=${BINTRAY_DOWNLOAD_PATH}/${PACMAN_REPOSITORY_NAME}/sources/${pkg};;
+	distrib) remote_path=${PACMAN_LOCAL_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch}/${pkg};;
+	binary) remote_path=${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/${pkg};;
+	sources) remote_path=${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${SOURCE_PACKAGE_NAME}/${pkg};;
 esac
-[ "$(check_url_exist ${remote_path})" == "yes" ] && return 0
+[ -f ${remote_path} ] && return 0
 return 1
 }
 
@@ -147,9 +147,9 @@ local filelist=(${@})
 local file resp remote_dir
 
 case ${type} in
-	distrib) remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch};;
-	binary) remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch};;
-	sources) remote_dir=https://api.bintray.com/content/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/sources;;
+	distrib) remote_dir=${PACMAN_LOCAL_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch};;
+	binary) remote_dir=${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch};;
+	sources) remote_dir=${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${SOURCE_PACKAGE_NAME};;
 	*)
 		echo "Unknown type '${type}'."
 		return 2;
@@ -157,8 +157,7 @@ case ${type} in
 esac
 
 for file in ${filelist[@]}; do
-resp=$(curl --silent --show-error --connect-timeout 5 --retry 10 -u${BINTRAY_ACCOUNT}:${BINTRAY_API_KEY} -X DELETE ${remote_dir}/${file})
-[ "${resp}" == '{"message":"success"}' ] && echo "Deleted BinTray file ${file}"
+rm -vf ${remote_dir}/${file}
 done
 }
 
@@ -170,172 +169,19 @@ local type="${1}" file="${2}"
 local download_link
 
 case ${type} in
-	distrib) download_link="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch}/${file}";;
-	binary) download_link="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/${file}";;
-	sources) download_link="https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/sources/${file}";;
+	distrib) download_link="${PACMAN_LOCAL_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch}/${file}";;
+	binary) download_link="${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/${file}";;
+	sources) download_link="${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${SOURCE_PACKAGE_NAME}/${file}";;
 esac
 
 wget --server-response --spider "${download_link}" 2>&1 | grep -Pio "Sha1:\s*\K\w+"
 return 0
 }
 
-# 函数： 下载软件包到本地仓库
-# Usage: download_package	<type> <pkgball> [pkgball ...]
-# <type>		包类型; 可取值：distrib, binary, sources
-# <pkgball>		软件包文件名称，比如gcc-6.3.0-1-i686.pkg.tar.xz
-download_package()
-{
-(( $# < 2 )) && { echo "Usage: download_package <type> <pkgball> [pkgball ...]"; return 1; }
-local type="${1}"
-shift
-local pkgnames=(${@})
-local pkg local_dir local_path remote_dir remote_path remote_publish checksum
-
-case ${type} in
-	distrib) local_dir=${PACMAN_LOCAL_REPOSITORY}/../distrib/${arch}
-			 remote_dir=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${DISTRIB_PACKAGE_NAME}/${arch}
-			 remote_publish=${BINTRAY_API_DIR}/distrib/latest/publish
-			;;
-	binary)	local_dir=${PACMAN_LOCAL_REPOSITORY}/${arch}
-			remote_dir=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}
-			remote_publish=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/publish
-			;;
-	sources) local_dir=${PACMAN_LOCAL_REPOSITORY}/sources
-			 remote_dir=https://dl.bintray.com/${BINTRAY_ACCOUNT}/${BINTRAY_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/sources
-			 remote_publish=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/publish
-			;;
-esac
-
-for pkg in ${pkgnames[@]}; do
-checksum="$(remote_file_sha1 ${type} ${pkg})"
-[ -n "${checksum}" ] || { echo "No file '${pkg}' on the server."; continue; }
-local_path=${local_dir}/${pkg}
-remote_path=${remote_dir}/${pkg}
-
-[ -f "${local_path}" ] && {
-[ "${checksum}" == "$(sha1sum ${local_path} | cut -d ' ' -f1)" ] && continue || rm -f "${local_path}" 
-}
-
-printf "Downloading ${pkg} ...... \n"
-curl --progress-bar -fSL -o "${local_path}" "${remote_path}" || { echo "Failed to donwload '${pkg}'"; rm -f "${local_path}"; }
-done
-}
-
-# 函数： 上传软件包到远程仓库
-# Usage: upload_package	<type> <pkgball> [pkgball ...]
-# 参数： 
-# <type>		包类型; 可取值：distrib, binary, sources
-# <pkgball>		软件包文件名称，比如gcc-6.3.0-1-i686.pkg.tar.xz
-upload_package()
-{
-(( $# < 2 )) && { echo "Usage: upload_package <type> <pkgball> [pkgball ...]"; return 1; }
-local type="${1}"
-shift
-local pkgnames=(${@})
-local pkg resp local_dir local_path remote_dir remote_path remote_publish checksum
-
-case ${type} in
-	distrib) local_dir=${PACMAN_LOCAL_REPOSITORY}/../distrib/${arch}
-			 remote_dir=${BINTRAY_API_DIR}/distrib/latest/distrib/${arch}
-			 remote_publish=${BINTRAY_API_DIR}/distrib/latest/publish
-			;;
-	binary)	local_dir=${PACMAN_LOCAL_REPOSITORY}/${arch}
-			remote_dir=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/${PACMAN_REPOSITORY_NAME}/${arch}
-			remote_publish=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/publish
-			;;
-	sources) local_dir=${PACMAN_LOCAL_REPOSITORY}/sources
-			 remote_dir=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/${PACMAN_REPOSITORY_NAME}/sources
-			 remote_publish=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/publish
-			;;
-	*)	echo "Unknwon package type ${type}"
-		return 1
-		;;
-esac
-
-for pkg in ${pkgnames[@]}; do
-local_path=${local_dir}/${pkg}
-[ -f "${local_path}" ] || { echo "No file ${pkg} in local repository."; continue; }
-[ "${type}" == binary ] && {
-checksum=$(grep -Po '.*(?=-\w+\.pkg\.tar\.xz$)' <<< ${pkg})
-[ -f ${PACMAN_LOCAL_REPOSITORY}/${arch}/old_pkg.list ] && [ -n "${checksum}" ] && sed -i -r "/${checksum}/d" ${PACMAN_LOCAL_REPOSITORY}/${arch}/old_pkg.list
-}
-checksum="$(remote_file_sha1 ${type} ${pkg})"
-[ "${checksum}" == "$(sha1sum ${local_path} | cut -d ' ' -f1)" ] && { echo "File '${pkg}' already exists on the server."; continue; }
-[ -n "${checksum}" ] && remote_file_delete "${type}" "${pkg}"
-printf "Uploading ${pkg} ...... \n"
-remote_path=${remote_dir}/${pkg}
-resp=""
-while ! ( [ "${resp}" == '{"message":"success"}' ] || (grep -Pq "Unable to upload files: An artifact with the path '[^']+' already exists" <<< ${resp}) ); do
-resp=$(curl --progress-bar -T "${local_path}" -u${BINTRAY_ACCOUNT}:${BINTRAY_API_KEY} ${remote_path})
-done
-done
-
-printf "Publishing ${type} package  ...... \n"
-resp=$(curl --silent --show-error  -u${BINTRAY_ACCOUNT}:${BINTRAY_API_KEY} -X POST ${remote_publish})
-resp=$(grep -Po "{\"files\":\K\d+(?=})" <<< ${resp})
-printf "${resp} new files published.\n"
-}
-
-# 函数： 上传所有包
-# Usage: upload_all_packages <type>
-# 参数： 
-# <type>		包类型; 可取值：distrib, binary, sources
-upload_all_packages()
-{
-[ $# == 1 ] || { echo "Usage: upload_all_packages <type>"; return 1; }
-local type="${1}"
-local pkg resp local_dir local_path remote_dir remote_path remote_publish checksum
-
-case ${type} in
-	distrib) local_dir=${PACMAN_LOCAL_REPOSITORY}/../distrib/${arch}
-			 remote_dir=${BINTRAY_API_DIR}/distrib/latest/distrib/${arch}
-			 remote_publish=${BINTRAY_API_DIR}/distrib/latest/publish
-			 ;;
-	binary)	 local_dir=${PACMAN_LOCAL_REPOSITORY}/${arch}
-			 remote_dir=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/${PACMAN_REPOSITORY_NAME}/${arch}
-			 remote_publish=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/publish
-			 ;;
-	sources) local_dir=${PACMAN_LOCAL_REPOSITORY}/sources
-			 remote_dir=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/${PACMAN_REPOSITORY_NAME}/sources
-			 remote_publish=${BINTRAY_API_DIR}/${PACMAN_REPOSITORY_NAME}/${BINTRAY_PACKAGE_VERSION}/publish
-			 ;;
-esac
-
-pushd ${local_dir}
-for pkg in $(ls); do
-local_path=${local_dir}/${pkg}
-remote_path=${remote_dir}/${pkg}
-checksum="$(remote_file_sha1 ${type} ${pkg})"
-[ "${checksum}" == "$(sha1sum ${local_path} | cut -d ' ' -f1)" ] && { echo "File '${pkg}' already exists on the server."; continue; }
-[ -n "${checksum}" ] && remote_file_delete "${type}" "${pkg}"
-printf "\n\nuploading ${pkg} ...... \n"
-resp=""
-while ! ( [ "${resp}" == '{"message":"success"}' ] || (grep -Pq "Unable to upload files: An artifact with the path '[^']+' already exists" <<< ${resp}) ); do
-resp=$(curl -T "${local_path}" -u${BINTRAY_ACCOUNT}:${BINTRAY_API_KEY} ${remote_path})
-done
-printf "Done\n"
-done
-popd
-
-printf "Publishing ${type} package ...... \n"
-resp=$(curl -u${BINTRAY_ACCOUNT}:${BINTRAY_API_KEY} -X POST ${remote_publish})
-resp=$(grep -Po "{\"files\":\K\d+(?=})" <<< ${resp})
-printf "\n${resp} files published.\n"
-}
-
-# 函数：上传整个本地仓库
-# Usage: upload_repository
-upload_repository()
-{
-upload_all_packages distrib
-upload_all_packages binary
-upload_all_packages sources
-}
-
 # Delete old files on the server.
 remote_clean_up()
 {
-local pkglist=${PACMAN_LOCAL_REPOSITORY}/${arch}/old_pkg.list
+local pkglist=${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/old_pkg.list
 local pkg
 [ -f "${pkglist}" ] && {
 while read pkg; do
@@ -353,7 +199,7 @@ rm -vf ${pkglist}
 # 参数：
 # <pkgname-ver>		软件包文件名称，比如gcc-6.3.0-1-i686.tar.xz
 # 备注：
-# (1) 指定的软件包必须事先存放在${PACMAN_LOCAL_REPOSITORY}/${arch}目录下
+# (1) 指定的软件包必须事先存放在${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}目录下
 sign_package()
 {
 (( $# < 2 )) && { echo "Usage: sign_package <type> <pkgball> [pkgball ...]"; return 1; }
@@ -368,9 +214,9 @@ export LANG=en_US.UTF-8
 
 for pkg in ${pkgnames[@]}; do
 case ${type} in
-	distrib) pkgpath="${PACMAN_LOCAL_REPOSITORY}/../distrib/${arch}/${pkg}";;
-	binary)  pkgpath="${PACMAN_LOCAL_REPOSITORY}/${arch}/${pkg}";;
-	sources) pkgpath="${PACMAN_LOCAL_REPOSITORY}/sources/${pkg}";;
+	distrib) pkgpath="${PACMAN_LOCAL_REPOSITORY}/distrib/${arch}/${pkg}";;
+	binary)  pkgpath="${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/${pkg}";;
+	sources) pkgpath="${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/sources/${pkg}";;
 	*) echo "Unknown package type ${type}"
 	   return 1
 	   ;;
@@ -396,7 +242,7 @@ export LANG=${LANG_bkp}
 # 函数：为所有的软件包生成签名文件
 # Usage: sign_all_packages
 # 备注：
-# (1) 所有软件包放在${PACMAN_LOCAL_REPOSITORY}/${arch}目录下
+# (1) 所有软件包放在${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}目录下
 sign_all_packages()
 {
 [ -n "${GPG_KEY_PASSWD}" ] || { echo "You must set GPG_KEY_PASSWD firstly."; return 1; } 
@@ -404,7 +250,7 @@ local f
 local LANG_bkp=${LANG}
 export LANG=en_US.UTF-8
 
-for f in $(ls ${PACMAN_LOCAL_REPOSITORY}/${arch}/*.pkg.tar.xz); do
+for f in $(ls ${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/*.pkg.tar.xz); do
 # signature for binary package.
 expect << _EOF
 spawn gpg --pinentry-mode loopback -o "${f}.sig" -b "${f}"
@@ -418,7 +264,7 @@ EOF { }
 _EOF
 done
 
-for f in $(ls ${PACMAN_LOCAL_REPOSITORY}/sources/*.src.tar.gz); do
+for f in $(ls ${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/sources/*.src.tar.gz); do
 # signature for source package
 expect << _EOF
 spawn gpg --pinentry-mode loopback -o "${f}.sig" -b "${f}"
@@ -911,7 +757,7 @@ build_package()
 local pkg_name=${1}
 local packages=($(subdir_of_pkg ${pkg_name}))
 local version=($(version_of_pkg ${pkg_name}))
-local locfile=${PACMAN_LOCAL_REPOSITORY}/${arch}/${PACMAN_REPOSITORY_NAME}.lck
+local locfile=${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/${PACMAN_REPOSITORY_NAME}.lck
 
 local provider=($(grep -Po '\[[^\[\]]+\]\K[^\[\]]*' <<< ${packages[@]}))
 packages=($(grep -Po '(?<=\[)[^\[\]]+(?=\])' <<< ${packages[@]}))
@@ -921,8 +767,8 @@ local package
 
 for ((i=0; i<${#packages[@]}; i++)); do
 
-[[ -f ${PACMAN_LOCAL_REPOSITORY}/${arch}/${provider[i]}-${version[i]}-${arch}.pkg.tar.xz || \
-   -f ${PACMAN_LOCAL_REPOSITORY}/${arch}/${provider[i]}-${version[i]}-any.pkg.tar.xz ]] && {
+[[ -f ${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/${provider[i]}-${version[i]}-${arch}.pkg.tar.xz || \
+   -f ${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}/${provider[i]}-${version[i]}-any.pkg.tar.xz ]] && {
 (grep -Pq "(?<=^|\s)${provider[i]}(?=$|\s)" <<< ${packages_builded[@]}) || packages_builded+=(${provider[i]})
 [ "${pkg_name}" != "${provider[i]}" ] && ! (grep -Pq "(?<=^|\s)${pkg_name}(?=$|\s)" <<< ${packages_builded[@]}) && packages_builded+=(${pkg_name})
 continue
@@ -939,8 +785,8 @@ execute 'Building source' makepkg --noconfirm --noprogressbar --skippgpcheck --a
 
 pkgball=($(ls "${package}"/*.pkg.tar.xz | grep -Po '[^/]+\.pkg\.tar\.xz'))
 srcball=($(ls "${package}"/*.src.tar.gz | grep -Po '[^/]+\.src\.tar\.gz'))
-mv "${package}"/*.pkg.tar.xz ${PACMAN_LOCAL_REPOSITORY}/${arch}
-mv "${package}"/*.src.tar.gz ${PACMAN_LOCAL_REPOSITORY}/sources
+mv "${package}"/*.pkg.tar.xz ${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${arch}
+mv "${package}"/*.src.tar.gz ${PACMAN_LOCAL_REPOSITORY}/${PACMAN_REPOSITORY_NAME}/${SOURCE_PACKAGE_NAME}
 rm -rf "${package}"/{src,pkg}
 
 sign_package binary ${pkgball[@]}
@@ -952,11 +798,7 @@ while [ "$(head -n 1 ${locfile})" != "${pkg_name}" ]; do
 sleep 1
 done
 
-download_package binary ${PACMAN_REPOSITORY_NAME}{.db,.files}{,.tar.xz{,.old}}
 repository_add_package ${pkgball[@]}
-upload_package binary ${pkgball[@]} $(sed -r 's/\S+/&.sig/g' <<< ${pkgball[@]})
-upload_package sources ${srcball[@]} $(sed -r 's/\S+/&.sig/g' <<< ${srcball[@]})
-upload_package binary ${PACMAN_REPOSITORY_NAME}{.db,.files}{,.tar.xz{,.old}}
 remote_clean_up
 
 while [ "$(head -n 1 ${locfile})" == "${pkg_name}" ]; do
@@ -1005,11 +847,5 @@ for pkg in ${pkgs[@]}; do
 build_depends "${pkg}"
 done
 
-}
-
-clean_build_cache()
-{
-export APPVEYOR_TOKEN="v2.7d9pm4w8v9j2dqlu2fq0"
-curl -H "Authorization: Bearer $APPVEYOR_TOKEN" -H "Content-Type: application/json" -X DELETE https://ci.appveyor.com/api/projects/atom2013/msys2-packages/buildcache 
 }
 
