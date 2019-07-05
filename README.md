@@ -1,5 +1,7 @@
 MSYS2-packages
 ==============
+[![AppVeyor status](https://ci.appveyor.com/api/projects/status/github/Alexpux/MSYS2-packages?branch=master&svg=true)](https://ci.appveyor.com/project/Alexpux/MSYS2-packages)
+
 Package scripts for MSYS2.
 
 To build these, run msys2_shell.cmd then from the bash prompt. Packages from

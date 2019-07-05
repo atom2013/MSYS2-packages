@@ -3,8 +3,8 @@
 
 pkgbase=msys2-runtime
 pkgname=('msys2-runtime' 'msys2-runtime-devel')
-pkgver=2.5.2
-pkgrel=2
+pkgver=3.0.7
+pkgrel=5
 pkgdesc="Cygwin POSIX emulation engine"
 arch=('i686' 'x86_64')
 url="https://www.cygwin.com/"
@@ -24,88 +24,95 @@ makedepends=('cocom'
              'diffutils')
 # options=('debug' '!strip')
 source=('msys2-runtime'::git://sourceware.org/git/newlib-cygwin.git#tag=cygwin-${pkgver//./_}-release
-        0001-Add-MSYS-triplets.patch
-        0002-Rename-DLL-from-cygwin-to-msys.patch
+        0001-Add-MSYS2-triplet.patch
+        0002-Rename-dll-from-cygwin-to-msys.patch
         0003-Add-functionality-for-converting-UNIX-paths-in-argum.patch
         0004-Add-functionality-for-changing-OS-name-via-MSYSTEM-e.patch
         0005-Move-root-to-usr.-Change-sorting-mount-points.-Do-no.patch
         0006-Do-not-create-cygwin-symlinks.-Instead-use-deep-copy.patch
-        0007-Automatically-rewrite-TERM-msys-to-TERM-cygwin.patch
+        0007-Automatically-rewrite-TERM-msys-to-TERM-cygwin-With-.patch
         0008-Do-not-convert-environment-for-strace.patch
-        0009-convert-be-more-careful-to-stay-within-the-buffer.patch
-        0010-convert-check-safely-whether-we-could-allocate-the-b.patch
-        0011-convert-use-the-elegant-realloc-call.patch
-        0012-convert-plug-potential-memory-leak.patch
-        0013-convert-warn-when-we-cut-off-a-path.patch
-        0014-arg_heuristic-be-better-prepared-to-handle-path-list.patch
-        0015-Fix-converting-argument-looks-like-DVAR-str1-c-path1.patch
-        0016-Special-case-for-converting-root-directory-to-have-t.patch
-        0017-dcrt0.cc-Untangle-allow_glob-from-winshell.patch
-        0018-dcrt0.cc-globify-Don-t-quote-literal-strings-differe.patch
-        0019-strace.cc-Don-t-set-MSYS-noglob.patch
-        0020-Add-debugging-for-build_argv.patch
-        0021-Add-debugging-for-strace-make_command_line.patch
-        0022-environ.cc-New-facility-environment-variable-MSYS2_E.patch
-        0023-path.cc-Ignore-zero-length-exclusions.patch
-        0024-machine-_types.h-__blkcnt_t-should-be-signed.patch
-		0025-Rename-__in-and-__out-in-headers-to-avoid-collision-.patch)
+        0009-Special-case-for-converting-root-directory-to-have-t.patch
+        0010-dcrt0.cc-Untangle-allow_glob-from-winshell.patch
+        0011-dcrt0.cc-globify-Don-t-quote-literal-strings-differe.patch
+        0012-strace.cc-Don-t-set-MSYS-noglob.patch
+        0013-Add-debugging-for-build_argv.patch
+        0014-Add-debugging-for-strace-make_command_line.patch
+        0015-environ.cc-New-facility-environment-variable-MSYS2_E.patch
+        0024-Fix-native-symbolic-link-spawn-passing-wrong-arg0.patch
+        0025-QueryUnbiasedInterruptTime-must-be-load-from.patch
+        0026-mkdir-always-check-for-existence.patch
+)
 sha256sums=('SKIP'
-            '7b24f901bddfb4b92ed2982d8608e8a9fdd1d2e523ae028115b5f5e8d710fea4'
-            '2683c45d3d964c55738dc65c9897fe6b8344ba20ead4102c432c46e382923625'
-            'c335d965acc3d632f95ebabd68b1ccd29f09bc4de0be7b9eb5e8f51092a7512c'
-            'aee9c77565bb076d8641f2bbf83020ead6dc5a5407489592718ea1bff9c17dba'
-            '58ca67dc53b65075679f518915854590b5c14572b7b27824251d06675fd434fe'
-            '0fc81a9ebb06f1b445d1feaab5cad47f8d2dc9194cc4e8a089a995b00cfdc24b'
-            '7b4f1f59a1c872b453234320d1d4e4d9f232530c2c97e41016fdcd294f5cc1ae'
-            'd874063ea8aa51fb63f3329daa101f16b388f9efa64495375aa353bbd6a51106'
-            '769399c63146d0d49ffbf8e6fbd6b79cea9e82f9268cf134ce6599819821f424'
-            '2ca7d7269f07722a631ddea0f60146fb93c1003449f0287f73ecaa34572f3c81'
-            'c441aaac174f5f1511381aac687cc70d5923ad5e78f98951c010d1afef1cc630'
-            'f8d7975f56d1c1ca25492ba2c3283c225d7df4508d508f776463080f0d4a084d'
-            'd3ab995ac5141f38fc228800b0ef867428775df789cd6ea242ef790ccabe6f0e'
-            '05e5305a4562ade558efa572176fa2632ac8a0b8c1680c904f3fcc4e900f6604'
-            '0995138d7311f5515fcb33524747960624cadb2f22f8059b99f3ad5b95e0917c'
-            '4ed24fcd8a4d0ac4961da8707a357ec7021d8c0c0638c83fa2734b764c897d28'
-            '43a02d7c85c55e4b9abbfb0e3ffe7512eefacd4420e42686efa5ba6705a53d7b'
-            'acb7bb895dc93eb4cbec81d9026b63f35dbf954093f9507629a5a8e0274aae63'
-            '90d9f051cd13d1ec9c6d23adda9eed28f3219da59378d98fc9e2f0cb8de7ad48'
-            'fc067fe6bb2d7d15909e41c1982fed7ebb1d2e3622acd277dbdadfc64beaa4ad'
-            'fd2731afc3b6ff3d9e870e5b0a582280eeb1a1ed7bbfe944c15299112bd2eb21'
-            '673680ee81c15a5750c3c56bf8803cfa4f4bd698d0b875d8e1a5d9362e4ce865'
-            '8e3fdcd9c6914e5edbe415b164321ff588ec2f1259772e633629314c30eac6b7'
-            '671401f0a26c53edc2b72dc9e87cf72780f64bffe3a3465f8c7c4b6760dab192'
-			'501c1db94c588be6f483b6de3c936cc80ab0530b7a6fe01784d3ba6100f4e766')
+            'df193299ab04aca8a049b2b98d025452caad95f27fba5a1f1b350f74a82c24f1'
+            'dd6c9856d6134cd992eee7ef4bdd64d5c57cd2faba9eae12d9be98c182b74734'
+            'b77abf5f462f081847879702b1c0ca0f65979c08362ec89aba598cf387d7dd68'
+            'bd67641a856d38c957b0b30bbc4fd58d9ca8829ae84c11acd13211c9dee1aab4'
+            '400d5377d986e53d3af50e730c536e71c9dfebb77a0efa71c14302fd8e201c59'
+            '2122b881be02cad4b2203a848f2a49794157ef091ed01f4c4e8d17c0b5e5b111'
+            'd001b32e07899a7a0cb44baaba7f5bc1cff57130a29ab72e3413a9698e0c3e0f'
+            '3e0c58abe0c81b7c08fdd0affd5d96a82f61f890b90fcee692584fe5b364962e'
+            'ead507d1fe2bc796937f93913da5196c33120a15860b5b87f7903e7015172dcd'
+            'f6471c9349bd89582cb6f5c5e32a427867d941b534267f86b1cee4367f8c8ab1'
+            'f429aaacd345e59f393b6b681c938a0d38017538e8bc40b27c8ade594d4f175d'
+            '774fda3da42da082578152c22d64b87f4bc63ad0412edb680f229b2ab5a1714e'
+            '8fa80ce0e14f078cf6a7096d0587c27add38d647191d5c836a70761b4214ffb4'
+            '05cca683b21ba0c8d22135f1f1f01da134be175de49fe7076200d7fe3efa4dce'
+            '5fd3bb0f943b9f6295c0ebeaf8fb2a4bce36780bba83e7c0ce2c3380c67acf4f'
+            '50d8a52cc33501898e7a01b00e8e5965c1ef7f37f26039a4380788ce7639a04c'
+            'b31e2bee92561594bf2db52f361ab2507e979797bec82955dc00f521ebee72b5'
+            'c68b687540668f0871a901143510666b8b9a59c12eae0ea9bef187d1af38c493'
+)
+
+# Helper macros to help make tasks easier #
+apply_patch_with_msg() {
+  for _patch in "$@"
+  do
+    msg2 "Applying $_patch"
+    patch -Nbp1 -i "${srcdir}/${_patch}"
+  done
+}
+
+apply_git_am_with_msg() {
+  for _patch in "$@"
+  do
+    msg2 "Applying $_patch"
+    git am --committer-date-is-author-date "${srcdir}/${_patch}"
+  done
+}
+
+del_file_exists() {
+  for _fname in "$@"
+  do
+    if [ -f $_fname ]; then
+      rm -rf $_fname
+    fi
+  done
+}
+# =========================================== #
+
 prepare() {
   cd "${srcdir}"/msys2-runtime
-  git am --committer-date-is-author-date "${srcdir}"/0001-Add-MSYS-triplets.patch
-  git am --committer-date-is-author-date "${srcdir}"/0002-Rename-DLL-from-cygwin-to-msys.patch
-  git am --committer-date-is-author-date "${srcdir}"/0003-Add-functionality-for-converting-UNIX-paths-in-argum.patch
-  git am --committer-date-is-author-date "${srcdir}"/0004-Add-functionality-for-changing-OS-name-via-MSYSTEM-e.patch
-  git am --committer-date-is-author-date "${srcdir}"/0005-Move-root-to-usr.-Change-sorting-mount-points.-Do-no.patch
-  git am --committer-date-is-author-date "${srcdir}"/0006-Do-not-create-cygwin-symlinks.-Instead-use-deep-copy.patch
-  git am --committer-date-is-author-date "${srcdir}"/0007-Automatically-rewrite-TERM-msys-to-TERM-cygwin.patch
-  git am --committer-date-is-author-date "${srcdir}"/0008-Do-not-convert-environment-for-strace.patch
-  git am --committer-date-is-author-date "${srcdir}"/0009-convert-be-more-careful-to-stay-within-the-buffer.patch
-  git am --committer-date-is-author-date "${srcdir}"/0010-convert-check-safely-whether-we-could-allocate-the-b.patch
-  git am --committer-date-is-author-date "${srcdir}"/0011-convert-use-the-elegant-realloc-call.patch
-  git am --committer-date-is-author-date "${srcdir}"/0012-convert-plug-potential-memory-leak.patch
-  git am --committer-date-is-author-date "${srcdir}"/0013-convert-warn-when-we-cut-off-a-path.patch
-  git am --committer-date-is-author-date "${srcdir}"/0014-arg_heuristic-be-better-prepared-to-handle-path-list.patch
-  git am --committer-date-is-author-date "${srcdir}"/0015-Fix-converting-argument-looks-like-DVAR-str1-c-path1.patch
-  git am --committer-date-is-author-date "${srcdir}"/0016-Special-case-for-converting-root-directory-to-have-t.patch
-  git am --committer-date-is-author-date "${srcdir}"/0017-dcrt0.cc-Untangle-allow_glob-from-winshell.patch
-  git am --committer-date-is-author-date "${srcdir}"/0018-dcrt0.cc-globify-Don-t-quote-literal-strings-differe.patch
-  git am --committer-date-is-author-date "${srcdir}"/0019-strace.cc-Don-t-set-MSYS-noglob.patch
-  git am --committer-date-is-author-date "${srcdir}"/0020-Add-debugging-for-build_argv.patch
-  git am --committer-date-is-author-date "${srcdir}"/0021-Add-debugging-for-strace-make_command_line.patch
-  git am --committer-date-is-author-date "${srcdir}"/0022-environ.cc-New-facility-environment-variable-MSYS2_E.patch
-  git am --committer-date-is-author-date "${srcdir}"/0023-path.cc-Ignore-zero-length-exclusions.patch
-  git am --committer-date-is-author-date "${srcdir}"/0024-machine-_types.h-__blkcnt_t-should-be-signed.patch
-  git am --committer-date-is-author-date "${srcdir}"/0025-Rename-__in-and-__out-in-headers-to-avoid-collision-.patch
-  
-  # remove 'mingw-w64-cross-crt-clang-git' and install 'mingw-w64-cross-crt-git'
-  (pacman -Q mingw-w64-cross-crt-clang-git &>/dev/null) && pacman -Rdd --noconfirm mingw-w64-cross-crt-clang-git
-  pacman -S --noconfirm mingw-w64-cross-crt-git
+  del_file_exists winsup/cygwin/msys2_path_conv.cc \
+    winsup/cygwin/msys2_path_conv.h 
+ apply_git_am_with_msg 0001-Add-MSYS2-triplet.patch \
+  0002-Rename-dll-from-cygwin-to-msys.patch \
+  0003-Add-functionality-for-converting-UNIX-paths-in-argum.patch \
+  0004-Add-functionality-for-changing-OS-name-via-MSYSTEM-e.patch \
+  0005-Move-root-to-usr.-Change-sorting-mount-points.-Do-no.patch \
+  0006-Do-not-create-cygwin-symlinks.-Instead-use-deep-copy.patch \
+  0007-Automatically-rewrite-TERM-msys-to-TERM-cygwin-With-.patch \
+  0008-Do-not-convert-environment-for-strace.patch \
+  0009-Special-case-for-converting-root-directory-to-have-t.patch \
+  0010-dcrt0.cc-Untangle-allow_glob-from-winshell.patch \
+  0011-dcrt0.cc-globify-Don-t-quote-literal-strings-differe.patch \
+  0012-strace.cc-Don-t-set-MSYS-noglob.patch \
+  0013-Add-debugging-for-build_argv.patch \
+  0014-Add-debugging-for-strace-make_command_line.patch \
+  0015-environ.cc-New-facility-environment-variable-MSYS2_E.patch \
+  0024-Fix-native-symbolic-link-spawn-passing-wrong-arg0.patch \
+  0025-QueryUnbiasedInterruptTime-must-be-load-from.patch \
+  0026-mkdir-always-check-for-existence.patch
 }
 
 build() {
@@ -125,11 +132,6 @@ build() {
   CFLAGS="$OPTIM -pipe -ggdb"
   CXXFLAGS="$OPTIM -pipe -ggdb"
 
-  if (($(gcc --version | sed -n -r 's/[^.]*([0-9]+)\.([0-9]+)\.([0-9]+).*/\1/p') >= 6)); then
-	CFLAGS+=" -Wno-error=frame-address"
-	CXXFLAGS+=" -Wno-error=nonnull-compare -Wno-error=frame-address"
-  fi
-  
   "${srcdir}"/msys2-runtime/configure \
     --prefix=/usr \
     --build=${CHOST} \
@@ -150,6 +152,8 @@ package_msys2-runtime() {
   pkgdesc="Posix emulation engine for Windows"
   groups=('base')
   options=('!strip')
+  conflicts=('catgets' 'libcatgets')
+  replaces=('catgets' 'libcatgets')
   #install=msys2-runtime.install
 
   mkdir -p "${pkgdir}"/usr
@@ -164,9 +168,11 @@ package_msys2-runtime() {
 
 package_msys2-runtime-devel() {
   pkgdesc="MSYS2 headers and libraries"
-  groups=('MSYS2-devel')
+  groups=('msys2-devel')
   depends=("msys2-runtime=${pkgver}")
   options=('staticlibs' '!strip')
+  conflicts=('libcatgets-devel')
+  replaces=('libcatgets-devel')
 
   mkdir -p "${pkgdir}"/usr/bin
   cp -f "${srcdir}"/dest/usr/bin/msys-2.0.dbg "${pkgdir}"/usr/bin/

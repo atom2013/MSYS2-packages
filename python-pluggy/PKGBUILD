@@ -3,7 +3,7 @@
 _realname=pluggy
 pkgbase=python-pluggy
 pkgname=(python2-${_realname} python3-${_realname})
-pkgver=0.8.0
+pkgver=0.12.0
 pkgrel=1
 pkgdesc="Plugin and hook calling mechanisms for python"
 arch=('any')
@@ -12,7 +12,7 @@ license=('MIT')
 makedepends=('python2-setuptools' 'python3-setuptools')
 checkdepends=('python2-pytest-runner' 'python3-pytest-runner')
 source=("$pkgbase-$pkgver.tar.gz::https://github.com/pytest-dev/pluggy/archive/$pkgver.tar.gz")
-sha512sums=('06e5835069d2c198e5b983d07287822717484c7add306b3156451da0c6ba16c0c942f3f4b6e1eb20118e2c157d4d5403ae2b14453179c902684710edcbe5106d')
+sha512sums=('84e0f085132e14b015b03a59ca6f90beff3f8cd7577d3097dca626e063b255f3b1d27c518d2afd28a31556eca58c6a6b6afa0b7922717ac44f0a500b59b6cc2f')
 
 prepare() {
   cd "${srcdir}"
