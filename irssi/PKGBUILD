@@ -5,8 +5,8 @@
 pkgname=irssi
 replaces=(irssi-git)
 conflicts=(irssi-git)
-pkgver=1.1.2
-pkgrel=1
+pkgver=1.2.1
+pkgrel=2
 pkgdesc="Modular text mode IRC client with Perl scripting"
 arch=('i686' 'x86_64')
 url="https://irssi.org/"
@@ -18,7 +18,7 @@ backup=('etc/irssi.conf')
 source=("https://github.com/irssi/${pkgname}/releases/download/${pkgver}/${pkgname}-${pkgver}.tar.xz"{,.asc}
         "0000_msysize.patch")
 options=('!strip')
-sha256sums=('5ccc2b89a394e91bea0aa83a951c3b1d471c76da87b4169ec435530a31bf9732'
+sha256sums=('5466a1ed9612cfa707d9a37d60b29d027b4ac7d83c74ceb1a410e2b59edba92c'
             'SKIP'
             'ec2dc647191717c4abd9b86a51c085e9bb8ca13998726ef0be97f4d213577eb3')
 
