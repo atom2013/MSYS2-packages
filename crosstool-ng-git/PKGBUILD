@@ -4,7 +4,7 @@
 _realname="crosstool-ng"
 pkgname="$_realname-git"
 replaces=("$_realname")
-pkgver=r4738.eb72b4eb
+pkgver=r4871.afaf7b9a
 pkgrel=1
 pkgdesc="A cross-platform open-source toolchain system (git)"
 arch=('i686' 'x86_64')
@@ -18,18 +18,14 @@ depends=("ncurses" "libintl")
 options=('staticlibs' 'strip')
 source=('crosstool-ng::git+https://github.com/crosstool-ng/crosstool-ng.git#branch=master'
 		"0001-Modify-config-to-support-correct-Mingw64-Triplet-Nam.patch"
-		"0002-modify-kconfig-Makefile-to-include-lintl.patch"
 		"0003-Add-new-gcc-patches.patch"
 		"0004-Add-a-new-gmp-patch.patch"
-		"0005-Add-a-new-newlib-patch.patch"
-		"0006-Fix-elf2flt-patch.patch")
+		"0005-Add-a-new-newlib-patch.patch")
 sha256sums=('SKIP'
 			'08c162f8199c45def9ac92098110b6b58c683c1561a04a7d475334a83b31ca1c'
-			'c39c0971d09f217efc440a99a68bdec0b3c34d8c3b00c310f46f03348c225423'
-			'51101d24057a32db5ae8185e81162a20c79b15b287d9068a76b51c989549ec36'
+			'eca911fc947d7a7153bc3ba8bca6ec2ae6749aed5cdc26834785d99362ee6c1c'
 			'4e0051ec260ad6e3d798e7420966152bc9dce9c3cad89785ea79383b8956b12b'
-			'ea17eabf684417d84e62d290df7939891c999b563ce44f54885bc5ca02fd5767'
-			'2679a5a67ca8e741b29d49784eaee01723f47a6bf703a7b3e0d20e0a18b0d292')
+			'0420edda3822a59c8a36509de335223375ac949eaa640f08047efa201ff10aaf')
 
 pkgver() {
   cd "${srcdir}/${_realname}"
@@ -39,12 +35,10 @@ pkgver() {
 prepare() {
   cd "${srcdir}/${_realname}"
   
-  patch -p1 -i "${srcdir}/0001-Modify-config-to-support-correct-Mingw64-Triplet-Nam.patch"
-  patch -p1 -i "${srcdir}/0002-modify-kconfig-Makefile-to-include-lintl.patch"  
+  patch -p1 -i "${srcdir}/0001-Modify-config-to-support-correct-Mingw64-Triplet-Nam.patch" 
   patch -p1 -i "${srcdir}/0003-Add-new-gcc-patches.patch"
   patch -p1 -i "${srcdir}/0004-Add-a-new-gmp-patch.patch"
   patch -p1 -i "${srcdir}/0005-Add-a-new-newlib-patch.patch"
-  patch -p1 -i "${srcdir}/0006-Fix-elf2flt-patch.patch"  
   find packages/ncurses -type f -name "*.patch" | xargs dos2unix
   
   ./bootstrap
