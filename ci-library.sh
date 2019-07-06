@@ -55,7 +55,7 @@ repository_add_package()
 {
 [ $# == 0 ] && { echo "Usage: repository_add_package	<pkgball> [pkgball ...]"; return 1; }
 local pkgnames
-local pkg
+local pkg name
 
 pkgnames=()
 for pkg in ${@}; do
@@ -71,6 +71,12 @@ true
 done
 
 repo-add "${PACMAN_REPOSITORY_NAME}.db.tar.xz" ${pkgnames[@]} | tee /dev/stderr | grep -Po "\bRemoving existing entry '\K[^']+(?=')" >> old_pkg.list
+
+for pkg in ${pkgnames[@]}; do
+name=$(grep -Po '.*(?=-\w+\.pkg\.tar\.xz$)' <<< ${pkg})
+[ -f old_pkg.list ] && [ -n "${name}" ] && sed -i -r "/${name}/d" old_pkg.list
+done
+
 popd
 
 export LANG=${LANG_bkp}
