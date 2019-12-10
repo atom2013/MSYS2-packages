@@ -2,7 +2,7 @@
 # Maintainer: Eon Jeong <administrator@korea.ac.kr>
 
 pkgname=axel
-pkgver=2.17.3
+pkgver=2.17.6
 pkgrel=1
 pkgdesc="Light command line download accelerator for Linux and Unix"
 arch=('i686' 'x86_64')
@@ -13,7 +13,7 @@ depends=('openssl' 'gettext')
 makedepends=('openssl-devel' 'gettext-devel')
 options=()
 source=("https://github.com/axel-download-accelerator/axel/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.bz2")
-sha256sums=('c96dd86499abfb64dc838081a4f4af4de3ea692061447f9b019b814821cb5d29')
+sha256sums=('4aceb94372dd56108f1bf1b4252e3fe8c9e99d3e8541d531919cb7993bad5a7f')
 
 prepare() {
   cat /dev/null

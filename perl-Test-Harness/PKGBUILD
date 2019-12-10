@@ -2,17 +2,17 @@
 
 _realname=Test-Harness
 pkgname=perl-${_realname}
-pkgver=3.39
+pkgver=3.42
 pkgrel=1
 pkgdesc="Test::Harness - Run Perl standard test scripts with statistics"
 arch=('any')
 license=('GPL' 'PerlArtistic')
-url="http://search.cpan.org/~leont/Test-Harness/"
+url="https://metacpan.org/release/Test-Harness"
 depends=('perl')
 groups=('perl-modules')
 options=('!emptydirs')
 source=(https://www.cpan.org/authors/id/L/LE/LEONT/${_realname}-${pkgver}.tar.gz)
-sha256sums=('69bd44c81c6e1d2db18e298ecf631852608893ddfddb332a7d55285bbfc51132')
+sha256sums=('0fd90d4efea82d6e262e6933759e85d27cbcfa4091b14bf4042ae20bab528e53')
 
 build() {
   cd ${_realname}-${pkgver}
