@@ -1,0 +1,47 @@
+--- awk-20180827/awk.1.orig	2018-08-28 23:05:48.000000000 +0300
++++ awk-20180827/awk.1	2019-11-12 10:26:19.668441900 +0300
+@@ -7,12 +7,11 @@
+ .fi
+ .ft 1
+ ..
+-.TH AWK 1
+-.CT 1 files prog_other
++.TH NAWK 1
+ .SH NAME
+-awk \- pattern-directed scanning and processing language
++nawk \- pattern-directed scanning and processing language
+ .SH SYNOPSIS
+-.B awk
++.B nawk
+ [
+ .BI \-F
+ .I fs
+@@ -31,7 +30,7 @@
+ .I file ...
+ ]
+ .SH DESCRIPTION
+-.I Awk
++.I Nawk
+ scans each input
+ .I file
+ for lines that match any of a set of patterns specified literally in
+@@ -198,7 +197,6 @@
+ .B sqrt
+ are built in.
+ Other built-in functions:
+-.TF length
+ .TP
+ .B length
+ the length of its argument
+@@ -426,10 +424,9 @@
+ do not combine with other patterns.
+ They may appear multiple times in a program and execute
+ in the order they are read by
+-.IR awk .
++.IR nawk .
+ .PP
+ Variable names with special meanings:
+-.TF FILENAME
+ .TP
+ .B ARGC
+ argument count, assignable.

@@ -3,16 +3,17 @@
 _realname=setuptools
 pkgbase="python-${_realname}"
 pkgname=("python3-${_realname}" "python2-${_realname}")
-pkgver=41.0.1
+pkgver=41.6.0
 pkgrel=1
 pkgdesc="Easily download, build, install, upgrade, and uninstall Python packages"
 arch=('any')
 license=('PSF')
 url="https://pypi.python.org/pypi/setuptools"
-makedepends=('python3-packaging' 'python2-packaging' 'python3-appdirs' 'python2-appdirs' 'python3-pip'
-             'python2-pip')
+makedepends=('python3-packaging' 'python2-packaging'
+             'python3-appdirs' 'python2-appdirs'
+             'python3-pip' 'python2-pip')
 source=("${_realname}-${pkgver}.tar.gz::https://github.com/pypa/setuptools/archive/v${pkgver}.tar.gz")
-sha512sums=('f3d6b81de7eb947fa8f7a3ad46d59e560940bc2f86672e072793d7cfa24267fb374a3b5b93ded6e10fd8889805ca26dfb7821a5d83992520c8b47628ca4174bf')
+sha512sums=('27dd6762afb7cc5cf302c4086d5142490d90fcba1d4886a6c9d3c7d4bf35cd7670081f103f6f6218b5fdce13a1c461ae7b9d917d0dc60669860e581f1945478a')
 
 prepare() {
   # Don't download and install deps

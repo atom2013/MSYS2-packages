@@ -1,0 +1,61 @@
+# Maintainer: Oleg Titov <oleg.titov@gmail.com>
+
+pkgbase=zstd
+pkgname=('zstd' 'libzstd' 'libzstd-devel')
+pkgver=1.4.3
+pkgrel=1
+pkgdesc="Zstandard - Fast real-time compression algorithm"
+arch=('i686' 'x86_64')
+url='https://facebook.github.io/zstd/'
+license=('BSD')
+makedepends=('gcc' 'make' 'cmake')
+source=(${pkgbase}-${pkgver}.tar.gz::"https://github.com/facebook/${pkgname}/archive/v${pkgver}.tar.gz"
+        install-pkgconfig.patch)
+sha256sums=('5eda3502ecc285c3c92ee0cc8cd002234dee39d539b3f692997a0e80de1d33de'
+            '9a8864dd11ad6f1eaf1e11ee19adfdbc4e023f20b14b429b8af2b387ffffdef4')
+options=(!libtool)
+
+prepare() {
+  cd "${srcdir}/${pkgbase}-${pkgver}"
+  patch -p1 -i ${srcdir}/install-pkgconfig.patch
+}
+
+build() {
+  cd "${srcdir}/${pkgbase}-${pkgver}"
+
+  cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    ../${pkgbase}-${pkgver}/build/cmake
+
+  make install DESTDIR="${srcdir}/dest"
+}
+
+package_zstd() {
+  groups=('libraries')
+  depends=('gcc-libs' 'libzstd')
+
+  cd "${srcdir}/${pkgbase}-${pkgver}"
+  mkdir -p ${pkgdir}/usr
+  cp -rf ${srcdir}/dest/usr/bin ${pkgdir}/usr/bin/
+  rm -f ${pkgdir}/usr/bin/*.dll
+  install -D -m644 "LICENSE" "${pkgdir}/usr/share/licenses/${pkgbase}/LICENSE"
+}
+
+package_libzstd() {
+  depends=('gcc-libs')
+
+  mkdir -p ${pkgdir}/usr/bin
+  cp -rf ${srcdir}/dest/usr/bin/*.dll ${pkgdir}/usr/bin/
+}
+
+package_libzstd-devel() {
+  groups=('development')
+  options=('staticlibs')
+  depends=("libzstd=${pkgver}")
+  pkgdesc="zstd headers and libraries"
+  
+  mkdir -p ${pkgdir}/usr
+  cp -rf ${srcdir}/dest/usr/include ${pkgdir}/usr/
+  cp -rf ${srcdir}/dest/usr/lib ${pkgdir}/usr/
+}
