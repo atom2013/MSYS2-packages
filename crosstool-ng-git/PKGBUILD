@@ -4,7 +4,7 @@
 _realname="crosstool-ng"
 pkgname="$_realname-git"
 replaces=("$_realname")
-pkgver=r4871.afaf7b9a
+pkgver=r4902.3f461da1
 pkgrel=1
 pkgdesc="A cross-platform open-source toolchain system (git)"
 arch=('i686' 'x86_64')
@@ -23,7 +23,7 @@ source=('crosstool-ng::git+https://github.com/crosstool-ng/crosstool-ng.git#bran
 		"0005-Add-a-new-newlib-patch.patch")
 sha256sums=('SKIP'
 			'08c162f8199c45def9ac92098110b6b58c683c1561a04a7d475334a83b31ca1c'
-			'eca911fc947d7a7153bc3ba8bca6ec2ae6749aed5cdc26834785d99362ee6c1c'
+			'47a207cdd43e80f48149c5e30eefed75f8ecf3e3e4ca8d288710db9cb7b876a1'
 			'4e0051ec260ad6e3d798e7420966152bc9dce9c3cad89785ea79383b8956b12b'
 			'0420edda3822a59c8a36509de335223375ac949eaa640f08047efa201ff10aaf')
 
