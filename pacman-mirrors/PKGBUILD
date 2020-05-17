@@ -1,8 +1,8 @@
 # Maintainer: Ray Donnelly <mingwandroid@gmail.com>
 
 pkgname=pacman-mirrors
-pkgver=20180604
-pkgrel=2
+pkgver=20200329
+pkgrel=1
 pkgdesc="MSYS2 mirror list for use by pacman"
 arch=('any')
 url="https://msys2.sourceforge.io/"
@@ -11,9 +11,9 @@ groups=('base')
 source=(mirrorlist.msys
         mirrorlist.mingw32
         mirrorlist.mingw64)
-sha256sums=('0041bc0b15f5ea81ed40266eccc6b2d878e7d0f10eb4070cc3cef0f1ea358f87'
-            '36fcf57db8f72972eca89801d15f3b13a34743782672547c7f6e8898d4ecdf65'
-            'ef2724d1308461e72d3c01645910247af1e4cc808a723fe7f1a3f7fcdb15508c')
+sha256sums=('ebda03ac5021fc05f623d1ca51e622ccfbf9ca83b765aa01d3d0565afd25054d'
+            '6adc56a1fee3f0e73a1304b7576b6492b451dc8684d01b2a2807096af31f9469'
+            'aefa0cf9fac23f96213c49be63797396d7507ec656ac6c1b96ef4900ede59c58')
 
 package() {
   mkdir -p ${pkgdir}/etc/pacman.d

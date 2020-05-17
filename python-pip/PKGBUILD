@@ -1,40 +1,32 @@
 # Maintainer: atom2013 <atom.long@hotmail.com>
 
-pkgbase=python-pip
-pkgname=('python3-pip' 'python2-pip')
-pkgver=19.3.1
-pkgrel=1
+_realname=pip
+pkgbase="python-${_realname}"
+pkgname=("python-${_realname}")
+pkgver=20.0.2
+pkgrel=2
 pkgdesc="The PyPA recommended tool for installing Python packages"
 url="https://pip.pypa.io/"
 arch=('any')
 license=('MIT')
-makedepends=('python3' 'python3-setuptools' 'python2' 'python2-setuptools')
-source=(pip-${pkgver}.tar.gz::https://github.com/pypa/pip/archive/${pkgver}.tar.gz)
-sha256sums=('f12b7a6be2dbbfeefae5f14992c89175ef72ce0fe96452b4f66be855a12841ff')
+depends=('python' 'python3-setuptools')
+makedepends=('python' 'python3-setuptools')
+provides=("python3-${_realname}")
+replaces=("python3-${_realname}")
+conflicts=("python3-${_realname}")
+source=(${_realname}-${pkgver}.tar.gz::https://github.com/pypa/${_realname}/archive/${pkgver}.tar.gz)
+sha256sums=('00bdc118df4552f654a5ccf0bd3ff1a7d101ee7d7ac899fe9a752363b3f2f070')
 
-package_python3-pip() {
-  depends=('python3' 'python3-setuptools')
+build() {
+  cd "${srcdir}/${_realname}-${pkgver}"
 
-  cd "${srcdir}/pip-${pkgver}"
   python3 setup.py build
-  python3 setup.py install --prefix=/usr --root="${pkgdir}"
-
-  install -D -m644 LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
 
-package_python2-pip() {
-  depends=('python2' 'python2-setuptools')
-  conflicts=('python-pyinstall')
-  replaces=('python-pyinstall')
+package() {
+  cd "${srcdir}/${_realname}-${pkgver}"
 
-  cd "${srcdir}/pip-${pkgver}"
-  python2 setup.py build
-  python2 setup.py install --prefix=/usr --root="${pkgdir}"
-  
-  mv "${pkgdir}/usr/bin/pip" "${pkgdir}/usr/bin/pip2"
-  sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|" \
-    ${pkgdir}/usr/lib/python2.7/site-packages/pip/__init__.py
-  python2 -m compileall ${pkgdir}/usr/lib/python2.7/site-packages/pip/__init__.py
-  
+  python3 setup.py install --prefix=/usr --root="${pkgdir}"
+
   install -D -m644 LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }

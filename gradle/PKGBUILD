@@ -7,15 +7,15 @@
 # Contributor: Eon Jeong <administrator@korea.ac.kr>
 
 pkgname=('gradle' 'gradle-doc')
-pkgver=6.0.1
+pkgver=6.4.1
 pkgrel=1
 arch=('any')
 url='https://www.gradle.org/'
 license=('APACHE')
 source=("https://services.gradle.org/distributions/gradle-${pkgver}-all.zip"
         "gradle.sh")
-sha256sums=('6f6cfdbb12a577c3845522a1c7fbfe1295ea05d87edabedd4e23fd2bf02b88b1'  # gradle-xxx-all.zip
-            '0d6699a246bc86c40fb2da3fe73f8e3b228201a8781194d8b303e239d2fa758e') # gradle.sh
+sha256sums=('3fd824892df8ad5847be6e4fb7d3600068437de172939fd657cc280a1a629f63'
+            '0d6699a246bc86c40fb2da3fe73f8e3b228201a8781194d8b303e239d2fa758e')
 
 package_gradle(){
   pkgdesc="A powerful build system for the JVM"
@@ -36,7 +36,6 @@ package_gradle(){
   # copy across supporting text documentation and scripts
   install -m644 LICENSE "${pkgdir}/usr/share/java/${pkgname}" || return 1            # license
   install -m644 NOTICE "${pkgdir}/usr/share/java/${pkgname}" || return 1             # license notes
-  install -m644 *.html "${pkgdir}/usr/share/java/${pkgname}" || return 1             # installation notes
   install -m755 bin/gradle "${pkgdir}/usr/share/java/${pkgname}/bin" || return 1     # UNIX script
   install -m755 bin/gradle.bat "${pkgdir}/usr/share/java/${pkgname}/bin" || return 1 # Windows script
 }
@@ -51,7 +50,6 @@ package_gradle-doc() {
   mkdir -p "${pkgdir}/usr/share/java/gradle/docs/"
   mkdir -p "${pkgdir}/usr/share/java/gradle/samples/"
 
-  # copy across documentation and samples
+  # copy across documentation
   cp --recursive docs/* "${pkgdir}/usr/share/java/gradle/docs/"
-  cp --recursive samples/* "${pkgdir}/usr/share/java/gradle/samples/"
 }

@@ -2,7 +2,7 @@
 
 _realname=Test-Simple
 pkgname=perl-${_realname}
-pkgver=1.302170
+pkgver=1.302175
 pkgrel=1
 pkgdesc="Basic utilities for writing tests"
 arch=('any')
@@ -11,7 +11,7 @@ groups=('perl-modules')
 depends=('perl')
 license=('GPL' 'PerlArtistic')
 source=("https://www.cpan.org/authors/id/E/EX/EXODIST/${_realname}-${pkgver}.tar.gz")
-sha256sums=('50dc374f93316ed1c251433e1f91050e82a56711ff47a7b333602e017e3bfe3a')
+sha256sums=('c8c8f5c51ad6d7a858c3b61b8b658d8e789d3da5d300065df0633875b0075e49')
 
 prepare() {
   cd "${srcdir}/${_realname}-${pkgver}"

@@ -2,58 +2,39 @@
 
 _realname=pluggy
 pkgbase=python-pluggy
-pkgname=(python2-${_realname} python3-${_realname})
-pkgver=0.13.0
-pkgrel=1
+pkgname=(python-${_realname})
+pkgver=0.13.1
+pkgrel=2
 pkgdesc="Plugin and hook calling mechanisms for python"
 arch=('any')
 url="https://www.pluggypayments.com/docs/python"
 license=('MIT')
-makedepends=('python2-setuptools-scm' 'python3-setuptools-scm')
-checkdepends=('python2-pytest-runner' 'python3-pytest-runner')
-source=("$pkgbase-$pkgver.tar.gz::https://github.com/pytest-dev/pluggy/archive/$pkgver.tar.gz")
-sha512sums=('cc946bf3e003e0c6fd04d113682560c6e2c84ffa790a6177f43cd5754d25248bae33af6aa77d86c938cea31bc386af9ada88d61499071a6216da1fd94bc11773')
+depends=('python')
+makedepends=('python-setuptools' 'python-setuptools-scm')
+checkdepends=('python-pytest-runner')
+provides=("python3-${_realname}")
+replaces=("python3-${_realname}")
+conflicts=("python3-${_realname}")
+source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/pytest-dev/pluggy/archive/${pkgver}.tar.gz")
+sha512sums=('3269f7ad7801a70ba8aa3182c568f70e2ee88a90b6f6335be631f9737dd42fac3fb1b27c5b6fe6422de128ddcc58736f0c41ed60b7c0177126dd676b98ece301')
 
 prepare() {
-  cd "${srcdir}"
-  for builddir in python{2,3}-build-${CARCH}; do
-    rm -rf ${builddir} | true
-    cp -r "${_realname}-${pkgver}" "${builddir}"
-  done
   # Set version for setuptools_scm
   export SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver
 }
 
 build() {
-  for pver in {2,3}; do  
-    msg "Python ${pver} build for ${CARCH}"  
-    cd "${srcdir}/python${pver}-build-${CARCH}"
-    python${pver} setup.py build
-  done  
+  cd "${srcdir}/${_realname}-${pkgver}"
+  /usr/bin/python setup.py build
 }
 
 check() {
-  for pver in {2,3}; do
-    msg "Python ${pver} test for ${CARCH}"
-    cd "${srcdir}/python${pver}-build-${CARCH}"
-    python${pver} setup.py pytest
-  done
+  cd "${srcdir}/${_realname}-${pkgver}"
+  /usr/bin/python setup.py pytest
 }
 
-package_python3-pluggy() {
-  depends=('python3')
-
-  cd "${srcdir}/python3-build-${CARCH}"
-  python3 setup.py install -O1 --root "$pkgdir" --optimize=1 --skip-build
-
-  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
-}
-
-package_python2-pluggy() {
-  depends=('python2')
-
-  cd "${srcdir}/python2-build-${CARCH}"
-  python2 setup.py install -O1 --root "$pkgdir" --optimize=1 --skip-build
-
-  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+package() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+  /usr/bin/python setup.py install -O1 --root "${pkgdir}" --optimize=1 --skip-build
+  install -Dm644 LICENSE "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
 }

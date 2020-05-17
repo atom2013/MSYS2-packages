@@ -1,0 +1,42 @@
+# Maintainer: J. Peter Mugaas <jpmugaas@suddenlink.net>
+
+pkgbase=python-pytest
+pkgname=('python-pytest')
+pkgver=5.4.1
+pkgrel=2
+provides=("python3-pytest")
+replaces=("python3-pytest")
+conflicts=("python3-pytest")
+pkgdesc="Simple powerful testing with Python"
+arch=('any')
+license=('MIT')
+url="https://pytest.org/"
+depends=('python'
+         'python-atomicwrites'
+         'python-attrs'
+         'python-more-itertools'
+         'python-pluggy'
+         'python-py'
+         'python-setuptools'
+         'python-six')
+makedepends=('python-setuptools-scm')
+source=("pytest-${pkgver}.tar.gz::https://github.com/pytest-dev/pytest/archive/${pkgver}.tar.gz")
+sha512sums=('921acb74d6161d368041fd44237d7bea20e0c925058fdb929cbe10c5634837a54b2e5332fc3b73d83d28c703353efda74e7685756dfc186fa2df7d56cb6227c5')
+
+prepare() {
+  sed -i "s/'_pytest.vendored_packages'//" pytest-${pkgver}/setup.py
+  sed -i 's/assert numentries == 0/assert numentries == 26/' pytest-${pkgver}/testing/python/collect.py
+}
+
+build() {
+  export SETUPTOOLS_SCM_PRETEND_VERSION=${pkgver}
+  
+  cd "${srcdir}/pytest-${pkgver}"
+  /usr/bin/python setup.py build
+}
+
+package() {
+  cd pytest-${pkgver}
+  /usr/bin/python setup.py install --root="${pkgdir}" --optimize=1 --skip-build
+  install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

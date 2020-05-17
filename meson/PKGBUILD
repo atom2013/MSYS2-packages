@@ -1,34 +1,31 @@
 # Maintainer: Christoph Reiter <reiter.christoph@gmail.com>
 
 pkgname=meson
-pkgver=0.52.1
+pkgver=0.54.1
 pkgrel=1
 pkgdesc='High-productivity build system'
 arch=('any')
 url="https://mesonbuild.com/"
 license=('Apache 2')
-depends=('python3' 'python3-setuptools' 'ninja')
+depends=('python' 'python-setuptools' 'ninja')
 source=("https://github.com/mesonbuild/${pkgname}/releases/download/${pkgver}/${pkgname}-${pkgver}.tar.gz"
         "cygwin-disguise.patch")
-sha256sums=('0c277472e49950a5537e3de3e60c57b80dbf425788470a1a8ed27446128fc035'
+sha256sums=('2f76fb4572762be13ee479292610091b4509af5788bcceb391fe222bcd0296dc'
             'de6ba260edf941a1530f6fcde5d1b7404c1cc38bb9d4175793b5459071ca75d5')
 
 prepare() {
   cd "${srcdir}/${pkgname}-${pkgver}"
-
   patch -p1 -i "${srcdir}"/cygwin-disguise.patch
 }
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
-
-  python3 setup.py build
+  /usr/bin/python setup.py build
 }
 
 package() {
   cd "${srcdir}/${pkgname}-${pkgver}"
-
-  python3 setup.py install --root="${pkgdir}/" --optimize=1
+  /usr/bin/python setup.py install --root="${pkgdir}/" --optimize=1
 
   install -Dm644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
 }

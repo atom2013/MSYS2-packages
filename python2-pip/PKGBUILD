@@ -1,0 +1,35 @@
+# Maintainer: atom2013 <atom.long@hotmail.com>
+
+_realname=pip
+pkgbase="python2-${_realname}"
+pkgname=("python2-${_realname}")
+pkgver=20.0.2
+pkgrel=1
+pkgdesc="The PyPA recommended tool for installing Python packages"
+url="https://pip.pypa.io/"
+arch=('any')
+license=('MIT')
+depends=('python2' 'python2-setuptools')
+conflicts=('python-pyinstall')
+replaces=('python-pyinstall')
+source=(${_realname}-${pkgver}.tar.gz::https://github.com/pypa/${_realname}/archive/${pkgver}.tar.gz)
+sha256sums=('00bdc118df4552f654a5ccf0bd3ff1a7d101ee7d7ac899fe9a752363b3f2f070')
+
+build() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  python2 setup.py build
+}
+
+package() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  python2 setup.py install --prefix=/usr --root="${pkgdir}"
+
+  mv "${pkgdir}/usr/bin/pip" "${pkgdir}/usr/bin/pip2"
+  sed -i "s|#!/usr/bin/env python$|#!/usr/bin/env python2|" \
+    ${pkgdir}/usr/lib/python2.7/site-packages/pip/__init__.py
+  python2 -m compileall ${pkgdir}/usr/lib/python2.7/site-packages/pip/__init__.py
+
+  install -D -m644 LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

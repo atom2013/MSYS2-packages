@@ -7,47 +7,34 @@
 # Contributor: Felix Kaiser <felix.kaiser@fxkr.net>
 
 pkgbase=python-py
-pkgname=('python3-py' 'python2-py')
-pkgver=1.8.0
-pkgrel=1
+pkgname=('python-py')
+pkgver=1.8.1
+pkgrel=2
 pkgdesc="library with cross-python path, ini-parsing, io, code, log facilities"
 arch=('any')
 license=('MIT')
 url="https://pylib.readthedocs.io/"
-makedepends=('python3-setuptools'
-             'python3-setuptools-scm'
-             'python2-setuptools'
-             'python2-setuptools-scm')
-source=("https://pypi.python.org/packages/source/p/py/py-${pkgver}.tar.gz")
-sha512sums=('83c7de6cfe89f5064f5f7266739b16adf61fd8f4f77ead787e17e41b7fb4d5f68fa242eab9a04c0c1a88cc7c47e68c78256e4432c5f8eeff5ac3dc36a90cfa3a')
+depends=('python')
+makedepends=('python-setuptools'
+             'python-setuptools-scm')
+provides=("python3-py")
+replaces=("python3-py")
+conflicts=("python3-py")
+source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/pytest-dev/py/archive/${pkgver}.tar.gz")
+sha512sums=('6ebe06c50e1279e1a73cf0ef97d75bafc8cd4c7d7990ed5add84aaba52523046f989cf29a11ae86ec56acbb5f0cb43147a0738108902c5eeaddaa8497e5ab32e')
 
 prepare() {
-  cp -a py-${pkgver}{,-py2}
   export LC_CTYPE=en_US.UTF-8
   export SETUPTOOLS_SCM_PRETEND_VERSION=${pkgver}
 }
 
 build() {
-  cd "$srcdir/py-${pkgver}"
-  /usr/bin/python3 setup.py build
-
-  cd "$srcdir/py-${pkgver}-py2"
-  /usr/bin/python2 setup.py build
+  cd "${srcdir}/py-${pkgver}"
+  /usr/bin/python setup.py build
 }
 
-package_python3-py() {
-  depends=('python3')
-
-  cd py-${pkgver}
-  /usr/bin/python3 setup.py install --root="${pkgdir}" --optimize=1
+package() {
+  cd "${srcdir}/py-${pkgver}"
+  /usr/bin/python setup.py install --root="${pkgdir}" --optimize=1
   install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
-
-package_python2-py() {
-  depends=('python2')
-
-  cd py-${pkgver}-py2
-  /usr/bin/python2 setup.py install --root="${pkgdir}" --optimize=1
-  install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
-}
-
