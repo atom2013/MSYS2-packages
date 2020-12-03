@@ -3,14 +3,14 @@
 # Contributor: Karlson2k (Evgeny Grin) <k2k@narod.ru>
 # Contributor: Alethea Rose <alethea@alethearose.com>
 
+PKGEXT='.pkg.tar.xz'
 pkgname=filesystem
-pkgver=2020.02
-pkgrel=2
+pkgver=2020.10
+pkgrel=1
 pkgdesc='Base filesystem'
 arch=('i686' 'x86_64')
 license=('BSD')
 url='https://sourceforge.net/projects/msys2/'
-groups=('base')
 provides=('msys2-base')
 replaces=('msys2-base')
 backup=('etc/fstab' 'etc/shells' 'etc/profile'
@@ -26,6 +26,8 @@ source=('bash.bash_logout'
         'dot.inputrc'
         'dot.profile'
         'fstab'
+        'mingw32.ico'
+        'mingw64.ico'
         'msys2.ico'
         'msys2_shell.cmd'
         'msystem'
@@ -33,7 +35,6 @@ source=('bash.bash_logout'
         'profile'
         'profile.lang.sh'
         'profile.tzset.sh'
-        'regen-info.sh'
         'shell'
         'shells'
         'start'
@@ -60,14 +61,15 @@ sha256sums=('742a7d66b7a5ebd2b8461728c5b44a46b2305fd2116208eecae5f45828938ea0'
             '2972d2f333a3b090aaaff4a546b16edf121cbb3e159f32a9ebdb3d125243a7d6'
             '5a51474700064f5c4527e4423a866ac957332f7e932675ab5fa6a419b47b1834'
             '387ca1e86c1a18a143eb077ca194ad44c0a2faf98795a0d437f2d210d5a6df18'
+            '40a10a03382b93f196464b11ec179f903b9af6d281a9327472b4fb9693b0ca8f'
+            'be368cc325f33db9035dc4839bb967bebe9b896bdd7582749124245ccbc38c9f'
             '7d6994d7caf52a459b562cfb0da1d758a4b7bca478d1df00de3a96686e59008e'
-            'db6738b88e6cf8092522fd794779059b3082ed1f4f72259d92df9df50b9c9cd4'
-            '3c1da9bf6ff791c32f17e49db0047b3c9cbaacd44d6d0b92696cdeacebf8f947'
+            '01a9355fe15a0a48b99b6bc0194d48f7c4bc632033137c9ddeb7bf0cf96516c1'
+            '65f59306dfe6437ea2694d50ed4e2fe95937148549157809ad3daac5d7e11ddf'
             '91f1f918cf13deab0124082086e990786113b0e710dbda4678d8fc14905ad94d'
-            '21d545a1c6f3d5dbe07b80645c09320bb709df627a82d02bbdf63e444376feb8'
+            '43172d66ee40a02d96c587a35e78fe0cb4e2e3d1cc96710b9ea06a0a909fdfbe'
             '6c0ca979c7b146b3750103b1296a399764f4e1b222ee091d3aa072b6da16c1a5'
             'cbec90c9403826bf6d8dd1fed16240b9d8695ec15df5dcdab7e485bb46c016ab'
-            '756df34c5b28478a81331785de0f56438bb652cf5f29029a9db2d83281361340'
             '2087410bf7ead6fa586628ea7fc97c53f5ea3ce16d1ee91ecc15ccc18ab53094'
             'f63241cc56aa7b7ec6962d19991d211b4e1641b78ba5226835118ab493830a8b'
             'e96c1f54ffff792e738aa032815c82c30821b0683806e5ed0ba2a759db2fd494'
@@ -122,6 +124,8 @@ package() {
   install -m644 ${srcdir}/profile.tzset.sh etc/profile.d/tzset.sh
   install -m644 ${srcdir}/profile.lang.sh etc/profile.d/lang.sh
 
+  install -m644 ${srcdir}/mingw32.ico mingw32.ico
+  install -m644 ${srcdir}/mingw64.ico mingw64.ico
   install -m644 ${srcdir}/msys2.ico msys2.ico
   install -m755 ${srcdir}/msys2_shell.cmd msys2_shell.cmd
 
@@ -141,7 +145,7 @@ package() {
     install -d -m755 usr/share/man/man${d}
   done
   # various shell scripts
-  for f in cmd start dep-search regen-info.sh shell; do
+  for f in cmd start dep-search shell; do
     install -m755 ${srcdir}/${f} usr/bin
   done
 

@@ -2,9 +2,9 @@
 
 pkgbase=gnutls
 pkgname=('gnutls' 'libgnutls' 'libgnutls-devel')
-_base_ver=3.6.13
+_base_ver=3.6.15
 pkgver=${_base_ver}
-pkgrel=1
+pkgrel=3
 pkgdesc="A library which provides a secure layer over a reliable transport layer"
 arch=('x86_64' 'i686')
 license=('GPL3' 'LGPL2.1')
@@ -21,13 +21,12 @@ makedepends=('gettext-devel'
 #optdepends=('guile: for use with Guile bindings')
 source=(https://gnupg.org/ftp/gcrypt/gnutls/v${_base_ver%.*}/${pkgname}-${pkgver}.tar.xz{,.sig}
         gnutls-3.6.3-msysize.patch)
-sha256sums=('32041df447d9f4644570cf573c9f60358e865637d69b7e59d1159b7240b52f38'
+sha256sums=('0ea8c3283de8d8335d7ae338ef27c53a916f15f382753b174c18b45ffd481558'
             'SKIP'
-            'a59cebd4ddad05eeb40ce1f6647b0a8b092c118f652db3723b56e267ef5a79ab')
-validpgpkeys=('0424D4EE81A0E3D119C6F835EDA21E94B565716F'
-              '1F42418905D8206AA754CCDC29EE58B996865171')
-               # "Simon Josefsson <simon@josefsson.org>"
-               # "Nikos Mavrogiannopoulos <nmav@gnutls.org>
+            '3b0b347d207033bdc21d5f9b9186f6819ad1f4a575f775fbbf5cb671130b4e68')
+validpgpkeys=('0424D4EE81A0E3D119C6F835EDA21E94B565716F' # "Simon Josefsson <simon@josefsson.org>"
+              '1F42418905D8206AA754CCDC29EE58B996865171' # "Nikos Mavrogiannopoulos <nmav@gnutls.org>
+              '462225C3B46F34879FC8496CD605848ED7E69871') # "Daiki Ueno <ueno@unixuser.org>"
 
 prepare() {
   cd "${srcdir}"/${pkgname}-${_base_ver}
@@ -83,7 +82,11 @@ package_libgnutls() {
 package_libgnutls-devel() {
   pkgdesc="Libgnutls headers and libraries"
   groups=('development')
-  depends=("libgnutls=${pkgver}")
+  depends=("libgnutls=${pkgver}"
+           'libidn2-devel'
+           'libnettle-devel'
+           'libp11-kit-devel'
+           'libtasn1-devel')
 
   mkdir -p ${pkgdir}/usr/lib
   cp -rf ${srcdir}/dest/usr/include ${pkgdir}/usr/

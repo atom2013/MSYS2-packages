@@ -2,16 +2,16 @@
 
 _realname=patiencediff
 pkgname="python-${_realname}"
-pkgver=0.1.0
-pkgrel=2
+pkgver=0.2.1
+pkgrel=1
 pkgdesc='Patiencediff Python and C implementations'
 arch=('i686' 'x86_64')
 url='https://www.breezy-vcs.org/'
 license=('GPL2')
 depends=('python')
-makedepends=('python-setuptools')
-source=("${_realname}-${pkgver}.tar.gz"::https://github.com/breezy-team/patiencediff/archive/${pkgver}.tar.gz)
-sha256sums=('7c10d1a7ca4f45d46e28e96ef181c70e62d0f3f438e82794987dfbbbb209be47')
+makedepends=('python-setuptools' 'python-devel')
+source=("${_realname}-${pkgver}.tar.gz"::https://github.com/breezy-team/patiencediff/archive/v${pkgver}.tar.gz)
+sha256sums=('cde3ece054837358d3c64b8fd18d3e15ead5b07d8f6d20bdfacce92d8725e506')
 
 prepare(){
   cd "${srcdir}/${_realname}-${pkgver}"

@@ -1,6 +1,7 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 # Contributor: Ray Donnelly <mingw.android@gmail.com>
 
+PKGEXT='.pkg.tar.xz'
 pkgbase=bash
 pkgname=('bash' 'bash-devel')
 _basever=4.4
@@ -11,7 +12,6 @@ pkgdesc="The GNU Bourne Again shell"
 arch=('i686' 'x86_64')
 license=('GPL')
 url="https://www.gnu.org/software/bash/bash.html"
-groups=('base')
 validpgpkeys=('7C0135FB088AAF6C66C650B9BB5869F064EA74AB') # Chet Ramey
 makedepends=('gettext-devel' 'libreadline-devel>=7.0' 'ncurses-devel')
 source=(https://ftp.gnu.org/gnu/bash/bash-${_basever}.tar.gz{,.sig}
@@ -84,7 +84,6 @@ check() {
 }
 
 package_bash() {
-  depends=('msys2-runtime') # 'libintl' 'libiconv' 'libreadline>=7.0' 'ncurses' 'gcc-libs'
   provides=('sh')
   #install=bash.install
 

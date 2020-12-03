@@ -6,7 +6,6 @@ pkgrel=1
 pkgdesc="GNU utilities to locate files"
 arch=('i686' 'x86_64')
 license=('GPL3')
-groups=('base')
 depends=('libiconv' 'libintl')
 makedepends=('libiconv-devel' 'gettext-devel')
 url="https://www.gnu.org/software/findutils"
@@ -16,6 +15,7 @@ install=findutils.install
 sha256sums=('c5fefbdf9858f7e4feb86f036e1247a54c79fc2d8e4b7064d5aaa1f47dfa789a'
             'SKIP'
             'b720cddb54958d4500e43fefedef3b91a6a2104641feacfdca1bbecd95c543b5')
+validpgpkeys=('A5189DB69C1164D33002936646502EF796917195')
 
 prepare() {
   cd "${srcdir}/${pkgname}-${pkgver}"

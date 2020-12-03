@@ -1,21 +1,16 @@
 # Maintainer: Alexey Pavlov <Alexpux@gmail.com>
 # Contributor: Ray Donnelly <mingw.android@gmail.com>
 
-pkgbase=python3
-pkgname=python
-pkgver=3.8.2
+pkgbase=python
+pkgname=('python' 'python-devel')
+pkgver=3.8.6
 pkgrel=1
 _pybasever=${pkgver%.*}
 pkgdesc="Next generation of the python high-level scripting language"
 arch=('i686' 'x86_64')
 license=('custom')
 url="https://www.python.org/"
-depends=('libbz2' 'libexpat' 'libffi' 'liblzma' 'ncurses' 'libopenssl' 'libreadline' 'mpdecimal' 'libsqlite' 'zlib')
-makedepends=('libbz2-devel' 'libexpat-devel'  'mpdecimal-devel' 'libsqlite-devel' 'libffi-devel' 'ncurses-devel' 'libreadline-devel' 'liblzma-devel' 'openssl-devel' 'zlib-devel')
-#optdepends=('tk: for tkinter' 'sqlite')
-provides=('python3')
-replaces=('python3')
-options=('!makeflags')
+makedepends=('libbz2-devel' 'libcrypt-devel' 'libexpat-devel'  'mpdecimal-devel' 'libsqlite-devel' 'libffi-devel' 'ncurses-devel' 'libreadline-devel' 'liblzma-devel' 'openssl-devel' 'zlib-devel')
 source=(https://www.python.org/ftp/python/${pkgver%rc*}/Python-${pkgver}.tar.xz
         001-3.1-enable-new-dtags.patch
         002-3.2-getpath-exe-extension.patch
@@ -36,8 +31,12 @@ source=(https://www.python.org/ftp/python/${pkgver%rc*}/Python-${pkgver}.tar.xz
         026-3.7-mpdec-msys.patch
         027-install-import-library.patch
         900-msysize.patch
-        920-allow-win-drives-in-os-path-isabs.patch)
-sha256sums=('2646e7dc233362f59714c6193017bb2d6f7b38d6ab4a0cb5fbac5c36c4d845df'
+        920-allow-win-drives-in-os-path-isabs.patch
+        930-fix-missing-tcp-include.patch
+        940-rebase-python-dll.patch
+        950-rebase-dlls.patch
+        960-fix-parallel-make.patch)
+sha256sums=('a9e0b79d27aa056eb9cce8d63a427b5f9bab1465dee3f942dcfdb25a82f4ab8a'
             'be96ddaca58a39ddaf1e3e5bb7900b34c0e6d00e9b64c4e0f8a3565a74a44e84'
             '4044827af3cf0e91a8ddd44cd588f17ea4e17619512edd299b5688ec6e112ad4'
             '82cfafc5b31ad4c9bb4c9786044c39c75762dbc2656abdfdc433c23fee69c02f'
@@ -57,7 +56,11 @@ sha256sums=('2646e7dc233362f59714c6193017bb2d6f7b38d6ab4a0cb5fbac5c36c4d845df'
             'fc6164a90f0ca2a9341aaf4448b4334c3393459ca5cbad6d7149f8bcf70da5fe'
             'b4042475c5c75e0b4c7c08ccad2891eb8098c066c5ba524a988a0519102e8e5d'
             'e833cb6ab8a3d35296f52ad327df7eb4cc4eab94413085bded2943a290cba16d'
-            '387a2b7931fb4958e2526991760d85677f44fa13cff0aeb0f41a267f1f7fd214')
+            '387a2b7931fb4958e2526991760d85677f44fa13cff0aeb0f41a267f1f7fd214'
+            '17e4ac1b5f0fa8a6c410fb80d1ad99ec9185efef51b8450a31932b553c354ed1'
+            'b439ff4f0a1f13858f8fb596414b74ed2c14fc3103d90287bb8e461ee89288b9'
+            '612bc5bcbe24c2f623713172d318c65a69ae601d72bcc5a170fe7c4eee458d18'
+            'c59025ca9d1219bbb42d620ca8d19398610737c5754f1873db07d55c47b2dad1')
 
 apply_patch_with_msg() {
   for _patch in "$@"
@@ -102,8 +105,15 @@ prepare() {
     026-3.7-mpdec-msys.patch \
     027-install-import-library.patch \
     900-msysize.patch \
-    920-allow-win-drives-in-os-path-isabs.patch
+    920-allow-win-drives-in-os-path-isabs.patch \
+    940-rebase-python-dll.patch \
+    950-rebase-dlls.patch \
+    960-fix-parallel-make.patch
   
+  # https://bugs.python.org/issue41374
+  apply_patch_with_msg \
+    930-fix-missing-tcp-include.patch
+
   # Incomplete patch from Ray Donnelly
   # patch -p1 -i ${srcdir}/3.3.2-allow-windows-paths-for-executable.patch
 
@@ -138,15 +148,21 @@ build() {
     --without-ensurepip \
     ac_cv_func_bind_textdomain_codeset=yes
 
-  LC_CTYPE=en_US.UTF-8 make EXTRA_CFLAGS="$CFLAGS"
+  LC_CTYPE=en_US.UTF-8 make EXTRA_CFLAGS="$CFLAGS" > >(tee make-python.log)
+  sed -ne '/^\s*Failed to build these modules/,$ {p; /^\s*$/q42}' make-python.log
 }
 
 check() {
   cd "${srcdir}/Python-${pkgver}"
-  "${srcdir}/Python-${pkgver}/python" -m test.regrtest -x test_posixpath test_logging
+  "${srcdir}/Python-${pkgver}/python.exe" -m test.regrtest -x test_posixpath test_logging
 }
 
-package() {
+package_python() {
+  #optdepends=('tk: for tkinter' 'sqlite')
+  depends=('libbz2' 'libexpat' 'libffi' 'liblzma' 'ncurses' 'libopenssl' 'libreadline' 'mpdecimal' 'libsqlite' 'zlib')
+  provides=('python3')
+  replaces=('python3')
+
   cd "${srcdir}/Python-${pkgver}"
   make DESTDIR="${pkgdir}" EXTRA_CFLAGS="$CFLAGS" install
 
@@ -169,4 +185,9 @@ package() {
 
   # fix permissons
   find ${pkgdir}/usr -type f \( -name *.dll -o -name *.exe \) | xargs chmod 0755
+}
+
+package_python-devel() {
+  pkgdesc="Python headers and dev dependencies"
+  depends=("python=${pkgver}" 'libcrypt-devel')
 }

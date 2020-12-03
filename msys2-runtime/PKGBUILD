@@ -1,15 +1,15 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 # Contributor: Ray Donnelly <mingw.android@gmail.com>
 
+PKGEXT='.pkg.tar.xz'
 pkgbase=msys2-runtime
 pkgname=('msys2-runtime' 'msys2-runtime-devel')
-pkgver=3.0.7
-pkgrel=6
+pkgver=3.1.7
+pkgrel=4
 pkgdesc="Cygwin POSIX emulation engine"
 arch=('i686' 'x86_64')
 url="https://www.cygwin.com/"
 license=('GPL')
-groups=('base')
 makedepends=('cocom'
              'git'
              'perl'
@@ -28,7 +28,7 @@ source=('msys2-runtime'::git://sourceware.org/git/newlib-cygwin.git#tag=cygwin-$
         0002-Rename-dll-from-cygwin-to-msys.patch
         0003-Add-functionality-for-converting-UNIX-paths-in-argum.patch
         0004-Add-functionality-for-changing-OS-name-via-MSYSTEM-e.patch
-        0005-Move-root-to-usr.-Change-sorting-mount-points.-Do-no.patch
+        0005-Move-root-to-usr.-Change-sorting-mount-points.-By-de.patch
         0006-Do-not-create-cygwin-symlinks.-Instead-use-deep-copy.patch
         0007-Automatically-rewrite-TERM-msys-to-TERM-cygwin-With-.patch
         0008-Do-not-convert-environment-for-strace.patch
@@ -39,31 +39,60 @@ source=('msys2-runtime'::git://sourceware.org/git/newlib-cygwin.git#tag=cygwin-$
         0013-Add-debugging-for-build_argv.patch
         0014-Add-debugging-for-strace-make_command_line.patch
         0015-environ.cc-New-facility-environment-variable-MSYS2_E.patch
-        0024-Fix-native-symbolic-link-spawn-passing-wrong-arg0.patch
-        0025-QueryUnbiasedInterruptTime-must-be-load-from.patch
-        0026-mkdir-always-check-for-existence.patch
-        0027-gcc8-errors.patch
-)
+        0016-Fix-native-symbolic-link-spawn-passing-wrong-arg0.patch
+        0017-QueryUnbiasedInterruptTime-must-be-load-from-kernel3.patch
+        0018-fixup-Do-not-create-cygwin-symlinks.-Instead-use-dee.patch
+        0019-strace-quiet-be-really-quiet.patch
+        0020-Default-to-disable_pcon.patch
+        0021-Introduce-the-enable_pcon-value-for-MSYS.patch
+        0022-Don-t-create-WSL-symlinks-for-MSYS2.patch
+        0023-popen-call-usr-bin-sh-instead-of-bin-sh.patch
+        0024-CI-add-a-GHA-for-doing-a-basic-build-test.patch
+        0025-Set-up-a-GitHub-Action-to-keep-in-sync-with-Cygwin.patch
+        0026-recursiveCopy-Always-close-the-used-handle-with-Find.patch
+        0027-fixup-Add-functionality-for-converting-UNIX-paths-in.patch
+        0028-Expose-full-command-lines-to-other-Win32-processes-b.patch
+        0029-Cygwin-pty-Prevent-garbled-output-when-pseudo-consol.patch
+        0030-squash-Do-not-create-cygwin-symlinks.-Instead-use-de.patch
+        0031-fixup-Don-t-create-WSL-symlinks-for-MSYS2.patch
+        0032-Cygwin-avoid-GCC-10-error-with-Werror-parentheses.patch
+        0033-Cygwin-avoid-GCC-10-error-with-Werror-narrowing.patch
+        0034-Cygwin-avoid-GCC-10-error-with-Werror-narrowing.patch)
 sha256sums=('SKIP'
-            'df193299ab04aca8a049b2b98d025452caad95f27fba5a1f1b350f74a82c24f1'
-            '73cc94bd63c82f69cded4ccdb0d3f7599e7b7f993a03f534eb5b8bee845694fc'
-            '65c13151b62af0a1ec1060804918093676933199b2d76510c40ac7980ee77824'
-            'bd67641a856d38c957b0b30bbc4fd58d9ca8829ae84c11acd13211c9dee1aab4'
-            '400d5377d986e53d3af50e730c536e71c9dfebb77a0efa71c14302fd8e201c59'
-            '2122b881be02cad4b2203a848f2a49794157ef091ed01f4c4e8d17c0b5e5b111'
-            'd001b32e07899a7a0cb44baaba7f5bc1cff57130a29ab72e3413a9698e0c3e0f'
-            '3e0c58abe0c81b7c08fdd0affd5d96a82f61f890b90fcee692584fe5b364962e'
-            'ead507d1fe2bc796937f93913da5196c33120a15860b5b87f7903e7015172dcd'
-            'f6471c9349bd89582cb6f5c5e32a427867d941b534267f86b1cee4367f8c8ab1'
-            'f429aaacd345e59f393b6b681c938a0d38017538e8bc40b27c8ade594d4f175d'
-            '774fda3da42da082578152c22d64b87f4bc63ad0412edb680f229b2ab5a1714e'
-            '8fa80ce0e14f078cf6a7096d0587c27add38d647191d5c836a70761b4214ffb4'
-            '05cca683b21ba0c8d22135f1f1f01da134be175de49fe7076200d7fe3efa4dce'
-            '5fd3bb0f943b9f6295c0ebeaf8fb2a4bce36780bba83e7c0ce2c3380c67acf4f'
-            '50d8a52cc33501898e7a01b00e8e5965c1ef7f37f26039a4380788ce7639a04c'
-            'b31e2bee92561594bf2db52f361ab2507e979797bec82955dc00f521ebee72b5'
-            'c68b687540668f0871a901143510666b8b9a59c12eae0ea9bef187d1af38c493'
-            '4e971710c4e277f64a5d7654dab92850b693659ebac3bdcb21898313c2c659b5')
+            'f75aeb01a344ccd343c54102397c01f48a457700248c84e3fd1de1b01cc65de9'
+            '97ca79f280a10ffced9c3a97a321f004d5146d6da56fb8e6eb051f3c396b76fb'
+            '0790f926d2e0162d1475ec8ca659bdeeb8905308e972a1b03e3ac4dab62a9055'
+            '4c0dc2bf32ece594c63d40bcef677bfe00b138c42b8e77493b5a2d37f686a794'
+            '39bfc13b5cc19e2548d22b8e38de23ba7ffa035752041cb2719e783a0152c9fb'
+            '1e5782cf7b504771656fe34c2b51d10357836708fce74380c0c3dd2ed3bb93e6'
+            '459e8ce5d0a08738d3d29010e90f1a96dbcac3c74a3bdc9f750b7c99f5c1554c'
+            '5be89e3d9f7655fb2f76ad035fbc78230805aeadb73ee81989cebbd42868ba29'
+            '1bbbdf1355b150ba3048d3eed9f21affbdc8a925f45ab6e1190e3f76958ddcc2'
+            '8e03be072bb966a0547496db60b8b9b442131bd922ddf4af7df8d518707ebe3d'
+            'f63e95aca5245ef0d31b6bd305457f583b0ff3cf40b147f643550bd2d310fc55'
+            '2477201f5fce1b2f2931f8759120b528bdf81c6f10dc01c2a7cdbdf239158179'
+            'c11d291b9308779af68d1d130d553de0f197c5b8a09447b26babce1dce019aca'
+            '7fb82429612db338b6680b1a8886919b00d87d29c5eb08d2e120f3065289d4f0'
+            '14340d2c01fcda00fdce1305b0a7c417d6647daeb69459a4a0dbdef84c39a97d'
+            '612cb665f25f0b8cbc367e9412420a7ca1f247373f3dc3e9731fbf5a3f2957be'
+            '8de571deb59b1a2a172206519eae5d7bfaa32dbb1228352f0bccb95ef7fa4c59'
+            '819ab87b32ed7898470216e3fede55b45d2b69dd33f1504b8c27d7b4097a6184'
+            'f3c2096f5ca7d896fb6b9ecab4a51808d8a5a97300201767e520f8919119759d'
+            '9c2c84bce43f2333adfd4bde9dcd0f6e614e699ed9660504091c2dead2c28ba1'
+            'd9bc5d5ee444ac7d72d59f8f1bd8469898740806bff4cd4061d3f3314ad588ed'
+            '638b534c258d1627c2e3c03744248ef553b0c3ad66a18493506bee467435a32b'
+            '6ccb9e33aebdcb92dec079beeb72d3830f340d6cc1a9ef99a66ce9ed4ebfea22'
+            'd41db0f4fcc2f71e5bf7fc09f51e7b9a629f828b807f446529636ec5826ead78'
+            'bee112fdb7c8a0405f4b834e9a1d6ff8227612cd2690e73911c4f4c71767c138'
+            '61072fdd9fa31479994bf0f1539e6491cce2d7a9563319eba6b151e3b9a04434'
+            'fbfba1e066d3ac251ae8ddd4855a0d18d4c3d57d045c2759d4cb0badb0df8ead'
+            'c90830d4057ca243e424d922be5c1858a6ce9c415c74ca563bcfe69388c725bd'
+            'f4b2e908a46970df567be8a29d6b1d9809296532490cf9e3c171a5d4904a6166'
+            '6e879fcdffb36bbe0ef475b67eea1cc5e7c41c41ea0eceb76f75dff18eb2d2e1'
+            '32ea03ab654c37fd296a29b538e5dc4f21c44e2572613daffb6b3d21e7dff4d7'
+            '0d38735503540acb85a067cb6b1b2faf02a5eca32ab76964565bd8fc98944120'
+            '97c095263faf7193eb265c02ae83e66aad6d263c9e89c4901d2fdd1e0740f5fb'
+            '527373882204626bcd1d37b03db8d3e90ce8519438bcd72ff6a2d3dd5c4e029c')
 
 # Helper macros to help make tasks easier #
 apply_patch_with_msg() {
@@ -94,13 +123,18 @@ del_file_exists() {
 
 prepare() {
   cd "${srcdir}"/msys2-runtime
+  if test true != "$(git config core.symlinks)"
+  then
+    git config core.symlinks true &&
+    /usr/bin/git reset --hard
+  fi
   del_file_exists winsup/cygwin/msys2_path_conv.cc \
-    winsup/cygwin/msys2_path_conv.h 
+    winsup/cygwin/msys2_path_conv.h
  apply_git_am_with_msg 0001-Add-MSYS2-triplet.patch \
   0002-Rename-dll-from-cygwin-to-msys.patch \
   0003-Add-functionality-for-converting-UNIX-paths-in-argum.patch \
   0004-Add-functionality-for-changing-OS-name-via-MSYSTEM-e.patch \
-  0005-Move-root-to-usr.-Change-sorting-mount-points.-Do-no.patch \
+  0005-Move-root-to-usr.-Change-sorting-mount-points.-By-de.patch \
   0006-Do-not-create-cygwin-symlinks.-Instead-use-deep-copy.patch \
   0007-Automatically-rewrite-TERM-msys-to-TERM-cygwin-With-.patch \
   0008-Do-not-convert-environment-for-strace.patch \
@@ -111,10 +145,25 @@ prepare() {
   0013-Add-debugging-for-build_argv.patch \
   0014-Add-debugging-for-strace-make_command_line.patch \
   0015-environ.cc-New-facility-environment-variable-MSYS2_E.patch \
-  0024-Fix-native-symbolic-link-spawn-passing-wrong-arg0.patch \
-  0025-QueryUnbiasedInterruptTime-must-be-load-from.patch \
-  0026-mkdir-always-check-for-existence.patch \
-  0027-gcc8-errors.patch
+  0016-Fix-native-symbolic-link-spawn-passing-wrong-arg0.patch \
+  0017-QueryUnbiasedInterruptTime-must-be-load-from-kernel3.patch \
+  0018-fixup-Do-not-create-cygwin-symlinks.-Instead-use-dee.patch \
+  0019-strace-quiet-be-really-quiet.patch \
+  0020-Default-to-disable_pcon.patch \
+  0021-Introduce-the-enable_pcon-value-for-MSYS.patch \
+  0022-Don-t-create-WSL-symlinks-for-MSYS2.patch \
+  0023-popen-call-usr-bin-sh-instead-of-bin-sh.patch \
+  0024-CI-add-a-GHA-for-doing-a-basic-build-test.patch \
+  0025-Set-up-a-GitHub-Action-to-keep-in-sync-with-Cygwin.patch \
+  0026-recursiveCopy-Always-close-the-used-handle-with-Find.patch \
+  0027-fixup-Add-functionality-for-converting-UNIX-paths-in.patch \
+  0028-Expose-full-command-lines-to-other-Win32-processes-b.patch \
+  0029-Cygwin-pty-Prevent-garbled-output-when-pseudo-consol.patch \
+  0030-squash-Do-not-create-cygwin-symlinks.-Instead-use-de.patch \
+  0031-fixup-Don-t-create-WSL-symlinks-for-MSYS2.patch \
+  0032-Cygwin-avoid-GCC-10-error-with-Werror-parentheses.patch \
+  0033-Cygwin-avoid-GCC-10-error-with-Werror-narrowing.patch \
+  0034-Cygwin-avoid-GCC-10-error-with-Werror-narrowing.patch
 }
 
 build() {
@@ -152,7 +201,6 @@ build() {
 
 package_msys2-runtime() {
   pkgdesc="Posix emulation engine for Windows"
-  groups=('base')
   options=('!strip')
   conflicts=('catgets' 'libcatgets')
   replaces=('catgets' 'libcatgets')

@@ -1,23 +1,22 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=tzcode
-pkgver=2020a
+pkgver=2020d
 pkgrel=1
 pkgdesc="Sources for time zone and daylight saving time data"
 arch=('i686' 'x86_64')
 url="https://www.iana.org/time-zones"
 license=('GPL')
 options=('!emptydirs')
-groups=('base')
 depends=('coreutils' 'gawk' 'sed')
 source=(
         https://www.iana.org/time-zones/repository/releases/tzdata${pkgver}.tar.gz{,.asc}
         https://www.iana.org/time-zones/repository/releases/${pkgname}${pkgver}.tar.gz{,.asc}
         tzcode-makefile.patch
         tzcode-makefile-exe-extensions.patch)
-sha256sums=('547161eca24d344e0b5f96aff6a76b454da295dc14ed4ca50c2355043fb899a2'
+sha256sums=('8d813957de363387696f05af8a8889afa282ab5016a764c701a20758d39cbaf3'
             'SKIP'
-            '7d2af7120ee03df71fbca24031ccaf42404752e639196fe93c79a41b38a6d669'
+            '6cf050ba28e8053029d3f32d71341d11a794c6b5dd51a77fc769d6dae364fad5'
             'SKIP'
             'f5ba93ebce547b14c44e55f94986046af6ed1c8befad296e4846412d053c4470'
             'faf73eb5f07c56b019b540005f4262f33927a4ff2acf3752a055e8530decd749')
@@ -25,8 +24,7 @@ validpgpkeys=('7E3792A9D8ACF7D633BC1588ED97E90E62AA7E34')
 
 timezones=('africa' 'antarctica' 'asia' 'australasia'
            'europe' 'northamerica' 'southamerica'
-           'pacificnew' 'etcetera' 'backward'
-           'systemv' 'factory')
+           'etcetera' 'backward' 'factory')
 
 prepare() {
   cd ${srcdir}

@@ -1,8 +1,9 @@
+#! /usr/bin/bash
 # Maintainer: micbou <contact@micbou.com>
 
 pkgbase=libqrencode
 pkgname=('libqrencode' 'libqrencode-devel')
-pkgver=4.0.2
+pkgver=4.1.1
 pkgrel=1
 pkgdesc="QR Code encoding library"
 conflicts=(${pkgbase}-git)
@@ -10,10 +11,10 @@ replaces=(${pkgbase}-git)
 arch=('i686' 'x86_64')
 url='https://fukuchi.org/works/qrencode/'
 license=('LGPL')
-#depends=(libpng")
+#depends=('libpng')
 makedepends=('autoconf' 'automake' 'libtool' 'pkg-config' 'gcc')
-source=("https://github.com/fukuchi/libqrencode/archive/v${pkgver}.tar.gz")
-sha256sums=('43091fea4752101f0fe61a957310ead10a7cb4b81e170ce61e5baa73a6291ac2')
+source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/fukuchi/libqrencode/archive/v${pkgver}.tar.gz")
+sha256sums=('5385bc1b8c2f20f3b91d258bf8ccc8cf62023935df2d2676b5b67049f31a049c')
 
 prepare() {
   cd ${srcdir}/${pkgbase}-${pkgver}
@@ -21,13 +22,20 @@ prepare() {
 }
 
 build() {
-  cd ${srcdir}/${pkgbase}-${pkgver}
-  ./configure \
+  mkdir -p build-${pkgbase}-${pkgver}-${CHOST}
+  cd build-${pkgbase}-${pkgver}-${CHOST}
+  ../${pkgbase}-${pkgver}/configure -C \
     --prefix=/usr \
-    --build=${CHOST}
+    --build=${CHOST} \
+    --with-tests
 
   make LDFLAGS="${LDFLAGS} -no-undefined"
   make DESTDIR=${srcdir}/dest install
+}
+
+check () {
+  cd build-${pkgbase}-${pkgver}-${CHOST}
+  make check
 }
 
 package_libqrencode() {

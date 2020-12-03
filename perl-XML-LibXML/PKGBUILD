@@ -2,8 +2,8 @@
 
 _realname=XML-LibXML
 pkgname=perl-${_realname}
-pkgver=2.0204
-pkgrel=1
+pkgver=2.0205
+pkgrel=3
 pkgdesc="Interface to the libxml library"
 arch=('i686' 'x86_64')
 license=('GPL' 'PerlArtistic')
@@ -11,14 +11,14 @@ url="https://search.cpan.org/dist/XML-LibXML"
 groups=('perl-modules')
 depends=('perl' 'perl-Alien-Libxml2' 'perl-XML-SAX' 'perl-XML-NamespaceSupport')
 #checkdepends=('perl-Test-Pod' 'perl-Test-LeakTrace' 'perl-CPAN-Changes' 'perl-URI')
-makedepends=('libxml2-devel')
+makedepends=('perl-devel' 'libxml2-devel' 'perl-Path-Tiny')
 #replaces=('perlxml')
 #provides=("perlxml=${pkgver}")
 install=perl-xml-libxml.install
 options=('!emptydirs')
 source=("https://www.cpan.org/authors/id/S/SH/SHLOMIF/${_realname}-${pkgver}.tar.gz"
         'XML-LibXML-2.0200.patch')
-sha256sums=('bd48b539ad4b3d419658db7e69811f3b5fe88c6fa3dd25b30bc83f7f203d2f36'
+sha256sums=('3a25002714b13f192d0baef5dc25ad2fbf09f8ec4ad1f793dec8fe6e2f5b2278'
             'ea1e1f58f33681dc0206c4fa868cc191efeb91facaa88631bc79c73e910cf745')
 
 prepare() {
