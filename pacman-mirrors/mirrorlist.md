@@ -131,7 +131,7 @@ Contact: <ftp-adm@acc.umu.se>
 
 Access URLs:
 
-- <https://sourceforge.net/projects/msys2/files/REPOS/>
+- <https://downloads.sourceforge.net/project/msys2/>
 
 Contact: David Macek @elieux
 
@@ -143,13 +143,6 @@ Access URLs:
 - <rsync://mirror.clarkson.edu/msys2/>
 
 Contact: [Cameron Weinfurt](mailto:weinfuc@clarkson.edu)
-
-#### Gaphor Project Mirror
-Access URLs:
-
-- <https://msys2.nyc3.digitaloceanspaces.com/>
-
-Contact: [Dan Yeaw](mailto:dan@yeaw.me)
 
 ### Oregon
 #### Oregon State University
