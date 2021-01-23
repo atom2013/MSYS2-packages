@@ -2,7 +2,7 @@
 
 _realname=LWP-Protocol-https
 pkgname=perl-${_realname}
-pkgver=6.07
+pkgver=6.10
 pkgrel=1
 pkgdesc="Provide https support for LWP::UserAgent"
 arch=('any')
@@ -12,7 +12,7 @@ license=('PerlArtistic' 'GPL')
 depends=('perl' 'perl-IO-Socket-SSL' 'perl-Mozilla-CA' 'perl-Net-HTTP' 'perl-libwww')
 options=('!emptydirs')
 source=("https://www.cpan.org/authors/id/O/OA/OALDERS/${_realname}-$pkgver.tar.gz")
-sha256sums=('522cc946cf84a1776304a5737a54b8822ec9e79b264d0ba0722a70473dbfb9e7')
+sha256sums=('cecfc31fe2d4fc854cac47fce13d3a502e8fdfe60c5bc1c09535743185f2a86c')
 
 build() {
   cd ${_realname}-${pkgver}

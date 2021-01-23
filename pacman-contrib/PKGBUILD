@@ -1,0 +1,59 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Martell Malone <martellmalone@gmail.com>
+# Contributor: Ray Donnelly <mingw.android@gmail.com>
+
+pkgname=pacman-contrib
+pkgver=1.4.0
+pkgrel=1
+pkgdesc="Contributed scripts and tools for pacman systems (MSYS2 port)"
+arch=('i686' 'x86_64')
+url="https://git.archlinux.org/pacman-contrib.git/about/"
+license=('GPL')
+depends=('perl'
+         'pacman'
+         'bash')
+optdepends=('vim')
+makedepends=('asciidoc'
+             'autoconf'
+             'automake-wrapper'
+             'libtool'
+             'libarchive-devel'
+             'libcurl-devel'
+             'libgpgme-devel'
+             )
+source=(https://git.archlinux.org/pacman-contrib.git/snapshot/${pkgname}-${pkgver}.tar.gz
+        "0100-contrib.patch")
+sha256sums=('8746f1352aaad990fe633be34f925d5ab8bd8a19a5f1274e72dbde426deb86bd'
+            'd7d0ea4effd6b0698959ee4d01d225cec1fe7671f0b84d83ffc9e5f036adb294')
+
+prepare() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+
+  patch -p1 -i ${srcdir}/0100-contrib.patch
+
+  ./autogen.sh
+}
+
+check() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+
+  make check
+}
+
+build() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --disable-git-version
+
+  make
+}
+
+package() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+
+  make -j1 DESTDIR=${pkgdir} install
+}

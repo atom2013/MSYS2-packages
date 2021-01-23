@@ -1,6 +1,10 @@
 *.tar.xz
 *.tar.gz
 *.tar.bz2
+*.tar.zst
+*.tar.lz
+*.tar.lzma
+*.tar
 *.tgz
 *.zip
 *.rar
@@ -10,5 +14,9 @@
 *.log.[0-9]*
 */src/
 */pkg/
-/build.config
-/seckey.asc
+*~
+*.swp
+*.swo
+/*/*-git/
+/*/*-svn/
+/*/*-hg/

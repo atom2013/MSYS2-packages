@@ -2,7 +2,7 @@
 # Maintainer: Ray Donnelly <mingw.android@gmail.com>
 
 pkgname=git
-pkgver=2.24.0
+pkgver=2.30.0
 pkgrel=1
 pkgdesc="The fast distributed version control system"
 arch=('i686' 'x86_64')
@@ -31,12 +31,12 @@ makedepends=('asciidoc'
              'libcurl-devel'
              'libiconv-devel'
              'pcre2-devel'
-             #'python2'
+             'python'
              'rsync'
              #'texinfo'
              'xmlto')
 optdepends=(#'tk: gitk and git gui'
-            'python2: various helper scripts'
+            'python: various helper scripts'
             'subversion: git svn'
             #'cvsps: git cvsimport'
             )
@@ -50,18 +50,14 @@ source=("${pkgname}-${pkgver}.tar.gz"::https://github.com/git/git/archive/v${pkg
         git-1.8.4-msys2.patch
         git-2.3.5-mingw-pwd.patch
         git-2.8.2-Cygwin-Allow-DOS-paths.patch
-        git-tcsh-completion-fixes.patch
-        git-zsh-completion-fixes.patch
-		git-credential-wincred-fixes.patch)
-sha256sums=('6b96ba03bc9e3ae5b8fb32b4bd8546298bdd792995a5d4c87f1f92c3c08aedb5'
+	git-tcsh-completion-fixes.patch)
+sha256sums=('8db4edd1a0a74ebf4b78aed3f9e25c8f2a7db3c00b1aaee94d1e9834fae24e61'
             'c5e735d829e11f79e2d508b663d0924030498f48fc716881031fb975dbf187a5'
-            '2c0301076a7b60b5be2491433560f6f87c510ec64d2d8f9db5a75c1295893885'
+            '47f5ff7840fa00665702fa70e5cc744de23b63ce2d9d787e2f86d2c54d57cc7a'
             '340d289f8a9d82975b34bd635e8c734c0c8529d5ac1ad9bbc8a77ed752502b02'
             'f67412f829e026b677d4c3ceacfb21da0549ad4636fb07c283e52c3fd5aa3e22'
             '905e35e145be34f6affad830155a193d869da4898e46726f36cef2e89c073d23'
-            'b28b3e13de08911f027d19a557967fc21128318a8d6ca74b20b26ee997a9b992'
-            '261438a4bedd5563c702533c34792581ccfa46db873ca3e105e6c1ab803a3107'
-            '3abeca1dc20c29644827f5701dbd05ef4f236b69907970ad51863a312307bed2')
+	    'b28b3e13de08911f027d19a557967fc21128318a8d6ca74b20b26ee997a9b992')
 
 prepare() {
   cd "${srcdir}/${pkgname}-${pkgver}"
@@ -73,8 +69,6 @@ prepare() {
   patch -p2 -i "${srcdir}"/git-2.3.5-mingw-pwd.patch
   patch -p1 -i "${srcdir}"/git-2.8.2-Cygwin-Allow-DOS-paths.patch
   patch -p1 -i "${srcdir}"/git-tcsh-completion-fixes.patch
-  patch -p1 -i "${srcdir}"/git-zsh-completion-fixes.patch
-  patch -p1 -i "${srcdir}"/git-credential-wincred-fixes.patch
 
   local _arch=
   if [ "${CARCH}" == 'x86_64' ]; then
@@ -88,10 +82,11 @@ prepare() {
 }
 
 build() {
-  export PYTHON_PATH='/usr/bin/python2'
+  export PYTHON_PATH='/usr/bin/python'
   cd "${srcdir}/${pkgname}-${pkgver}"
 
-  ./configure --build=${CHOST} \
+  ./configure \
+    --build=${CHOST} \
     --prefix=/usr \
     --sysconfdir=/etc \
     --libexecdir=/usr/lib \
@@ -107,7 +102,7 @@ build() {
 }
 
 check() {
-  export PYTHON_PATH='/usr/bin/python2'
+  export PYTHON_PATH='/usr/bin/python'
   cd "${srcdir}/${pkgname}-${pkgver}"
   local jobs
   jobs=$(expr "$MAKEFLAGS" : '.*\(-j[0-9]*\).*')
@@ -124,7 +119,7 @@ check() {
 }
 
 package() {
-  export PYTHON_PATH='/usr/bin/python2'
+  export PYTHON_PATH='/usr/bin/python'
   cd "${srcdir}/${pkgname}-${pkgver}"
   make INSTALLDIRS=vendor DESTDIR="$pkgdir" install
   make INSTALLDIRS=vendor DESTDIR="${pkgdir}" install-man
@@ -148,12 +143,10 @@ package() {
   # the rest of the contrib stuff
   cp -a ./contrib/* ${pkgdir}/usr/share/git/
 
-  # scripts are for python 2.x
-  sed -i 's|#![ ]*/usr/bin/env python$|#!/usr/bin/env python2|' \
-    $(find "$pkgdir" -name '*.py') \
+  # scripts are for python
+  sed -i 's|#![ ]*/usr/bin/env python$|#!/usr/bin/python|' \
+    $(find "${pkgdir}" -name '*.py') \
     "${pkgdir}"/usr/lib/git-core/git-p4 \
     "${pkgdir}"/usr/share/git/remote-helpers/git-remote-bzr \
     "${pkgdir}"/usr/share/git/remote-helpers/git-remote-hg
-  sed -i 's|#![ ]*/usr/bin/python$|#!/usr/bin/python2|' \
-    "${pkgdir}"/usr/share/git/svn-fe/svnrdump_sim.py
 }

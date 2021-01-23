@@ -2,7 +2,7 @@
 
 pkgbase=libuv
 pkgname=("${pkgbase}" "${pkgbase}-devel")
-pkgver=1.33.1
+pkgver=1.40.0
 pkgrel=1
 pkgdesc="Multi-platform support library with a focus on asynchronous I/O"
 arch=('i686' 'x86_64')
@@ -11,7 +11,7 @@ license=('custom')
 makedepends=('gcc')
 depends=('gcc-libs')
 source=("https://github.com/libuv/libuv/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
-sha512sums=('0200aae2d38c26f537658955479cbc54fb69d5d8cbbccf3016cea319b2c46b1f311ca7a8fc289f14532acbbf2905cf96b17353b8b92bf09802424c372701d1d5')
+sha512sums=('14a6880e636e9d046e1f4c86061d7ca5fe0cdae0efb0c6fec6b6ad03b17c626da479d6cc1ae84da281ec04a75e0d56fa99ef25164432cdb246cf59f0964a7e8b')
 
 prepare() {
   cd "${srcdir}"/${pkgname}-${pkgver}
@@ -19,6 +19,7 @@ prepare() {
 }
 
 build() {
+  export lt_cv_deplibs_check_method='pass_all'
   cd "${srcdir}"/${pkgbase}-${pkgver}
   ./configure --host=${CHOST} \
               --build=${CHOST} \

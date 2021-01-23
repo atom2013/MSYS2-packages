@@ -4,13 +4,12 @@
 # Contributor: Alethea Rose <alethea@alethearose.com>
 
 pkgname=filesystem
-pkgver=2018.12
+pkgver=2021.01
 pkgrel=1
 pkgdesc='Base filesystem'
 arch=('i686' 'x86_64')
 license=('BSD')
 url='https://sourceforge.net/projects/msys2/'
-groups=('base')
 provides=('msys2-base')
 replaces=('msys2-base')
 backup=('etc/fstab' 'etc/shells' 'etc/profile'
@@ -26,6 +25,8 @@ source=('bash.bash_logout'
         'dot.inputrc'
         'dot.profile'
         'fstab'
+        'mingw32.ico'
+        'mingw64.ico'
         'msys2.ico'
         'msys2_shell.cmd'
         'msystem'
@@ -33,7 +34,6 @@ source=('bash.bash_logout'
         'profile'
         'profile.lang.sh'
         'profile.tzset.sh'
-        'regen-info.sh'
         'shell'
         'shells'
         'start'
@@ -50,24 +50,25 @@ source=('bash.bash_logout'
         'mingw64-config.site'
         'mingw32-config.site'
         'redirect-config.site')
-sha256sums=('6d651f6b0b2d173961a3fa21acd9d44c783ed9cd73a031687698c8b9ed1f6dee'
-            'fd1ecf1748391ace014ab8c1416451ce33eb9ed153f58b6403285d18f9961222'
+sha256sums=('742a7d66b7a5ebd2b8461728c5b44a46b2305fd2116208eecae5f45828938ea0'
+            'dfb0a5c21b1b1dcec942f556fe32967bd78207c47ff28093837a37d2ed457e92'
             '99eae6e37081edd73b399009c85f4a67a0c14481241ee4937ab45c4178b540fb'
-            'ed08a8bd0919ba29ec5dd2d0c74ba74324ca2bcbf7852354b0b6c523809029a0'
+            '69e62980bd853bc67194c3cd0b3547b35ab5b2fc7237d70f15617196685bf287'
             '4330edf340394d0dae50afb04ac2a621f106fe67fb634ec81c4bfb98be2a1eb5'
-            '06016b2541299e98474e945f22c675d63be67f3c6339b894bf75a1524dfa8604'
-            '6e5d0460bc35a04c44740db7c9730ddf2aedac66b149374b6a8dfb5dae41edcd'
-            'b896abbbd7187184045e42e2646d4cb25f5484a27558f780137c7ec9ca9bdc47'
-            '50c3746d621e682e3560e1b37cc1ac5d988460064a20ed15f107c203ac5ad622'
-            '9620bdf1c82ea3f14c3553c44a2006ea61ff3f5a775a2a053130a59cc186daf5'
+            '6dbc86dd88d0dfbe69271e3f49095135fde755ac6e454bc6a984ec081a1e2258'
+            '602d7075b29cf5ed00de83fe010fcae4f0ad7c3321f5a2563a096b2eaf027c06'
+            '2972d2f333a3b090aaaff4a546b16edf121cbb3e159f32a9ebdb3d125243a7d6'
+            '5a51474700064f5c4527e4423a866ac957332f7e932675ab5fa6a419b47b1834'
+            '387ca1e86c1a18a143eb077ca194ad44c0a2faf98795a0d437f2d210d5a6df18'
+            '40a10a03382b93f196464b11ec179f903b9af6d281a9327472b4fb9693b0ca8f'
+            'be368cc325f33db9035dc4839bb967bebe9b896bdd7582749124245ccbc38c9f'
             '7d6994d7caf52a459b562cfb0da1d758a4b7bca478d1df00de3a96686e59008e'
-            'ec4996dc42c806320c24ed083fbd62320fa85c719572c8212595189ab1a72e6e'
-            '3c1da9bf6ff791c32f17e49db0047b3c9cbaacd44d6d0b92696cdeacebf8f947'
+            '01a9355fe15a0a48b99b6bc0194d48f7c4bc632033137c9ddeb7bf0cf96516c1'
+            'c6faa86edf92199c54c45bde65115eb872336eb8a10ca24a8bf3ea92d9d8db2c'
             '91f1f918cf13deab0124082086e990786113b0e710dbda4678d8fc14905ad94d'
-            '6cf6bb55f5a578aace121fb4d3db0e0081864f4eb70c1f6079ea57e3ad86540b'
-            '67e9285cdadb484ccf7e189f0872d2282171de2da4796e63471471ca37cf01c5'
-            '7a844eb4cb915b91c3d4a5ec6bb4ba9253b7446aac698fe7689855341b381eaa'
-            '756df34c5b28478a81331785de0f56438bb652cf5f29029a9db2d83281361340'
+            '118e113df16328ac41426ff3c5276e80fc6e8b0af999c6df5e56d13e3f21f7af'
+            '6c0ca979c7b146b3750103b1296a399764f4e1b222ee091d3aa072b6da16c1a5'
+            'cbec90c9403826bf6d8dd1fed16240b9d8695ec15df5dcdab7e485bb46c016ab'
             '2087410bf7ead6fa586628ea7fc97c53f5ea3ce16d1ee91ecc15ccc18ab53094'
             'f63241cc56aa7b7ec6962d19991d211b4e1641b78ba5226835118ab493830a8b'
             'e96c1f54ffff792e738aa032815c82c30821b0683806e5ed0ba2a759db2fd494'
@@ -77,7 +78,7 @@ sha256sums=('6d651f6b0b2d173961a3fa21acd9d44c783ed9cd73a031687698c8b9ed1f6dee'
             'fedaf4d9ae282f6c1698d04d280dd48c8d3247321a5cb5e309e61e2c655102c6'
             'fd6eb255b5a35e62a34a54bf39598134296a11bddd3e6a30edd008cbe136b9f3'
             'ad8533809ea2b1bce0a41b3a0a24dbc7a9f58b992ceb40cc9f862b1978032790'
-            'b9af554432605fe4027fbc231170e01edb5bcbb958bfd0922609f1901a2dd555'
+            'caf25e3390331c6a22cc91f1c1bc551a9f87c59171dd3ef7b3b6016859a10fb5'
             '475d79aa6d4cec9f286762d0be1a0ef7c849091ddde24d2e834d186053644eed'
             'a81da3a792bc0eed2149b18fad6680207ce7a902613323aeb18f83271de54142'
             '50d50db353671ae1bf78e10ad90f2b86c15dc8ae132c5142e409ad541e24edc3'
@@ -122,6 +123,8 @@ package() {
   install -m644 ${srcdir}/profile.tzset.sh etc/profile.d/tzset.sh
   install -m644 ${srcdir}/profile.lang.sh etc/profile.d/lang.sh
 
+  install -m644 ${srcdir}/mingw32.ico mingw32.ico
+  install -m644 ${srcdir}/mingw64.ico mingw64.ico
   install -m644 ${srcdir}/msys2.ico msys2.ico
   install -m755 ${srcdir}/msys2_shell.cmd msys2_shell.cmd
 
@@ -141,7 +144,7 @@ package() {
     install -d -m755 usr/share/man/man${d}
   done
   # various shell scripts
-  for f in cmd start dep-search regen-info.sh shell; do
+  for f in cmd start dep-search shell; do
     install -m755 ${srcdir}/${f} usr/bin
   done
 

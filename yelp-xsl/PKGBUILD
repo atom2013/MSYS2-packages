@@ -1,16 +1,16 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=yelp-xsl
-pkgver=3.34.0
+pkgver=3.38.2
 pkgrel=1
 pkgdesc="Stylesheets for Yelp"
 arch=('any')
 license=('GPL')
 url="https://www.gnome.org"
 options=('strip' '!libtool' 'staticlibs')
-makedepends=("libxml2-python" "libxslt-python" "intltool" "itstool")
+makedepends=("libxml2-python" "intltool" "itstool")
 source=(https://download.gnome.org/sources/${pkgname}/${pkgver:0:4}/${pkgname}-${pkgver}.tar.xz)
-sha256sums=('e8063aee67d1df634f3d062f1c28130b2dabb3c0c66396b1af90388f34e14ee2')
+sha256sums=('2c8472dc6c470145e8a01e5e7c8ceffe81eb2bd318f7282fdede9a3f975fb47b')
 
 prepare() {
   cd ${srcdir}/${pkgname}-${pkgver}

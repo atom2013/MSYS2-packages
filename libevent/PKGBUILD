@@ -1,19 +1,23 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=('libevent' 'libevent-devel')
-pkgver=2.1.11
-pkgrel=1
+pkgver=2.1.12
+pkgrel=2
 pkgdesc="An event notification library"
 arch=('i686' 'x86_64')
 url="https://libevent.org/"
 license=('BSD')
 makedepends=('openssl-devel')
-source=("https://github.com/${pkgname}/${pkgname}/releases/download/release-${pkgver}-stable/${pkgname}-${pkgver}-stable.tar.gz"{,.asc})
-sha256sums=('a65bac6202ea8c5609fd5c7e480e6d25de467ea1917c08290c521752f147283d'
-            'SKIP')
+source=("https://github.com/${pkgname}/${pkgname}/releases/download/release-${pkgver}-stable/${pkgname}-${pkgver}-stable.tar.gz"{,.asc}
+        "0001-Fix-DNS-lookups-in-MSYS2.patch")
+sha256sums=('92e6de1be9ec176428fd2367677e61ceffc2ee1cb119035037a27d346b0403bb'
+            'SKIP'
+            '38246613788aa843abcaf1d895824af40db5a927ff32814b984552d6f8f8bb96')
+validpgpkeys=('9E3AC83A27974B84D1B3401DB86086848EF8686D') # Azat Khuzhin <azat@libevent.org>
 
 prepare() {
   cd ${srcdir}/${pkgname}-${pkgver}-stable
+  patch -p1 -i ${srcdir}/0001-Fix-DNS-lookups-in-MSYS2.patch
   ./autogen.sh
 }
 
@@ -24,7 +28,7 @@ build() {
     --sysconfdir=/etc \
     --disable-libevent-regress
   make
-  make DESTDIR="$srcdir/dest" install
+  make DESTDIR="${srcdir}/dest" install
 }
 
 check() {
@@ -34,11 +38,11 @@ check() {
 
 package_libevent() {
   depends=('openssl')
-  optdepends=('python2: to use event_rpcgen.py')
+  optdepends=('python: to use event_rpcgen.py')
 
-  mkdir -p $pkgdir/usr/bin
-  cp -rf $srcdir/dest/usr/bin $pkgdir/usr/
-  install -Dm644 $srcdir/${pkgname}-${pkgver}-stable/LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  mkdir -p ${pkgdir}/usr/bin
+  cp -rf ${srcdir}/dest/usr/bin $pkgdir/usr/
+  install -Dm644 ${srcdir}/${pkgname}-${pkgver}-stable/LICENSE "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
 }
 
 package_libevent-devel() {
@@ -46,7 +50,7 @@ package_libevent-devel() {
   groups=('development')
   depends=("libevent=${pkgver}" "openssl-devel")
 
-  mkdir -p $pkgdir/usr
-  cp -rf $srcdir/dest/usr/include $pkgdir/usr/
-  cp -rf $srcdir/dest/usr/lib $pkgdir/usr/
+  mkdir -p ${pkgdir}/usr
+  cp -rf ${srcdir}/dest/usr/include ${pkgdir}/usr/
+  cp -rf ${srcdir}/dest/usr/lib ${pkgdir}/usr/
 }

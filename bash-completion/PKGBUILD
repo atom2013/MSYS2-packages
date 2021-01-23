@@ -1,18 +1,17 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=bash-completion
-pkgver=2.9
+pkgver=2.11
 pkgrel=1
 pkgdesc="Programmable completion for the bash shell"
 arch=('any')
 url="https://bash-completion.alioth.debian.org/"
 license=('GPL')
-groups=('base')
 depends=('bash')
 options=('!emptydirs' '!makeflags')
 source=(https://github.com/scop/${pkgname}/releases/download/${pkgver}/${pkgname}-${pkgver}.tar.xz
         001-quote_readline_by_ref_fixes.patch)
-sha256sums=('d48fe378e731062f479c5f8802ffa9d3c40a275a19e6e0f6f6cc4b90fa12b2f5'
+sha256sums=('73a8894bad94dee83ab468fa09f628daffd567e8bef1a24277f1e9a0daf911ac'
             'cb33b656f435b945a6ae42dace5ace56e7063152ad3fa38429a7311d491525af')
 prepare() {
   cd ${pkgname}-${pkgver}

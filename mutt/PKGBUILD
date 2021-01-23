@@ -1,8 +1,7 @@
-# $Id$
 # Maintainer: Felix Huettner <huettner94@gmx.de>
 
 pkgname=mutt
-pkgver=1.12.2
+pkgver=2.0.4
 pkgrel=1
 pkgdesc='Small but very powerful text-based mail client (net-utils)'
 url='http://www.mutt.org/'
@@ -10,12 +9,22 @@ license=('GPL')
 groups=('net-utils')
 backup=('etc/Muttrc')
 arch=('i686' 'x86_64')
-depends=('libgpgme' 'libsasl' 'libgdbm' 'ncurses' 'libgnutls' 'libidn2')
-makedepends=('libgpgme-devel' 'libsasl-devel' 'libgdbm-devel' 'ncurses-devel' 'libgnutls-devel' 'libidn2-devel')
+depends=('libgpgme' 'libsasl' 'libgdbm' 'ncurses' 'libgnutls' 'libidn2' 'libsqlite' 'zlib')
+makedepends=('docbook-xml'
+             'docbook-xsl'
+             'elinks'
+             'libgdbm-devel'
+             'libgnutls-devel'
+             'libgpgme-devel'
+             'libidn2-devel'
+             'libsasl-devel'
+             'libsqlite-devel'
+             'ncurses-devel'
+             'zlib-devel')
 source=("http://ftp.mutt.org/pub/mutt/${pkgname}-${pkgver}.tar.gz"{,.asc})
-sha256sums=('bc42750ce8237742b9382f2148fc547a8d8601aa4a7cd28c55fe7ca045196882'
+sha256sums=('45087e78105e9abc7cc37827865d319081587cb53a94412aa4e3118e937991d4'
             'SKIP')
-validpgpkeys=('8975A9B33AA37910385C5308ADEF768480316BDA')
+validpgpkeys=('8975A9B33AA37910385C5308ADEF768480316BDA') # Kevin J. McCarthy <kevin@8t8.us>
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
@@ -28,9 +37,9 @@ build() {
     --enable-smtp \
     --enable-hcache \
     --with-curses=/usr \
-    --with-regex \
     --with-gss=/usr \
     --with-gnutls=/usr \
+    --with-sqlite3=/usr \
     --with-sasl \
     --with-idn2 \
     --with-gdbm \

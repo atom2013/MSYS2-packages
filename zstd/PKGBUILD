@@ -2,22 +2,19 @@
 
 pkgbase=zstd
 pkgname=('zstd' 'libzstd' 'libzstd-devel')
-pkgver=1.4.3
+pkgver=1.4.8
 pkgrel=1
 pkgdesc="Zstandard - Fast real-time compression algorithm"
 arch=('i686' 'x86_64')
 url='https://facebook.github.io/zstd/'
 license=('BSD')
 makedepends=('gcc' 'make' 'cmake')
-source=(${pkgbase}-${pkgver}.tar.gz::"https://github.com/facebook/${pkgname}/archive/v${pkgver}.tar.gz"
-        install-pkgconfig.patch)
-sha256sums=('5eda3502ecc285c3c92ee0cc8cd002234dee39d539b3f692997a0e80de1d33de'
-            '9a8864dd11ad6f1eaf1e11ee19adfdbc4e023f20b14b429b8af2b387ffffdef4')
+source=(${pkgbase}-${pkgver}.tar.gz::"https://github.com/facebook/${pkgname}/archive/v${pkgver}.tar.gz")
+sha256sums=('f176f0626cb797022fbf257c3c644d71c1c747bb74c32201f9203654da35e9fa')
 options=(!libtool)
 
 prepare() {
   cd "${srcdir}/${pkgbase}-${pkgver}"
-  patch -p1 -i ${srcdir}/install-pkgconfig.patch
 }
 
 build() {
@@ -36,8 +33,9 @@ package_zstd() {
   depends=('gcc-libs' 'libzstd')
 
   cd "${srcdir}/${pkgbase}-${pkgver}"
-  mkdir -p ${pkgdir}/usr
+  mkdir -p ${pkgdir}/usr/share
   cp -rf ${srcdir}/dest/usr/bin ${pkgdir}/usr/bin/
+  cp -rf ${srcdir}/dest/usr/share/man ${pkgdir}/usr/share/man/
   rm -f ${pkgdir}/usr/bin/*.dll
   install -D -m644 "LICENSE" "${pkgdir}/usr/share/licenses/${pkgbase}/LICENSE"
 }

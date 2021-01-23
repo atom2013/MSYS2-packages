@@ -1,18 +1,18 @@
 # Maintainer: Felix Huettner <huettner94@gmx.de>
 
 pkgname=whois
-pkgver=5.5.2
-pkgrel=1
+pkgver=5.5.7
+pkgrel=2
 pkgdesc="The whois client by Marco d'Itri"
 arch=('i686' 'x86_64')
 url="https://www.linux.it/~md/software/"
 license=('GPL')
-depends=('libcrypt' 'libidn2' 'libiconv')
+depends=('libcrypt' 'libidn2' 'libiconv' 'libunistring')
 makedepends=('perl' 'libcrypt-devel' 'libidn2-devel' 'libiconv-devel' 'libunistring-devel')
 backup=('etc/whois.conf')
 source=("http://ftp.debian.org/debian/pool/main/w/whois/${pkgname}_${pkgver}.tar.xz"
         "whois-libiconv.patch")
-sha256sums=('c0594d3bc81c12958118ffa5c1bc04db105b853e7f748021588913c986fea5c0'
+sha256sums=('3efa700dbf38d127c31b21af3176cd6e5a69f96a056be60ac1dcd13df7717393'
             '15635fe62da7eed833ad0b1c124fc8e4647f06c7e5b6b5b3314b32a663899ce6')
 
 prepare() {

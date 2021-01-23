@@ -1,7 +1,7 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
-pkgname=('openssl' 'libopenssl' 'openssl-devel')
-_ver=1.1.1d
+pkgname=('openssl' 'libopenssl' 'openssl-devel' 'openssl-docs')
+_ver=1.1.1i
 # use a pacman compatible version scheme
 pkgver=${_ver/[a-z]/.${_ver//[0-9.]/}}
 pkgrel=1
@@ -18,10 +18,10 @@ source=("https://www.openssl.org/source/${pkgname}-${_ver}.tar.gz"{,.asc}
         '0002-Support-MSYS2.patch'
         '0003-tls13secretstest-work-around-multiple-definition-of.patch'
         '0004-Override-engines-directory.patch')
-sha256sums=('1e3a91bc1f9dfce01af26026f856e064eab4c8ee0a8f457b5ae30b40b8b711f2'
+sha256sums=('e8be6a35fe41d10603c3cc635e93289ed00bf34b79671a3a4de64fcee00d5242'
             'SKIP'
             '35f5508bc3e651bb2ef1bf9f4e052f531aeaefbbdeff95b9746fff71137fff31'
-            '9a4e721ab9fb9c693d0a6bbc3ae0d71456857f83febc1c8412bfdf323e4d69e2'
+            '44038ce01db03b43e90420c229d97a37be81c48183fd8e061e42b41799953acd'
             'a83dcfeec646724f081f8ff89beccee83c962758aa74d724f263138aa21b2438'
             '79765cc10799691ae47880556255287c64b8c1f26ea3907ad2e0add97bc9f1fc')
 validpgpkeys=('8657ABB260F056B1E5190839D9C4D26D0E604491')
@@ -76,9 +76,17 @@ package_openssl() {
   mkdir -p ${pkgdir}/usr/bin
   cp -f ${srcdir}/dest/usr/bin/*.exe ${pkgdir}/usr/bin/
   cp -f ${srcdir}/dest/usr/bin/c_rehash ${pkgdir}/usr/bin/
-  cp -rf ${srcdir}/dest/usr/share ${pkgdir}/usr/
+  mkdir -p ${pkgdir}/usr/share/man
+  cp -rf ${srcdir}/dest/usr/share/man/man1 ${pkgdir}/usr/share/man
+  cp -rf ${srcdir}/dest/usr/share/man/man5 ${pkgdir}/usr/share/man
+  cp -rf ${srcdir}/dest/usr/share/man/man7 ${pkgdir}/usr/share/man
   cp -rf ${srcdir}/dest/usr/ssl ${pkgdir}/usr/
-  install -D -m644 ${srcdir}/${pkgname}-${_ver}/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+}
+
+package_openssl-docs() {
+  mkdir -p ${pkgdir}/usr/share/man
+  cp -rf ${srcdir}/dest/usr/share/man/man3 ${pkgdir}/usr/share/man
+  cp -rf ${srcdir}/dest/usr/share/doc ${pkgdir}/usr/share
 }
 
 package_libopenssl() {
@@ -91,6 +99,8 @@ package_libopenssl() {
   mkdir -p ${pkgdir}/usr/lib/openssl
   cp -rf ${srcdir}/dest/usr/lib/openssl/engines-1.1 ${pkgdir}/usr/lib/openssl/
   chmod -R 755 ${pkgdir}/usr/lib/openssl/engines-1.1
+
+  install -D -m644 ${srcdir}/openssl-${_ver}/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
 }
 
 package_openssl-devel() {

@@ -2,7 +2,7 @@
 
 _realname=Test-Warnings
 pkgname=perl-${_realname}
-pkgver=0.026
+pkgver=0.030
 pkgrel=1
 pkgdesc="Test for warnings and the lack of them"
 arch=('any')
@@ -12,7 +12,7 @@ depends=('perl')
 options=('!emptydirs')
 groups=('perl-modules')
 source=("https://search.mcpan.org/CPAN/authors/id/E/ET/ETHER/${_realname}-${pkgver}.tar.gz")
-sha256sums=('ae2b68b1b5616704598ce07f5118efe42dc4605834453b7b2be14e26f9cc9a08')
+sha256sums=('89a4947ddf1564ae01122275584433d7f6c4370370bcf3768922d796956ae24f')
 
 build() {
   ( export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \

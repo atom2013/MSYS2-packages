@@ -2,7 +2,7 @@
 
 pkgbase=gmp
 pkgname=('gmp' 'gmp-devel')
-pkgver=6.1.2
+pkgver=6.2.1
 pkgrel=1
 pkgdesc="A free library for arbitrary precision arithmetic"
 groups=('libraries')
@@ -10,22 +10,23 @@ arch=('i686' 'x86_64')
 url="https://gmplib.org/"
 license=('LGPL3')
 install=gmp.install
-source=(https://gmplib.org/download/gmp-${pkgver}/gmp-${pkgver}.tar.xz{,.sig}
-        gmp-5.1.2-msys2.patch)
-sha256sums=('87b565e89a9a684fe4ebeeddb8399dce2599f9c9049854ca8c0dfbdea0e21912'
-            'SKIP'
-            'c1ff80a8643a362f44be680a5430dca6f4ec16d84a4068d344a24b8d181e5436')
-validpgpkeys=('5972C48224C1E7E62AA0275D1150EE33C1A000B0')   # Marco Bodrato
+source=(https://gmplib.org/download/gmp-${pkgver}/gmp-${pkgver}.tar.xz{,.sig})
+sha256sums=('fd4829912cddd12f84181c3451cc752be224643e87fac497b69edddadc49b4f2'
+            'SKIP')
+validpgpkeys=('5972C48224C1E7E62AA0275D1150EE33C1A000B0'   # Marco Bodrato
+              '343C2FF0FBEE5EC2EDBEF399F3599FF828C67298')   # Niels Möller
 
 prepare() {
   cd "${srcdir}/${pkgname}-${pkgver}"
-  patch -p1 -i ${srcdir}/gmp-5.1.2-msys2.patch
 
   autoreconf -fi
 }
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
+# get rid of those pesky declspec warnings
+  CFLAGS+=" -Wno-attributes" \
+  CXXFLAGS+=" -Wno-attributes" \
   ./configure --build=${CHOST} \
     --prefix=/usr \
     --enable-cxx \
