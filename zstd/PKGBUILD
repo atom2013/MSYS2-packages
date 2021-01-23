@@ -1,24 +1,20 @@
 # Maintainer: Oleg Titov <oleg.titov@gmail.com>
 
-PKGEXT='.pkg.tar.xz'
 pkgbase=zstd
 pkgname=('zstd' 'libzstd' 'libzstd-devel')
-pkgver=1.4.5
-pkgrel=2
+pkgver=1.4.8
+pkgrel=1
 pkgdesc="Zstandard - Fast real-time compression algorithm"
 arch=('i686' 'x86_64')
 url='https://facebook.github.io/zstd/'
 license=('BSD')
 makedepends=('gcc' 'make' 'cmake')
-source=(${pkgbase}-${pkgver}.tar.gz::"https://github.com/facebook/${pkgname}/archive/v${pkgver}.tar.gz"
-        'zstd-1.4.5-fix-install-shared-library.patch')
-sha256sums=('734d1f565c42f691f8420c8d06783ad818060fc390dee43ae0a89f86d0a4f8c2'
-            '31e071e5e7e75dcecfd1eafd07a0b6bb5cfbcdc5b5c172478b73c1915d2cdc06')
+source=(${pkgbase}-${pkgver}.tar.gz::"https://github.com/facebook/${pkgname}/archive/v${pkgver}.tar.gz")
+sha256sums=('f176f0626cb797022fbf257c3c644d71c1c747bb74c32201f9203654da35e9fa')
 options=(!libtool)
 
 prepare() {
   cd "${srcdir}/${pkgbase}-${pkgver}"
-  patch -p1 -i ${srcdir}/zstd-1.4.5-fix-install-shared-library.patch
 }
 
 build() {
