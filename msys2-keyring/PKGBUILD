@@ -9,12 +9,14 @@ arch=('any')
 url='https://github.com/Alexpux/MSYS2-keyring'
 license=('GPL')
 install="${pkgname}.install"
-source=("https://github.com/msys2/MSYS2-keyring/archive/${pkgver}.tar.gz")
-sha256sums=('aa88fd993d97684ce86d464594bbe5a8e6c2a46fffb445aac37731efa3d7ddd2')
+source=("https://github.com/msys2/MSYS2-keyring/archive/${pkgver}.tar.gz"
+		"0001-add-Atom-s-key.patch")
+sha256sums=('aa88fd993d97684ce86d464594bbe5a8e6c2a46fffb445aac37731efa3d7ddd2'
+			'ace07f8e034172f8f14a97a6e40c407e3f3c4e692771aa183bd53747aa753fd4')
 
 prepare() {
-  cd "${srcdir}/${pkgname}"
-  git am ${srcdir}/0001-add-Atom-s-key.patch
+  cd "MSYS2-keyring-${pkgver}"
+  patch -p1 -i ${srcdir}/0001-add-Atom-s-key.patch
 }
 
 package() {
