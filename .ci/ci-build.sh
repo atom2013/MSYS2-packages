@@ -381,14 +381,11 @@ echo ::set-output name=message::${message}
 
 # Send mail
 cat > mail.txt << EOF
-From: "Sync" <${MAIL_USERNAME}>
+From: "Build" <${MAIL_USERNAME}>
 To: "Atom" <${MAIL_TO}>
-Subject: Sync Result
+Subject: Build Result
 
-Hi master,
-Sync script has been executed and the results are as follows:
-$(cat sync.log)
-If you have any questions, please check the script '$(readlink -f "${0}")' on the server.
+${message}
 Bye!
 EOF
 
