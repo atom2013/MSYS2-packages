@@ -26,7 +26,7 @@ prepare() {
 
 build() {
   LDFLAGS+=' -Wl,--export-all-symbols'
-  CFLAGS+=" -Wno-implicit-fallthrough -Wno-format-overflow -Wno-format-truncation"
+  CFLAGS+=" -Wno-implicit-fallthrough -Wno-format-overflow -Wno-format-truncation -Wno-char-subscripts"
   cd "${srcdir}/${pkgname}-${pkgver}"
   ./configure \
     --build=${CHOST} \
