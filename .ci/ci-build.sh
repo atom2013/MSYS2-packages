@@ -384,6 +384,7 @@ cat > mail.txt << EOF
 From: "Build" <${MAIL_USERNAME}>
 To: "Atom" <${MAIL_TO}>
 Subject: Build Result
+Content-Type: text/html; charset="utf-8"
 
 ${message}
 Bye!
