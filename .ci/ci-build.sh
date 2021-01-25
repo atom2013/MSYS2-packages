@@ -43,6 +43,44 @@ _as_list() {
     return "${result}"
 }
 
+# Lock the remote file to prevent it from being modified by another instance.
+_lock_remote_file()
+{
+local filepath=${1}
+local lockfile=$(basename ${filepath}.lck.$$)
+
+rclone lsf ${filepath}.lck &>/dev/null && rclone copyto ${filepath}.lck ${lockfile}
+echo "$$" >> ${lockfile}
+rclone moveto "${lockfile}" "${filepath}.lck"
+
+while [ "$(rclone cat ${filepath}.lck | head -n 1)" != "$$" ]; do :; done
+return 0
+}
+
+# Release the remote file to allow it to be modified by another instance.
+_release_remote_file()
+{
+local filepath=${1}
+local lockfile=$(basename ${filepath}.lck.$$)
+
+rclone lsf ${filepath}.lck &>/dev/null && rclone copyto ${filepath}.lck ${lockfile}
+
+[ -f "${lockfile}" ] || return 0
+
+while [ "$(head -n 1 ${lockfile})" == "$$" ]; do
+sed -i '1d' ${lockfile}
+done
+[ ! -s ${lockfile} ] && {
+rm -vf ${lockfile}
+rclone deletefile ${filepath}.lck
+true
+} || {
+rclone moveto "${lockfile}" "${filepath}.lck"
+}
+
+return 0
+}
+
 # Changes since last build
 _list_changes() {
     local list_name="${1}"
@@ -65,11 +103,13 @@ _create_build_marker() {
 	local branch_url="$(git remote get-url origin | sed 's/\.git$//')/tree/${CI_BRANCH}"
 	local marker="build.marker"
 	
-	rclone copy "${PKG_DEPLOY_PATH}/${marker}" . &>/dev/null || touch "${marker}"
+	_lock_remote_file "${PKG_DEPLOY_PATH}/${marker}"
+	rclone lsf "${PKG_DEPLOY_PATH}/${marker}" &>/dev/null && while ! rclone copy "${PKG_DEPLOY_PATH}/${marker}" . &>/dev/null; do :; done || touch "${marker}"
 	grep -Pq "\[[[:xdigit:]]+\]${branch_url}\s*$" ${marker} && \
 	sed -i -r "s|^(\[)[[:xdigit:]]+(\]${branch_url}\s*)$|\1${CI_COMMIT}\2|g" "${marker}" || \
 	echo "[${CI_COMMIT}]${branch_url}" >> "${marker}"
 	rclone move "${marker}" "${PKG_DEPLOY_PATH}"
+	_release_remote_file "${PKG_DEPLOY_PATH}/${marker}"
 }
 
 # Get package information
@@ -138,12 +178,14 @@ local package="${1}"
 local marker="build.marker"
 local commit_sha
 
+_lock_remote_file "${PKG_DEPLOY_PATH}/${marker}"
 commit_sha="$(_now_package_hash ${package})"
-rclone copy "${PKG_DEPLOY_PATH}/${marker}" . &>/dev/null || touch "${marker}"
+rclone lsf "${PKG_DEPLOY_PATH}/${marker}" &>/dev/null && while ! rclone copy "${PKG_DEPLOY_PATH}/${marker}" . &>/dev/null; do :; done || touch "${marker}"
 grep -Pq "\[[[:xdigit:]]+\]${package}\s*$" ${marker} && \
 sed -i -r "s|^(\[)[[:xdigit:]]+(\]${package}\s*)$|\1${commit_sha}\2|g" "${marker}" || \
 echo "[${commit_sha}]${package}" >> "${marker}"
 rclone move "${marker}" "${PKG_DEPLOY_PATH}"
+_release_remote_file "${PKG_DEPLOY_PATH}/${marker}"
 return 0
 }
 
@@ -218,8 +260,8 @@ create_package_signature()
 [ -n "${PGP_KEY_PASSWD}" ] || { echo "You must set PGP_KEY_PASSWD firstly."; return 1; } 
 local pkg
 # signature for distrib packages.
-(ls ${PKG_ARTIFACTS_PATH}/*${PKGEXT} &>/dev/null) && {
-pushd ${PKG_ARTIFACTS_PATH}
+(ls ${PKG_ARTIFACTS_PATH}/${package}/*${PKGEXT} &>/dev/null) && {
+pushd ${PKG_ARTIFACTS_PATH}/${package}
 for pkg in *${PKGEXT}; do
 gpg --pinentry-mode loopback --passphrase "${PGP_KEY_PASSWD}" -o "${pkg}.sig" -b "${pkg}"
 done
@@ -227,8 +269,8 @@ popd
 }
 
 # signature for source packages.
-(ls ${SRC_ARTIFACTS_PATH}/*${SRCEXT} &>/dev/null) && {
-pushd ${SRC_ARTIFACTS_PATH}
+(ls ${SRC_ARTIFACTS_PATH}/${package}/*${SRCEXT} &>/dev/null) && {
+pushd ${SRC_ARTIFACTS_PATH}/${package}
 for pkg in *${SRCEXT}; do
 gpg --pinentry-mode loopback --passphrase "${PGP_KEY_PASSWD}" -o "${pkg}.sig" -b "${pkg}"
 done
@@ -310,16 +352,16 @@ makepkg --noconfirm --skippgpcheck --nocheck --syncdeps --rmdeps --cleanbuild &&
 makepkg --noconfirm --noprogressbar --allsource --skippgpcheck
 
 (ls *${PKGEXT} &>/dev/null) && {
-mkdir -pv ${PKG_ARTIFACTS_PATH}
-mv -vf *${PKGEXT} ${PKG_ARTIFACTS_PATH}
+mkdir -pv ${PKG_ARTIFACTS_PATH}/${package}
+mv -vf *${PKGEXT} ${PKG_ARTIFACTS_PATH}/${package}
 true
 } || {
 export FILED_PKGS=(${FILED_PKGS[@]} ${package})
 }
 
 (ls *${SRCEXT} &>/dev/null) && {
-mkdir -pv ${SRC_ARTIFACTS_PATH}
-mv -vf *${SRCEXT} ${SRC_ARTIFACTS_PATH}
+mkdir -pv ${SRC_ARTIFACTS_PATH}/${package}
+mv -vf *${SRCEXT} ${SRC_ARTIFACTS_PATH}/${package}
 }
 
 popd
@@ -331,14 +373,18 @@ deploy_artifacts()
 [ -n "${PKG_DEPLOY_PATH}" ] || { echo "You must set PKG_DEPLOY_PATH firstly."; return 1; }
 [ -n "${SRC_DEPLOY_PATH}" ] || { echo "You must set SRC_DEPLOY_PATH firstly."; return 1; }
 local old_pkgs pkg file
-(ls ${PKG_ARTIFACTS_PATH}/*${PKGEXT} &>/dev/null) || { echo "Skiped, no file to deploy"; return 0; }
-pushd ${PKG_ARTIFACTS_PATH}
+
+(ls ${PKG_ARTIFACTS_PATH}/${package}/*${PKGEXT} &>/dev/null) || { echo "Skiped, no file to deploy"; return 0; }
+
+_lock_remote_file "${PKG_DEPLOY_PATH}/${PACMAN_REPO}.db"
+
+pushd ${PKG_ARTIFACTS_PATH}/${package}
 export PKG_FILES=(${PKG_FILES[@]} $(ls *${PKGEXT}))
 for file in ${PACMAN_REPO}.{db,files}{,.tar.xz}{,.old}; do
-rclone copy ${PKG_DEPLOY_PATH}/${file} ${PWD} 2>/dev/null || true
+rclone lsf ${PKG_DEPLOY_PATH}/${file} &>/dev/null || continue
+while ! rclone copy ${PKG_DEPLOY_PATH}/${file} ${PWD}; do :; done
 done
 old_pkgs=($(repo-add "${PACMAN_REPO}.db.tar.xz" *${PKGEXT} | tee /dev/stderr | grep -Po "\bRemoving existing entry '\K[^']+(?=')" || true))
-popd
 for pkg in ${old_pkgs[@]}; do
 for file in ${pkg}-{${PACMAN_ARCH},any}.pkg.tar.{xz,zst}{,.sig}; do
 rclone delete ${PKG_DEPLOY_PATH}/${file} 2>/dev/null || true
@@ -348,10 +394,12 @@ rclone delete ${SRC_DEPLOY_PATH}/${file} 2>/dev/null || true
 done
 done
 
-rclone move ${PKG_ARTIFACTS_PATH} ${PKG_DEPLOY_PATH} --copy-links
-rclone move ${SRC_ARTIFACTS_PATH} ${SRC_DEPLOY_PATH} --copy-links
+rclone move ${PKG_ARTIFACTS_PATH}/${package} ${PKG_DEPLOY_PATH} --copy-links
+rclone move ${SRC_ARTIFACTS_PATH}/${package} ${SRC_DEPLOY_PATH} --copy-links
 
+popd
 _record_package_hash "${package}"
+_release_remote_file "${PKG_DEPLOY_PATH}/${PACMAN_REPO}.db"
 }
 
 # create mail message
@@ -376,8 +424,8 @@ done
 [ -n "${message}" ] && {
 message=${message}"<p>Architecture: ${PACMAN_ARCH}</p>"
 # message=${message}"<p>Build Number: ${CI_BUILD_NUMBER}</p>"
-echo ::set-output name=message::${message}
-}
+
+# echo ::set-output name=message::${message}
 
 # Send mail
 cat > mail.txt << EOF
@@ -397,6 +445,8 @@ curl --url "smtps://${MAIL_HOST}:${MAIL_PORT}" \
 	--upload-file mail.txt \
 	--user "${MAIL_USERNAME}:${MAIL_PASSWD}" \
 	--insecure
+rm -f mail.txt
+}
 
 return 0
 }
@@ -446,16 +496,21 @@ printf "${RCLONE_CONF}" > ${HOME}/.config/rclone/rclone.conf
 import_pgp_seckey
 
 pushd ${CI_BUILD_DIR}
+[ $# == 0 ] && {
 # Detect
 list_commits  || failure 'Could not detect added commits'
 list_packages || failure 'Could not detect changed files'
 message 'Processing changes' "${commits[@]}"
 test -z "${packages}" && success 'No changes in package recipes'
+} || {
+packages=(${@})
+}
 define_build_order || failure 'Could not determine build order'
 
 # Build
 message 'Building packages' "${packages[@]}"
 for package in "${packages[@]}"; do
+echo -e "\033]0;[$$] ${package}\007"
 execute 'Building packages' build_package
 execute "Generating package signature" create_package_signature
 execute "Deploying artifacts" deploy_artifacts
