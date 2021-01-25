@@ -1,0 +1,59 @@
+# Maintainer: Ray Donnelly <mingw.android@gmail.com>
+# Maintainer: Martell Malone <martellmalone@gmail.com>
+
+_realname="crosstool-ng"
+pkgname="$_realname-git"
+replaces=("$_realname")
+pkgver=r5123.1678034b
+pkgrel=1
+pkgdesc="A cross-platform open-source toolchain system (git)"
+arch=(i686 x86_64)
+url="http://www.crosstool-ng.org/"
+license=("MIT")
+makedepends=("autoconf" "automake-wrapper" "binutils" "bison"
+             "flex" "gettext-devel" "git" "gcc" "gperf"
+             "patch" "libtool" "make" "ncurses-devel"
+             "tar" "texinfo" "wget" "xz" "unzip")
+depends=("ncurses" "libintl")
+options=('staticlibs' 'strip')
+source=('crosstool-ng::git+https://github.com/crosstool-ng/crosstool-ng.git#branch=master'
+		"0001-Modify-config-to-support-correct-Mingw64-Triplet-Nam.patch"
+		"0002-Add-new-gmp-patches.patch"
+		"0003-Add-new-gcc-patches.patch"
+		"0004-Add-new-newlib-patches.patch")
+sha256sums=('SKIP'
+			'abc6632e812eb3c803b00f4032b56aa528ed9059c4373fb62a0eacc101d03137'
+			'8ca11b022a033816c498695d2ccd551126b3cb66967e15c70de27dfe7d5453bf'
+			'10dafb3179f895ce5c461c4eb7d771f2fd993cba12727e4e6effbad3ae2483ca'
+			'c8c6b814a2ca156e70ad6e654b77d2b2bad416b6fec5a68d2e2530a4f9ef9b20')
+
+pkgver() {
+  cd "${srcdir}/${_realname}"
+  echo "r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd "${srcdir}/${_realname}"
+  
+  patch -p1 -i "${srcdir}/0001-Modify-config-to-support-correct-Mingw64-Triplet-Nam.patch" 
+  patch -p1 -i "${srcdir}/0002-Add-new-gmp-patches.patch"
+  patch -p1 -i "${srcdir}/0003-Add-new-gcc-patches.patch"
+  patch -p1 -i "${srcdir}/0004-Add-new-newlib-patches.patch"
+  find packages/ncurses -type f -name "*.patch" | xargs dos2unix
+  
+  ./bootstrap
+}
+
+build() {
+  cd "${srcdir}/${_realname}"
+  ./configure \
+    --build=${CHOST} \
+    --prefix=/usr
+
+  make
+}
+
+package() {
+  cd "${srcdir}/${_realname}"
+  make DESTDIR=${pkgdir} install
+}

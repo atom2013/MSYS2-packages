@@ -1,6 +1,6 @@
-From dfd8bedb2c13f60fbee2107979e75131d226560e Mon Sep 17 00:00:00 2001
-From: "atom.long" <atom.long@hotmail.com>
-Date: Wed, 19 Dec 2018 09:44:53 +0800
+From fa57b20069f735c74923618b9cbe28978bd8aae9 Mon Sep 17 00:00:00 2001
+From: Atom Long <atom.long@hotmail.com>
+Date: Sun, 24 Jan 2021 18:13:35 +0800
 Subject: [PATCH] Modify config to support correct Mingw64 Triplet Names
 
 ---
@@ -9,10 +9,10 @@ Subject: [PATCH] Modify config to support correct Mingw64 Triplet Names
  2 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/scripts/config.guess b/scripts/config.guess
-index 94c4ac15..e9c86c4d 100755
+index 699b3a10..7884e4d4 100755
 --- a/scripts/config.guess
 +++ b/scripts/config.guess
-@@ -862,7 +862,10 @@ EOF
+@@ -886,7 +886,10 @@ EOF
  	echo "$UNAME_MACHINE"-pc-cygwin
  	exit ;;
      *:MINGW64*:*)
@@ -25,24 +25,24 @@ index 94c4ac15..e9c86c4d 100755
      *:MINGW*:*)
  	echo "$UNAME_MACHINE"-pc-mingw32
 diff --git a/scripts/config.sub b/scripts/config.sub
-index 46708056..893aca96 100755
+index 19c9553b..38e17565 100755
 --- a/scripts/config.sub
 +++ b/scripts/config.sub
-@@ -380,11 +380,11 @@ case $1 in
- 				os=sysv
+@@ -373,11 +373,11 @@ case $1 in
+ 				basic_os=sysv
  				;;
  			mingw64)
 -				basic_machine=x86_64-pc
--				os=mingw64
+-				basic_os=mingw64
 +				basic_machine=x86_64-w64
-+				os=-mingw32
++				basic_os=-mingw32
  				;;
  			mingw32)
 -				basic_machine=i686-pc
 +				basic_machine=i686-w64
- 				os=mingw32
+ 				basic_os=mingw32
  				;;
  			mingw32ce)
 -- 
-2.19.1
+2.30.0.windows.1
 
