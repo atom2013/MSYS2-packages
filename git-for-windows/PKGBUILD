@@ -3,10 +3,10 @@
 
 _realname=git
 pkgname="$_realname-for-windows"
-pkgver=2.19.1.89790.d4f95fc6d2
+pkgver=2.30.0.116295.e3396cf19c
 pkgrel=1
 pkgdesc="The fast distributed version control system"
-arch=('i686' 'x86_64')
+arch=(i686 x86_64)
 url="https://git-scm.com/"
 license=('GPL2')
 groups=('VCS')
