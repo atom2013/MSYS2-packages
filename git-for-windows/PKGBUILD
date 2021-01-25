@@ -57,13 +57,13 @@ source=("git+https://github.com/git-for-windows/git"
         git-credential-wincred-fixes.patch)
 sha256sums=('SKIP'
             'c5e735d829e11f79e2d508b663d0924030498f48fc716881031fb975dbf187a5'
-            '2c0301076a7b60b5be2491433560f6f87c510ec64d2d8f9db5a75c1295893885'
-            '8dd65f3b0c4320dd30eb5109de86accee699ef3201d8611576d664f9d6fcb5d6'
-            'e19151d7dfbe18b7e3c0e689661662684d2b26ab0a84a06fb5c872ac0fc18f8e'
-            '5af41f12a1c4d97b2cdb44c51709923c4cb110ca5a4a2c843270ccbbf679b11d'
+            '47f5ff7840fa00665702fa70e5cc744de23b63ce2d9d787e2f86d2c54d57cc7a'
+            '340d289f8a9d82975b34bd635e8c734c0c8529d5ac1ad9bbc8a77ed752502b02'
+            'f67412f829e026b677d4c3ceacfb21da0549ad4636fb07c283e52c3fd5aa3e22'
+            '905e35e145be34f6affad830155a193d869da4898e46726f36cef2e89c073d23'
             'b28b3e13de08911f027d19a557967fc21128318a8d6ca74b20b26ee997a9b992'
             '261438a4bedd5563c702533c34792581ccfa46db873ca3e105e6c1ab803a3107'
-            'e1455ab6c943f070454f735660864234a97d5c6aa8e2f36fdb5358f3db7c9025')
+            '3abeca1dc20c29644827f5701dbd05ef4f236b69907970ad51863a312307bed2')
 
 pkgver() {
   cd "${srcdir}/${_realname}"

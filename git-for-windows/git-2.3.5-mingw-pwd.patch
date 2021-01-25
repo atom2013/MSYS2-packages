@@ -1,20 +1,13 @@
-diff -durN git.orig/git-sh-setup.sh git/git-sh-setup.sh
---- git.orig/git-sh-setup.sh	2018-06-17 15:31:18.953125000 +0800
-+++ git/git-sh-setup.sh	2018-06-17 15:43:08.656250000 +0800
-@@ -346,34 +346,17 @@
- 			/usr/bin/find "$@"
- 		}
- 	fi
--	# On Windows, Git wants Windows paths. But /usr/bin/pwd spits out
--	# Unix-style paths. At least in Bash, we have a builtin pwd that
--	# understands the -W option to force "mixed" paths, i.e. with drive
--	# prefix but still with forward slashes. Let's use that, if available.
--	if type builtin >/dev/null 2>&1
--	then
--		pwd () {
--			builtin pwd -W
--		}
--	fi
+--- src/git-2.3.5/git-sh-setup.sh.old	2015-04-01 00:14:52.000000000 +0200
++++ src/git-2.3.5/git-sh-setup.sh	2015-04-18 21:47:15.753865900 +0200
+@@ -306,28 +305,17 @@ case $(uname -s) in
+ 	find () {
+ 		/usr/bin/find "$@"
+ 	}
+-	# git sees Windows-style pwd
+-	pwd () {
+-		builtin pwd -W
+-	}
 -	is_absolute_path () {
 -		case "$1" in
 -		[/\\]* | [A-Za-z]:*)
@@ -32,7 +25,7 @@ diff -durN git.orig/git-sh-setup.sh git/git-sh-setup.sh
 -		return 1
 -	}
  esac
- 
+
 +is_absolute_path () {
 +	case "$1" in
 +	/*)
