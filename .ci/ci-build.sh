@@ -43,41 +43,24 @@ _as_list() {
     return "${result}"
 }
 
-# Lock the remote file to prevent it from being modified by another instance.
-_lock_remote_file()
+# Lock the local file to prevent it from being modified by another instance.
+_lock_file()
 {
-local filepath=${1}
-local lockfile=$(basename ${filepath}.lck.$$)
-
-rclone lsf ${filepath}.lck &>/dev/null && rclone copyto ${filepath}.lck ${lockfile}
+local lockfile=${LOCK_FILE_DIR}/${1}.lck
 echo "$$" >> ${lockfile}
-rclone moveto "${lockfile}" "${filepath}.lck"
-
-while [ "$(rclone cat ${filepath}.lck | head -n 1)" != "$$" ]; do :; done
+while [ "$(rclone cat ${lockfile} | head -n 1)" != "$$" ]; do :; done
 return 0
 }
 
-# Release the remote file to allow it to be modified by another instance.
-_release_remote_file()
+# Release the local file to allow it to be modified by another instance.
+_release_file()
 {
-local filepath=${1}
-local lockfile=$(basename ${filepath}.lck.$$)
-
-rclone lsf ${filepath}.lck &>/dev/null && rclone copyto ${filepath}.lck ${lockfile}
-
+local lockfile=${LOCK_FILE_DIR}/${1}.lck
 [ -f "${lockfile}" ] || return 0
-
 while [ "$(head -n 1 ${lockfile})" == "$$" ]; do
 sed -i '1d' ${lockfile}
 done
-[ ! -s ${lockfile} ] && {
-rm -vf ${lockfile}
-rclone deletefile ${filepath}.lck
-true
-} || {
-rclone moveto "${lockfile}" "${filepath}.lck"
-}
-
+[ ! -s ${lockfile} ] && rm -vf ${lockfile}
 return 0
 }
 
@@ -103,13 +86,13 @@ _create_build_marker() {
 	local branch_url="$(git remote get-url origin | sed 's/\.git$//')/tree/${CI_BRANCH}"
 	local marker="build.marker"
 	
-	_lock_remote_file "${PKG_DEPLOY_PATH}/${marker}"
+	_lock_file "${marker}"
 	rclone lsf "${PKG_DEPLOY_PATH}/${marker}" &>/dev/null && while ! rclone copy "${PKG_DEPLOY_PATH}/${marker}" . &>/dev/null; do :; done || touch "${marker}"
 	grep -Pq "\[[[:xdigit:]]+\]${branch_url}\s*$" ${marker} && \
 	sed -i -r "s|^(\[)[[:xdigit:]]+(\]${branch_url}\s*)$|\1${CI_COMMIT}\2|g" "${marker}" || \
 	echo "[${CI_COMMIT}]${branch_url}" >> "${marker}"
 	rclone move "${marker}" "${PKG_DEPLOY_PATH}"
-	_release_remote_file "${PKG_DEPLOY_PATH}/${marker}"
+	_release_file "${marker}"
 }
 
 # Get package information
@@ -178,14 +161,14 @@ local package="${1}"
 local marker="build.marker"
 local commit_sha
 
-_lock_remote_file "${PKG_DEPLOY_PATH}/${marker}"
+_lock_file "${marker}"
 commit_sha="$(_now_package_hash ${package})"
 rclone lsf "${PKG_DEPLOY_PATH}/${marker}" &>/dev/null && while ! rclone copy "${PKG_DEPLOY_PATH}/${marker}" . &>/dev/null; do :; done || touch "${marker}"
 grep -Pq "\[[[:xdigit:]]+\]${package}\s*$" ${marker} && \
 sed -i -r "s|^(\[)[[:xdigit:]]+(\]${package}\s*)$|\1${commit_sha}\2|g" "${marker}" || \
 echo "[${commit_sha}]${package}" >> "${marker}"
 rclone move "${marker}" "${PKG_DEPLOY_PATH}"
-_release_remote_file "${PKG_DEPLOY_PATH}/${marker}"
+_release_file "${marker}"
 return 0
 }
 
@@ -376,7 +359,7 @@ local old_pkgs pkg file
 
 (ls ${PKG_ARTIFACTS_PATH}/${package}/*${PKGEXT} &>/dev/null) || { echo "Skiped, no file to deploy"; return 0; }
 
-_lock_remote_file "${PKG_DEPLOY_PATH}/${PACMAN_REPO}.db"
+_lock_file "${PACMAN_REPO}.db"
 
 pushd ${PKG_ARTIFACTS_PATH}/${package}
 export PKG_FILES=(${PKG_FILES[@]} $(ls *${PKGEXT}))
@@ -394,12 +377,14 @@ rclone delete ${SRC_DEPLOY_PATH}/${file} 2>/dev/null || true
 done
 done
 
-rclone move ${PKG_ARTIFACTS_PATH}/${package} ${PKG_DEPLOY_PATH} --copy-links
-rclone move ${SRC_ARTIFACTS_PATH}/${package} ${SRC_DEPLOY_PATH} --copy-links
+rclone move ${PKG_ARTIFACTS_PATH}/${package} ${PKG_DEPLOY_PATH} --copy-links --delete-empty-src-dirs
+
+(ls ${SRC_ARTIFACTS_PATH}/${package}/*${SRCEXT} &>/dev/null) && 
+rclone move ${SRC_ARTIFACTS_PATH}/${package} ${SRC_DEPLOY_PATH} --copy-links --delete-empty-src-dirs
 
 popd
 _record_package_hash "${package}"
-_release_remote_file "${PKG_DEPLOY_PATH}/${PACMAN_REPO}.db"
+_release_file "${PACMAN_REPO}.db"
 }
 
 # create mail message
@@ -452,18 +437,24 @@ return 0
 }
 
 # Status functions
-failure() { local status="${1}"; local items=("${@:2}"); _status failure "${status}." "${items[@]}"; exit 1; }
-success() { local status="${1}"; local items=("${@:2}"); _status success "${status}." "${items[@]}"; exit 0; }
+failure() { local status="${1}"; local items=("${@:2}"); _status failure "${status}." "${items[@]}"; return 1; }
+success() { local status="${1}"; local items=("${@:2}"); _status success "${status}." "${items[@]}"; return 0; }
 message() { local status="${1}"; local items=("${@:2}"); _status message "${status}"  "${items[@]}"; }
 
 # Run from here ......
+echo -e "\033]0;[$$] Starting...\007"
 # Configure
-BUILD_CFG=$(readlink -f "$(dirname '${0}')")/build.rar
-echo "Enter the password to extract file '${BUILD_CFG##*/}'"
+BUILD_RAR=$(readlink -f "$(dirname '${0}')")/build.rar
+BUILD_CFG=${BUILD_RAR%/*}/build.config
+_lock_file "build.config"
+[ -z "${RAR_FILE_SECRET}" ] && {
+echo "Enter the password to extract file '${BUILD_RAR##*/}'"
 Read_Passwd RAR_FILE_SECRET
-unrar x -p"${RAR_FILE_SECRET}" -o+ -id[q] ${BUILD_CFG} ${BUILD_CFG%/*}
-BUILD_CFG=${BUILD_CFG%/*}/build.config
+}
+unrar x -p"${RAR_FILE_SECRET}" -o+ -id[q] ${BUILD_RAR} ${BUILD_CFG%/*}
+unset RAR_FILE_SECRET
 [ -f "${BUILD_CFG}" ] && source ${BUILD_CFG} && rm -vf ${BUILD_CFG}
+_release_file "build.config"
 
 [ -z "${PACMAN_REPO}" ] && export PACMAN_REPO=$([ "$(uname -o)" == "Msys" ] && tr 'A-Z' 'a-z' <<< ${MSYSTEM%%[0-9]*} || echo "eyun")
 [[ ${PACMAN_REPO} =~ '$' ]] && eval export PACMAN_REPO=${PACMAN_ARCH}
@@ -486,7 +477,11 @@ SRC_DEPLOY_PATH=$(dirname ${PKG_DEPLOY_PATH})/sources
 PKG_ARTIFACTS_PATH=${PWD}/artifacts/${PACMAN_REPO}/${PACMAN_ARCH}/package
 SRC_ARTIFACTS_PATH=${PWD}/artifacts/${PACMAN_REPO}/${PACMAN_ARCH}/sources
 
+LOCK_FILE_DIR=$(readlink -f "$(dirname '${0}')")
+
+_lock_file "pacman_sync"
 pacman --sync --refresh --sysupgrade --needed --noconfirm --disable-download-timeout base-devel rclone-bin expect git
+_release_file "pacman_sync"
 
 git_config user.email 'ci@msys2.org'
 git_config user.name  'MSYS2 Continuous Integration'
