@@ -141,8 +141,7 @@ _last_package_hash()
 {
 local package="${1}"
 local marker="build.marker"
-rclone copy "${PKG_DEPLOY_PATH}/${marker}" . &>/dev/null && sed -rn "s|^\[([[:xdigit:]]+)\]${package}\s*$|\1|p" "${marker}"
-rm -f ${hashfile}
+rclone cat "${PKG_DEPLOY_PATH}/${marker}" 2>/dev/null | sed -rn "s|^\[([[:xdigit:]]+)\]${package}\s*$|\1|p"
 return 0
 }
 
@@ -305,6 +304,9 @@ build_package()
 local depends makedepends arch buildarch
 unset PKGEXT SRCEXT
 
+rm -rf ${PKG_ARTIFACTS_PATH}/${package}
+rm -rf ${SRC_ARTIFACTS_PATH}/${package}
+
 _package_info "${package}" depends{,_${PACMAN_ARCH}} makedepends{,_${PACMAN_ARCH}} arch buildarch PKGEXT SRCEXT
 [ -n "${PKGEXT}" ] || PKGEXT=$(grep -Po "^PKGEXT=('|\")?\K[^'\"]+" /etc/makepkg.conf)
 export PKGEXT=${PKGEXT}
@@ -331,6 +333,9 @@ arch=($(tr ' ' '\n' <<< ${arch[@]} | sort -u))
 
 pushd "${package}"
 sed -i -r "s|^(arch=\()[^)]+(\))|\1${arch[*]}\2|" PKGBUILD
+_lock_file "pacman_sync"
+pacman --sync --refresh --noconfirm --disable-download-timeout
+_release_file "pacman_sync"
 makepkg --noconfirm --skippgpcheck --nocheck --syncdeps --rmdeps --cleanbuild &&
 makepkg --noconfirm --noprogressbar --allsource --skippgpcheck
 
@@ -339,7 +344,7 @@ mkdir -pv ${PKG_ARTIFACTS_PATH}/${package}
 mv -vf *${PKGEXT} ${PKG_ARTIFACTS_PATH}/${package}
 true
 } || {
-export FILED_PKGS=(${FILED_PKGS[@]} ${package})
+export FAILED_PKGS=(${FAILED_PKGS[@]} ${package})
 }
 
 (ls *${SRCEXT} &>/dev/null) && {
@@ -399,9 +404,9 @@ message=${message}"<p><font color=\"green\">${item}</font></p>"
 done
 }
 
-[ -n "${FILED_PKGS}" ] && {
+[ -n "${FAILED_PKGS}" ] && {
 message=${message}"<p>Failed to build following packages. </p>"
-for item in ${FILED_PKGS[@]}; do
+for item in ${FAILED_PKGS[@]}; do
 message=${message}"<p><font color=\"red\">${item}</font></p>"
 done
 }
@@ -443,14 +448,18 @@ message() { local status="${1}"; local items=("${@:2}"); _status message "${stat
 
 # Run from here ......
 echo -e "\033]0;[$$] Starting...\007"
+
 # Configure
-BUILD_RAR=$(readlink -f "$(dirname '${0}')")/build.rar
-BUILD_CFG=${BUILD_RAR%/*}/build.config
-_lock_file "build.config"
+THIS_DIR=$(readlink -f "$(dirname '${0}')")
+LOCK_FILE_DIR=${THIS_DIR}
+BUILD_RAR=${THIS_DIR}/build.rar
+BUILD_CFG=${THIS_DIR}/build.config
+
 [ -z "${RAR_FILE_SECRET}" ] && {
 echo "Enter the password to extract file '${BUILD_RAR##*/}'"
 Read_Passwd RAR_FILE_SECRET
 }
+_lock_file "build.config"
 unrar x -p"${RAR_FILE_SECRET}" -o+ -id[q] ${BUILD_RAR} ${BUILD_CFG%/*}
 unset RAR_FILE_SECRET
 [ -f "${BUILD_CFG}" ] && source ${BUILD_CFG} && rm -vf ${BUILD_CFG}
@@ -477,8 +486,6 @@ SRC_DEPLOY_PATH=$(dirname ${PKG_DEPLOY_PATH})/sources
 PKG_ARTIFACTS_PATH=${PWD}/artifacts/${PACMAN_REPO}/${PACMAN_ARCH}/package
 SRC_ARTIFACTS_PATH=${PWD}/artifacts/${PACMAN_REPO}/${PACMAN_ARCH}/sources
 
-LOCK_FILE_DIR=$(readlink -f "$(dirname '${0}')")
-
 _lock_file "pacman_sync"
 pacman --sync --refresh --sysupgrade --needed --noconfirm --disable-download-timeout base-devel rclone-bin expect git
 _release_file "pacman_sync"
@@ -504,13 +511,15 @@ define_build_order || failure 'Could not determine build order'
 
 # Build
 message 'Building packages' "${packages[@]}"
+IPKG=0
 for package in "${packages[@]}"; do
-echo -e "\033]0;[$$] ${package}\007"
+echo -e "\033]0;[$$] $((++IPKG))/${#packages[@]} - ${package}\007"
 execute 'Building packages' build_package
+[ -d "${PKG_ARTIFACTS_PATH}/${package}" ] || continue
 execute "Generating package signature" create_package_signature
 execute "Deploying artifacts" deploy_artifacts
 done
 _create_build_marker
 create_mail_message
-success 'All packages built successfully'
+[ -z "${FAILED_PKGS}" ] && success 'All packages built successfully'
 popd

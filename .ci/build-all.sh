@@ -53,7 +53,7 @@ export rsync_proxy=${NET_PROXY_HOST}:${NET_PROXY_PORT}
 export RSYNC_PROXY=${NET_PROXY_HOST}:${NET_PROXY_PORT}
 
 which git &>/dev/null && {
-git config --global core.gitproxy git://${NET_PROXY_HOST}:${NET_PROXY_PORT}
+#git config --global core.gitproxy git://${NET_PROXY_HOST}:${NET_PROXY_PORT}
 git config --global http.proxy http://${NET_PROXY_HOST}:${NET_PROXY_PORT}
 git config --global https.proxy https://${NET_PROXY_HOST}:${NET_PROXY_PORT}
 }
@@ -72,7 +72,7 @@ export rsync_proxy=
 export RSYNC_PROXY=
 
 which git &>/dev/null && {
-git config --global --unset core.gitproxy
+#git config --global --unset core.gitproxy
 git config --global --unset http.proxy
 git config --global --unset https.proxy
 }
