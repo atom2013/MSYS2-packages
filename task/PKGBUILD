@@ -52,7 +52,7 @@ build() {
 #  ls "/usr/include/sys"
 #  pacman -Q
   msg "Starting cmake..."
-  cmake -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX=/usr .
+  cmake -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_CXX_FLAGS="${CXXFLAGS} -std=gnu++11 -D_GNU_SOURCE" .
 
   sed -i -r 's/-luuid/-luuid.dll/' src/CMakeFiles/task_executable.dir/link.txt
   sed -i -r 's/-luuid/-luuid.dll/' src/CMakeFiles/calc_executable.dir/link.txt
