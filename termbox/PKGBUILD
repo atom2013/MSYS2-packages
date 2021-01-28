@@ -1,29 +1,26 @@
 # Maintainer: Yusuke Sasaki <yusuke dot sasaki dot nuem at gmail dot com>
 
 pkgname=termbox
-pkgver=1.1.0
-pkgrel=2
+pkgver=1.1.2
+pkgrel=1
 pkgdesc="Library for writing text-based user interfaces"
-_wafver=1.9.15
+_wafver=2.0.21
 arch=('i686' 'x86_64')
 license=('MIT')
 url="https://github.com/nsf/termbox"
 makedepends=('python3')
 source=(${pkgname}-${pkgver}.tar.gz::https://github.com/nsf/termbox/archive/v${pkgver}.tar.gz
         https://waf.io/waf-${_wafver}
-        0010-msysize.patch
-        0100-add_XOPEN_SOURCE-define-for-python-module.patch)
-sha256sums=('2743ee4aeb0ff39fadbaf945b76c43e6f6bba544156f2576282b775a3067d748'
-            '85e76e38df9a4d45a6f73383f02f1438a5da39890e28c483101b2c16d2a63663'
-            'ad0550bd4e66daee3f6c3cfcc01c3f12e8b2e415f87deae910df8cfbe0f4ee35'
-            'aee94d19c50610cf1fae7f289deec13cd985d64472bcd8dce85ee648cdd2d6e9')
+        0010-msysize.patch)
+sha256sums=('61c9940b42b3ac44bf0cba67eacba75e3c02088b8c695149528c77def04d69b1'
+            '7cebf2c5efe53cbb9a4b5bdc4b49ae90ecd64a8fce7a3222d58e591b58215306'
+            'ad0550bd4e66daee3f6c3cfcc01c3f12e8b2e415f87deae910df8cfbe0f4ee35')
 
 prepare() {
   cd ${srcdir}/${pkgname}-${pkgver}
   cp -f ${srcdir}/waf-${_wafver} ./waf
 
   patch -p1 -i ${srcdir}/0010-msysize.patch
-  patch -p1 -i ${srcdir}/0100-add_XOPEN_SOURCE-define-for-python-module.patch
 }
 
 build() {
