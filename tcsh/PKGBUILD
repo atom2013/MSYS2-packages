@@ -15,14 +15,17 @@ provides=('csh')
 conflicts=('csh')
 install=tcsh.install
 source=("ftp://ftp.astron.com/pub/${pkgname}/${pkgname}-${pkgver}.tar.gz"
-        "msys-platform.patch")
+        "msys-platform.patch"
+        "tcsh-6.21.00-fno-common.patch")
 sha256sums=('ed287158ca1b00ba477e8ea57bac53609838ebcfd05fcb05ca95021b7ebe885b'
-            '69d1f10818adf9ebb09369a5eb3500c289f518c5e54f51d93439c7a6ac90af6b')
+            '69d1f10818adf9ebb09369a5eb3500c289f518c5e54f51d93439c7a6ac90af6b'
+            '771ee572e7b7dcce338b64b8784f36f6322c74a7c8b78d614ecbe57755868681')
 
 prepare() {
   cd "${srcdir}/${pkgname}-${pkgver}"
   cp -f config/cygwin config/msys
   patch -p1 -i ${srcdir}/msys-platform.patch
+  patch -p1 -i ${srcdir}/tcsh-6.21.00-fno-common.patch
   autoreconf -ivf
 }
 
