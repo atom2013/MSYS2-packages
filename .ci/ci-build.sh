@@ -74,8 +74,7 @@ _list_changes() {
     local branch_url="$(git remote get-url origin | sed 's/\.git$//')/tree/${CI_BRANCH}"
 	local commit_sha
 	
-	rclone copy "${PKG_DEPLOY_PATH}/${marker}" . &>/dev/null && commit_sha=$(sed -rn "s|^\[([[:xdigit:]]+)\]${branch_url}\s*$|\1|p" "${marker}")
-	rm -f ${marker}
+	commit_sha=$(rclone cat "${PKG_DEPLOY_PATH}/${marker}" 2>/dev/null | sed -rn "s|^\[([[:xdigit:]]+)\]${branch_url}\s*$|\1|p")
 	[ -n "${commit_sha}" ] || commit_sha="HEAD^"
 	
 	_as_list "${list_name}" "${filter}" "${strip}" "$(git log "${git_options[@]}" ${commit_sha}.. | sort -u)"
@@ -500,10 +499,11 @@ import_pgp_seckey
 pushd ${CI_BUILD_DIR}
 [ $# == 0 ] && {
 # Detect
-list_commits  || failure 'Could not detect added commits'
-list_packages || failure 'Could not detect changed files'
+list_commits  || { failure 'Could not detect added commits'; exit 1; }
+list_packages || { failure 'Could not detect changed files'; exit 1; }
 message 'Processing changes' "${commits[@]}"
-test -z "${packages}" && success 'No changes in package recipes'
+[ -z "${packages}" ] && { success 'No changes in package recipes'; exit 0; }
+true
 } || {
 packages=(${@})
 }
