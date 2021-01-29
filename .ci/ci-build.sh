@@ -459,7 +459,7 @@ echo "Enter the password to extract file '${BUILD_RAR##*/}'"
 Read_Passwd RAR_FILE_SECRET
 }
 _lock_file "build.config"
-unrar x -p"${RAR_FILE_SECRET}" -o+ -id[q] ${BUILD_RAR} ${BUILD_CFG%/*}
+unrar x -p"${RAR_FILE_SECRET}" -o+ -id[q] ${BUILD_RAR} ${BUILD_CFG%/*} || { _release_file "build.config"; exit 1; }
 unset RAR_FILE_SECRET
 [ -f "${BUILD_CFG}" ] && source ${BUILD_CFG} && rm -vf ${BUILD_CFG}
 _release_file "build.config"
@@ -486,7 +486,7 @@ PKG_ARTIFACTS_PATH=${PWD}/artifacts/${PACMAN_REPO}/${PACMAN_ARCH}/package
 SRC_ARTIFACTS_PATH=${PWD}/artifacts/${PACMAN_REPO}/${PACMAN_ARCH}/sources
 
 _lock_file "pacman_sync"
-pacman --sync --refresh --sysupgrade --needed --noconfirm --disable-download-timeout base-devel rclone-bin expect git
+pacman --sync --refresh --sysupgrade --needed --noconfirm --disable-download-timeout base-devel rclone-bin expect git || { _release_file "pacman_sync"; exit 1; }
 _release_file "pacman_sync"
 
 git_config user.email 'ci@msys2.org'
