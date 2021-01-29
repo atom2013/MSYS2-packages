@@ -14,7 +14,7 @@ makedepends=("gcc" 'make' 'libedit-devel' 'flex' 'bison')
 source=("https://cdecl.org/files/cdecl-blocks-2.5.tar.gz"
         "build.patch")
 sha256sums=('9ee6402be7e4f5bb5e6ee60c6b9ea3862935bf070e6cecd0ab0842305406f3ac'
-            'a69609f569dd332879d803f60ef400e9243dc7b91ee9842b9c149151fbd49066')
+            'd49bb2fd4d0b88e9ee8dc6d9f9e5d15414185885f6c5d78f43807b5757cf0d3a')
 
 prepare() {
   cd "${srcdir}/${_realname}-${pkgver}"
@@ -23,7 +23,7 @@ prepare() {
 
 build() {
   cd ${srcdir}/${_realname}-${pkgver}
-  make
+  make CFLAGS="-O2 -s -DUSE_READLINE -std=gnu90"
 }
 
 package() {

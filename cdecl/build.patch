@@ -1,7 +1,11 @@
-diff --git cdecl-blocks-2.5.orig/Makefile cdecl-blocks-2.5/Makefile
-index 2a1429d..86f759b 100644
---- cdecl-blocks-2.5.orig/Makefile
-+++ cdecl-blocks-2.5/Makefile
+ Makefile | 16 +++++++++-------
+ cdecl.c  | 14 +++++++-------
+ 2 files changed, 16 insertions(+), 14 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 1643b74..1d15048 100644
+--- a/Makefile
++++ b/Makefile
 @@ -15,13 +15,13 @@
  #
  # add -DUSE_READLINE	To compile in support for the GNU readline library.
@@ -21,7 +25,7 @@ index 2a1429d..86f759b 100644
  INSTALL= install -c
  INSTALL_DATA= install -c -m 644
  
-@@ -34,10 +34,10 @@ c++decl: cdgram.c cdlex.c cdecl.c
+@@ -33,18 +33,20 @@ c++decl: cdgram.c cdlex.c cdecl.c
  	rm -f cdecl
  
  cdlex.c: cdlex.l
@@ -32,9 +36,8 @@ index 2a1429d..86f759b 100644
 -	yacc cdgram.y && mv y.tab.c cdgram.c
 +	yacc -ocdgram.c cdgram.y
  
- test: cdecl
- 	@./cdecl < testset | diff -U 3 - test_expected_output.txt \
-@@ -48,8 +48,10 @@ test_cpp: c++decl
+ test:
+ 	./cdecl < testset
  	./c++decl < testset++
  
  install: cdecl
@@ -45,10 +48,10 @@ index 2a1429d..86f759b 100644
  	$(INSTALL_DATA) cdecl.1 $(MANDIR)
  	$(INSTALL_DATA) c++decl.1 $(MANDIR)
  
-diff --git cdecl-blocks-2.5.orig/cdecl.c cdecl-blocks-2.5/cdecl.c
-index 8ecaca4..c839c17 100644
---- cdecl-blocks-2.5.orig/cdecl.c
-+++ cdecl-blocks-2.5/cdecl.c
+diff --git a/cdecl.c b/cdecl.c
+index 73ad493..2418306 100644
+--- a/cdecl.c
++++ b/cdecl.c
 @@ -93,12 +93,12 @@ void free(), exit(), perror();
  #endif /* __STDC__ || DOS */
  
@@ -92,3 +95,12 @@ index 8ecaca4..c839c17 100644
  	    if (!strcmp(line, "quit") || !strcmp(line, "exit")) {
  		free(line);
  		return ret;
+@@ -1255,7 +1255,7 @@ char **argv;
+ 
+ #ifdef USE_READLINE
+     /* install completion handlers */
+-    rl_attempted_completion_function = (CPPFunction *)attempt_completion;
++    rl_attempted_completion_function = (rl_completion_func_t *)attempt_completion;
+     rl_completion_entry_function = (Function *)keyword_completion;
+ #endif
+ 
