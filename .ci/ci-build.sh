@@ -470,7 +470,7 @@ _release_file "build.config"
 [[ ${PACMAN_ARCH} =~ '$' ]] && eval export PACMAN_ARCH=${PACMAN_ARCH}
 [ -z "${DEPLOY_PATH}" ] && { echo "Environment variable 'DEPLOY_PATH' is required."; exit 1; }
 [[ ${DEPLOY_PATH} =~ '$' ]] && eval export DEPLOY_PATH=${DEPLOY_PATH}
-[ -z "${RCLONE_CONF}" ] && { echo "Environment variable 'RCLONE_CONF' is required."; exit 1; }
+[ -z "${RCLONE_CONF_URL}" ] && { echo "Environment variable 'RCLONE_CONF_URL' is required."; exit 1; }
 [ -z "${PGP_KEY_PASSWD}" ] && { echo "Environment variable 'PGP_KEY_PASSWD' is required."; exit 1; }
 [ -z "${PGP_KEY}" ] && { echo "Environment variable 'PGP_KEY' is required."; exit 1; }
 [ -z "${MAIL_HOST}" ] && { echo "Environment variable 'MAIL_HOST' is required."; exit 1; }
@@ -479,6 +479,7 @@ _release_file "build.config"
 [ -z "${MAIL_PASSWD}" ] && { echo "Environment variable 'MAIL_PASSWD' is required."; exit 1; }
 [ -z "${MAIL_TO}" ] && { echo "Environment variable 'MAIL_TO' is required."; exit 1; }
 [ -z "${CUSTOM_REPOS}" ] || add_custom_repos
+import_pgp_seckey
 
 PKG_DEPLOY_PATH=${DEPLOY_PATH%% *}
 SRC_DEPLOY_PATH=$(dirname ${PKG_DEPLOY_PATH})/sources
@@ -492,9 +493,16 @@ _release_file "pacman_sync"
 git_config user.email 'ci@msys2.org'
 git_config user.name  'MSYS2 Continuous Integration'
 
-mkdir -pv ${HOME}/.config/rclone
-printf "${RCLONE_CONF}" > ${HOME}/.config/rclone/rclone.conf
-import_pgp_seckey
+RCLONE_CONFIG_PATH=$(cygpath -u "$(rclone config file | tail -n1)")
+CFG_TIME=$(stat -c "%X" ${RCLONE_CONFIG_PATH} 2>/dev/null || printf 0)
+NOW_TIME=$(date "+%s")
+(( NOW_TIME - CFG_TIME > 86400 )) && {
+mv -vf  ${RCLONE_CONFIG_PATH}{,.orig} 2>/dev/null
+mkdir -pv ${RCLONE_CONFIG_PATH%/*}
+curl -L ${RCLONE_CONF_URL} -o ${RCLONE_CONFIG_PATH}.gpg
+gpg --pinentry-mode loopback --passphrase "${PGP_KEY_PASSWD}" --output ${RCLONE_CONFIG_PATH} --decrypt ${RCLONE_CONFIG_PATH}.gpg
+rm -vf ${RCLONE_CONFIG_PATH}{.gpg,.orig}
+}
 
 pushd ${CI_BUILD_DIR}
 [ $# == 0 ] && {
