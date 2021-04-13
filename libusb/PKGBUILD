@@ -1,0 +1,41 @@
+# Maintainer: Atom Long <atom.long@hotmail.com>
+
+pkgname=libusb
+pkgver=1.0.24
+pkgrel=1
+pkgdesc="Library that provides generic access to USB devices"
+arch=(i686 x86_64)
+url="https://libusb.info/"
+license=('LGPL2.1')
+depends=('msys2-runtime')
+source=("https://github.com/${pkgname}/${pkgname}/releases/download/v$pkgver/${pkgname}-$pkgver.tar.bz2"
+        "${pkgname}-1.0.24-descriptor_parsing.patch"
+		"${pkgname}-1.0.24-msysize.patch")
+sha512sums=('5aea36a530aaa15c6dd656d0ed3ce204522c9946d8d39ffbb290dab4a98cda388a2598da4995123d1032324056090bd429e702459626d3e8d7daeebc4e7ff3dc'
+            '588624bdcce2ff3ef98ab28b98b00eb48f16ef9e94033f29aaf8c6d6cb3e56d1299ea59f63b0d7a485955fa85182db0db5c043ceca24345c41f40311483606e2'
+			'94d6403c6f8161457883c05557a9043649110822affc7210e4e3075c4dd1a6692aa8163f9b1e143adb1afaf6796d7f3b659fa9ddb87eea90cc8b94402ab3a6d1')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  patch -Np1 -i ${srcdir}/${pkgname}-1.0.24-descriptor_parsing.patch
+  patch -Np1 -i ${srcdir}/${pkgname}-1.0.24-msysize.patch
+  autoreconf -vfi
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  ./configure --prefix=/usr
+  make
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  make -k check
+}
+
+package () {
+  cd "$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+  install -vDm 644 {AUTHORS,ChangeLog,README} \
+    -t "${pkgdir}/usr/share/doc/${pkgname}/"
+}
